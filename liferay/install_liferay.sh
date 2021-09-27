@@ -37,6 +37,12 @@ check_existence_connector(){
     echo -e "\e[0;31m The liferay connector was not added to the /connectors/liferay directory \e[0m"
     exit 1
   fi
+  connector_size="$(du /connectors/liferay/onlyoffice-integration-web-liferay.jar | awk '{print $1}')"
+  echo "$connector_size"
+  if [[ "$connector_size" == '0' ]]; then
+    echo -e "\e[0;31m The size of the connector is 0, check that the connector is loaded correctly \e[0m"
+    exit 1
+  fi
   chown -R 1000:1000 /connectors/liferay/
 }
 add_connector_to_container(){

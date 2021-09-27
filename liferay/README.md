@@ -12,7 +12,7 @@ runcmd:
 
 Where:
  - `https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar` - The address at which the connector under test is available
- - `liferay_tag` – liferay version 
+ - `liferay_tag` - liferay version 
 
 If you do not specify the tag, version `7.4.0-ga1` will be installed by default.
 
