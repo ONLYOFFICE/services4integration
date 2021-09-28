@@ -4,7 +4,7 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 ```
 runcmd:
  - git clone --depth=1 https://username:password@github.com/ONLYOFFICE/services4integration.git /app
- - /app/liferay/install_liferay.sh -lt liferay_tag -cu connector_url
+ - /app/liferay/install.sh -lt liferay_tag -cu connector_url
 ```
 
 Where:
@@ -13,7 +13,7 @@ Where:
 
 For example:
 ```
-/app/liferay/install_liferay.sh -lt 7.4.0-ga1 -cu https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar
+/app/liferay/install.sh -lt 7.4.0-ga1 -cu https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
