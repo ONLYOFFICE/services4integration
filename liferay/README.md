@@ -1,15 +1,15 @@
 # Stand for testing the connector to Liferay
 
-When creating a VM in oVirt, in the `Initial Run` contribution, enter the following commands in the `Custom Script` field:
+Pass the following `cloud-init` directives to the instance with `user data`:
 ```
 runcmd:
- - git clone https://username:password@github.com/ONLYOFFICE/services4integration.git /app
+ - git clone --depth=1 https://username:password@github.com/ONLYOFFICE/services4integration.git /app
  - /app/liferay/install_liferay.sh -lt liferay_tag -cu connector_url
 ```
 
 Where:
- - `liferay_tag` - liferay version
- - `connector_url` - The address at which the connector under test is available
+ - `liferay_tag` - liferay version. The available versions of Liferay can be viewed [here](https://hub.docker.com/r/liferay/portal/tags)
+ - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-liferay/releases)
 
 For example:
 ```

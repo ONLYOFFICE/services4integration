@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 LIFERAY_TAG="7.4.0-ga1"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar"
 if [ "$1" == "" ]; then
@@ -22,14 +22,8 @@ while [ "$1" != "" ]; do
   shift
 done
 install_liferay(){
-  apt-get update && apt-get install -y apt-transport-https curl wget ca-certificates software-properties-common gnupg2 ntp
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  apt update
-  apt install -y docker-ce docker-ce-cli
-  systemctl start docker
-  curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  chmod +x /usr/local/bin/docker-compose
+  source /app/common/install_dependencies.sh
+  install_dependencies
   docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 onlyoffice/documentserver
   docker run -i -t -d --restart=always --name liferay -p 80:8080 liferay/portal:${LIFERAY_TAG}
   echo OK > /opt/run
