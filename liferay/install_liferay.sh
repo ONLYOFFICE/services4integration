@@ -1,15 +1,37 @@
 #!/bin/bash
-liferay_tag=${1:-"7.4.0-ga1"}
+LIFERAY_TAG="7.4.0-ga1"
+CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar"
+if [ "$1" == "" ]; then
+  echo -e "\e[0;33m Warning: Basic parameters are missing. The default values will be used \e[0m"
+fi
+while [ "$1" != "" ]; do
+  case $1 in
+    -lt | --liferay_tag )
+       if [ "$2" != "" ]; then
+         LIFERAY_TAG=$2
+         shift
+       fi
+    ;;
+    -cu | --connector_url )
+       if [ "$2" != "" ]; then
+         CONNECTOR_URL=$2
+         shift
+       fi
+    ;;
+  esac
+  shift
+done
 install_liferay(){
-  apt-get update && apt-get install -y apt-transport-https curl ca-certificates software-properties-common gnupg2 ntp
+  apt-get update && apt-get install -y apt-transport-https curl wget ca-certificates software-properties-common gnupg2 ntp
   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
   add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   apt update
-  apt install -y docker-ce=5:19.03.11* docker-ce-cli=5:19.03.11*
-  curl -L "https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  apt install -y docker-ce docker-ce-cli
+  systemctl start docker
+  curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   chmod +x /usr/local/bin/docker-compose
   docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 onlyoffice/documentserver
-  docker run -i -t -d --restart=always --name liferay -p 80:8080 liferay/portal:${liferay_tag}
+  docker run -i -t -d --restart=always --name liferay -p 80:8080 liferay/portal:${LIFERAY_TAG}
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"
 }
@@ -33,6 +55,7 @@ check_launch_liferay(){
 }
 check_existence_connector(){
   echo -e "\e[0;32m The connector will now be added to the container \e[0m"
+  wget -O /connectors/liferay/onlyoffice-integration-web-liferay.jar ${CONNECTOR_URL}
   if [ ! -f "/connectors/liferay/onlyoffice-integration-web-liferay.jar" ]; then
     echo -e "\e[0;31m The liferay connector was not added to the /connectors/liferay directory \e[0m"
     exit 1
