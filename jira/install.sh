@@ -36,7 +36,7 @@ prepare_connector(){
 }
 add_connector_to_container(){
   docker cp /connectors/${CONNECTOR_NAME} jira:/var/atlassian/application-data/jira/plugins/installed-plugins/
-  docker exec -it jira bash -c 'test -e /var/atlassian/application-data/jira/plugins/installed-plugins/${CONNECTOR_NAME}'
+  docker exec jira bash -c 'test -e /var/atlassian/application-data/jira/plugins/installed-plugins/${CONNECTOR_NAME}'
   if [ $? -ne 0 ]; then
     echo -e "\e[0;31m The connector under test was not added to the container in the /var/atlassian/application-data/jira/plugins directory \e[0m"
     exit 1
