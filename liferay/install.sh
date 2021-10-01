@@ -1,31 +1,13 @@
 #!/usr/bin/env bash
-LIFERAY_TAG="7.4.0-ga1"
+SERVICE_TAG="7.4.0-ga1"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar"
-if [ "$1" == "" ]; then
-  echo -e "\e[0;33m Warning: Basic parameters are missing. The default values will be used \e[0m"
-fi
-while [ "$1" != "" ]; do
-  case $1 in
-    -lt | --liferay_tag )
-       if [ "$2" != "" ]; then
-         LIFERAY_TAG=$2
-         shift
-       fi
-    ;;
-    -cu | --connector_url )
-       if [ "$2" != "" ]; then
-         CONNECTOR_URL=$2
-         shift
-       fi
-    ;;
-  esac
-  shift
-done
+CONNECTOR_NAME="onlyoffice-integration-web-liferay.jar"
+source /app/common/check_parameters.sh ${@}
 install_liferay(){
   source /app/common/install_dependencies.sh
   install_dependencies
   docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 onlyoffice/documentserver
-  docker run -i -t -d --restart=always --name liferay -p 80:8080 liferay/portal:${LIFERAY_TAG}
+  docker run -i -t -d --restart=always --name liferay -p 80:8080 liferay/portal:${SERVICE_TAG}
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"
 }
@@ -47,23 +29,13 @@ check_launch_liferay(){
     fi
   done
 }
-check_existence_connector(){
-  echo -e "\e[0;32m The connector will now be added to the container \e[0m"
-  wget -O /connectors/liferay/onlyoffice-integration-web-liferay.jar ${CONNECTOR_URL}
-  if [ ! -f "/connectors/liferay/onlyoffice-integration-web-liferay.jar" ]; then
-    echo -e "\e[0;31m The liferay connector was not added to the /connectors/liferay directory \e[0m"
-    exit 1
-  fi
-  connector_size="$(du /connectors/liferay/onlyoffice-integration-web-liferay.jar | awk '{print $1}')"
-  echo "$connector_size"
-  if [[ "$connector_size" == '0' ]]; then
-    echo -e "\e[0;31m The size of the connector is 0, check that the connector is loaded correctly \e[0m"
-    exit 1
-  fi
-  chown -R 1000:1000 /connectors/liferay/
+prepare_connector(){
+  source /app/common/get_connector.sh
+  get_connector
+  chown -R 1000:1000 /connectors/
 }
 add_connector_to_container(){
-  docker cp /connectors/liferay/onlyoffice-integration-web-liferay.jar liferay:/opt/liferay/deploy/
+  docker cp /connectors/${CONNECTOR_NAME} liferay:/opt/liferay/deploy/
   for i in {1..19}; do
     echo "Checking whether the connector is loaded into the container: $i"
     docker logs liferay | grep -i "STARTED onlyoffice.integration.web"
@@ -85,6 +57,6 @@ complete_installation(){
 }
 install_liferay
 check_launch_liferay
-check_existence_connector
+prepare_connector
 add_connector_to_container
 complete_installation
