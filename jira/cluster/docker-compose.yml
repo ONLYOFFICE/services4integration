@@ -1,0 +1,68 @@
+version: "3.6"
+
+services:
+
+  postgresql:
+    restart: unless-stopped
+    image: postgres:12
+    container_name: postgresql
+    environment:
+      POSTGRES_PASSWORD: my-secret
+
+  haproxy:
+    restart: unless-stopped
+    image: haproxy:latest
+    container_name: haproxy
+    ports:
+      - 80:80
+    volumes:
+      - /jira/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+
+  onlyoffice-document-server:
+    restart: unless-stopped
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice-document-server
+    ports:
+      - 3000:80
+
+  jira-node-1:
+    restart: unless-stopped
+    image: atlassian/jira-software:SERVICE_TAG
+    container_name: jira-node-1
+    depends_on:
+      - postgresql
+    environment:
+      - CLUSTERED=true
+      - JIRA_NODE_ID=jira_node_1
+      - JIRA_SHARED_HOME=/data/jira/sharedhome
+      - ATL_PROXY_NAME=EXTERNALIP
+      - ATL_PROXY_PORT=80
+      - ATL_TOMCAT_SCHEME=http
+      - ATL_TOMCAT_SECURE=false
+      - ATL_TOMCAT_CONNECTIONTIMEOUT=600000
+    volumes:
+      - /jira/share:/data/jira/sharedhome
+
+  jira-node-2:
+    restart: unless-stopped
+    image: atlassian/jira-software:SERVICE_TAG
+    container_name: jira-node-2
+    depends_on:
+      - postgresql
+      - jira-node-1
+    environment:
+      - CLUSTERED=true
+      - JIRA_NODE_ID=jira_node_2
+      - JIRA_SHARED_HOME=/data/jira/sharedhome
+      - ATL_PROXY_NAME=EXTERNALIP
+      - ATL_PROXY_PORT=80
+      - ATL_TOMCAT_SCHEME=http
+      - ATL_TOMCAT_SECURE=false
+      - ATL_TOMCAT_CONNECTIONTIMEOUT=600000
+    volumes:
+      - /jira/share:/data/jira/sharedhome
+
+networks:
+  default:
+    external:
+      name: onlyoffice

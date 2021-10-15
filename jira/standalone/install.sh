@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 SERVICE_TAG="latest"
-CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira"
+CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.0/onlyoffice-jira-app-1.0.0.jar"
 CONNECTOR_NAME="onlyoffice-integration-web-jira.jar"
 source /app/common/check_parameters.sh ${@}
 install_jira(){
@@ -41,7 +41,7 @@ add_connector_to_container(){
     echo -e "\e[0;31m The connector under test was not added to the container in the /var/atlassian/application-data/jira/plugins directory \e[0m"
     exit 1
   else
-    echo -e "\e[0;32m The connector was successfully added to liferay. Ready to go \e[0m"
+    echo -e "\e[0;32m The connector was successfully added to Jira. Ready to go \e[0m"
   fi
 }
 complete_installation(){
