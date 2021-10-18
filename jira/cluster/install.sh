@@ -3,6 +3,8 @@ SERVICE_TAG="latest"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.0/onlyoffice-jira-app-1.0.0.jar"
 CONNECTOR_NAME="onlyoffice-integration-web-jira.jar"
 JIRA_NODES=(jira-node-1 jira-node-2)
+ALLIPADDR="$(hostname -I)"
+declare -a IPADDR=($ALLIPADDR)
 source /app/common/check_parameters.sh ${@}
 install_jira(){
   source /app/common/install_dependencies.sh
@@ -10,8 +12,6 @@ install_jira(){
   mkdir -p /jira/haproxy
   mkdir -p /jira/share/plugins/installed-plugins
   chown -R 2001:2001 /jira/share/
-  ALLIPADDR="$(hostname -I)"
-  declare -a IPADDR=($ALLIPADDR)
   sed -i 's/EXTERNALIP/'${IPADDR[0]}'/g' /app/jira/cluster/docker-compose.yml
   sed -i 's/SERVICE_TAG/'${SERVICE_TAG}'/g' /app/jira/cluster/docker-compose.yml
   cp /app/jira/cluster/haproxy.cfg /jira/haproxy/
@@ -59,7 +59,7 @@ check_connector_in_container(){
 }
 complete_installation(){
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the Jira web interface at http://"${IPADDR[0]}":8080/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the Jira web interface at http://${IPADDR[0]}:8080/ and follow a few configuration steps \e[0m"
 }
 install_jira
 check_launch_jira
