@@ -59,7 +59,7 @@ check_connector_in_container(){
 }
 complete_installation(){
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the Jira web interface at http://${IPADDR[0]}:8080/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the Jira web interface at http://${IPADDR[0]}/ and follow a few configuration steps \e[0m"
 }
 install_jira
 check_launch_jira

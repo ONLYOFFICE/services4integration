@@ -29,13 +29,13 @@ The script is finished
 After that you need to go to the Jira web interface at `http://IP-SERVER/` and follow a few configuration steps. Read more about it [here](https://confluence.atlassian.com/adminjiraserver/running-the-setup-wizard-938846872.html#Runningthesetupwizard-manual) (Note. You need to select the Production and testing setup).
 
 DB connection parameters:
- - 'Database Type: PostgreSQL'
- - 'Hostname: postgresql'
- - 'Port: 5432'
- - 'Database: postgres'
- - 'Username: postgres'
- - 'Password: my-secret'
- - 'Schema: public'
+ - Database Type: `PostgreSQL`
+ - Hostname: `postgresql`
+ - Port: `5432`
+ - Database: `postgres`
+ - Username: `postgres`
+ - Password: `my-secret`
+ - Schema: `public`
 
 After completing all the "setup wizard" steps, go to the menu: `System - Clustering` and make sure that there is a green dot next to the line `jira-node-1`.
 
