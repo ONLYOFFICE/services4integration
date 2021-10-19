@@ -14,7 +14,7 @@ check_cluster_readiness(){
   for name in "${JIRA_NODES[@]}"; do
     for i in {1..50}; do
       echo "Waiting for $name to be ready: $i"
-      docker logs ${name} | grep -w "Plugins upgrades completed successfully"
+      docker logs ${name} | grep -w "Warmed cache(s)"
       if [ $? -ne 0 ]; then
         if [[ "$i" == '49' ]]; then
           echo -e "\e[0;31m I didn't wait for the launch of $name. Check the container logs using the command: sudo docker logs -f $name \e[0m"

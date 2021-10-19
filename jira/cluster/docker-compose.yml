@@ -40,6 +40,16 @@ services:
       - ATL_TOMCAT_SCHEME=http
       - ATL_TOMCAT_SECURE=false
       - ATL_TOMCAT_CONNECTIONTIMEOUT=600000
+      - ATL_JDBC_URL=jdbc:postgresql://postgresql:5432/postgres
+      - ATL_DB_DRIVER=org.postgresql.Driver
+      - ATL_JDBC_USER=postgres
+      - ATL_JDBC_PASSWORD=my-secret
+      - ATL_DB_TYPE=postgres72
+      - ATL_DB_SCHEMA_NAME=public
+      - ATL_DB_MAXIDLE=30
+      - ATL_DB_POOLMINSIZE=30
+      - ATL_DB_MINEVICTABLEIDLETIMEMILLIS=60000
+      - ATL_DB_TIMEBETWEENEVICTIONRUNSMILLIS=300000
     volumes:
       - /jira/share:/data/jira/sharedhome
 

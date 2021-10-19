@@ -23,11 +23,11 @@ install_jira(){
 check_launch_jira(){
   echo -e "\e[0;32m Waiting for the launch of Jira \e[0m"
   for name in "${JIRA_NODES[@]}"; do
-    for i in {1..30}; do
+    for i in {1..50}; do
       echo "Getting the $name status: $i"
       docker logs ${name} | grep -w "Jira is ready to serve"
       if [ $? -ne 0 ]; then
-        if [[ "$i" == '29' ]]; then
+        if [[ "$i" == '49' ]]; then
           echo -e "\e[0;31m I didn't wait for the launch of $name. Check the container logs using the command: sudo docker logs -f $name \e[0m"
           exit 1
         else
@@ -53,7 +53,26 @@ check_connector_in_container(){
       echo -e "\e[0;31m The connector under test was not added to the container in the /data/jira/sharedhome/plugins/installed-plugins directory \e[0m"
       exit 1
     else
-      echo -e "\e[0;32m The connector was successfully added to ${name}. Ready to go \e[0m"
+      echo -e "\e[0;32m The connector was successfully added to ${name} \e[0m"
+    fi
+  done
+}
+database_initialization(){
+  echo "Database initialization begins"
+  curl -L http://${IPADDR[0]}
+  for i in {1..50}; do
+    echo "Readiness check: $i"
+    docker logs jira-node-1 | grep -w "Upgrade Succeeded! JIRA has been upgraded"
+    if [ $? -ne 0 ]; then
+      if [[ "$i" == '49' ]]; then
+        echo -e "\e[0;31m Readiness check failed. Check the container logs using the command: sudo docker logs -f jira-node-1 \e[0m"
+        exit 1
+      else
+        sleep 5
+      fi
+    else
+      echo -e "\e[0;32m Jira is ready for further configuration \e[0m"
+      break
     fi
   done
 }
@@ -65,4 +84,5 @@ install_jira
 check_launch_jira
 prepare_connector
 check_connector_in_container
+database_initialization
 complete_installation
