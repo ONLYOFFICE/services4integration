@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
+SERVICE_TAG="latest"
+CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.1.2/onlyoffice.tar.gz"
+CONNECTOR_NAME="onlyoffice.tar.gz"
 source /app/common/check_parameters.sh ${@}
+source /app/common/get_connector.sh
 
 install_nextcloud() {
+  export SERVICE_TAG=`echo $SERVICE_TAG`
+  export EXT_IP=`get -q -O - ifconfig.me/ip`  
   source /app/common/install_dependencies.sh
   install_dependencies
   cd /app/nextcloud/
-  export EXT_IP=`wget -q -O - ifconfig.me/ip`
   docker-compose up -d
 }
 
 install_connector() {
+  get_connector
+  cp /connectors/${CONNECTOR_NAME} /var/lib/docker/volumes/nextcloud_nextcloud/_data/apps
   cd /var/lib/docker/volumes/nextcloud_nextcloud/_data/apps
-  git clone --recurse-submodules https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git onlyoffice
+  tar -xzf $CONNECTOR_NAME && rm -f $CONNECTOR_NAME
   chown -R www-data:www-data onlyoffice
 }
 

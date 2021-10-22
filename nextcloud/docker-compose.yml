@@ -26,7 +26,7 @@ services:
       - MYSQL_USER=nextcloud
   
   app:
-    image: nextcloud
+    image: nextcloud:${SERVICE_TAG}
     restart: always
     ports:
       - 8080:80
