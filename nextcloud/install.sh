@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-SERVICE_TAG="latest"
-CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira"
-CONNECTOR_NAME="onlyoffice-integration-web-jira.jar"
 
 install_nextcloud() {
   source /app/common/install_dependencies.sh
@@ -11,5 +8,12 @@ install_nextcloud() {
   docker-compose up -d
 }
 
+install_connector() {
+  cd /var/lib/docker/volumes/nextcloud_nextcloud/_data/apps
+  git clone --recurse-submodules https://github.com/ONLYOFFICE/onlyoffice-nextcloud.git onlyoffice
+  chown -R www-data:www-data onlyoffice
+}
+
 #main
 install_nextcloud
+install_connector
