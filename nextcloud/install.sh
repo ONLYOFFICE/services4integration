@@ -14,6 +14,17 @@ install_connector() {
   chown -R www-data:www-data onlyoffice
 }
 
+check_ready() {
+while [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://localhost:8080)" != "200" ]]
+  do 
+    echo Waiting to ready
+    sleep 5
+  done
+    echo Nextcloud is up on 
+    echo http://$EXT_IP:8080
+}
+
 #main
 install_nextcloud
-while [[ "$(curl --connect-timeout 2 -s -o /dev/null -w ''%{http_code}'' http://localhost:8080)" != "200" ]]; do echo ..; sleep 5; done; echo nextcloud is up; install_connector
+check_ready
+install_connector
