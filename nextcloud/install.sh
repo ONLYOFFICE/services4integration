@@ -7,11 +7,13 @@ source /app/common/get_connector.sh
 
 install_nextcloud() {
   export SERVICE_TAG=`echo $SERVICE_TAG`
-  export EXT_IP=`get -q -O - ifconfig.me/ip`  
+  export EXT_IP=`wget -q -O - ifconfig.me/ip`  
   source /app/common/install_dependencies.sh
   install_dependencies
   cd /app/nextcloud/
   docker-compose up -d
+  echo $SERVICE_TAG
+  echo $EXT_IP
 }
 
 install_connector() {
