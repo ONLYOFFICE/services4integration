@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+source /app/common/check_parameters.sh ${@}
 
 install_nextcloud() {
   source /app/common/install_dependencies.sh
