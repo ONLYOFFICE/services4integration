@@ -18,10 +18,8 @@ install_nextcloud() {
 
 install_connector() {
   get_connector
-  cp /connectors/${CONNECTOR_NAME} /var/lib/docker/volumes/nextcloud_nextcloud/_data/apps
-  cd /var/lib/docker/volumes/nextcloud_nextcloud/_data/apps
-  tar -xzf $CONNECTOR_NAME && rm -f $CONNECTOR_NAME
-  chown -R www-data:www-data onlyoffice
+  docker cp /connectors/$CONNECTOR_NAME nextcloud_app:/var/www/html/apps
+  docker exec -d nextcloud_app sh -c "cd apps && tar -xzf $CONNECTOR_NAME && rm -f $CONNECTOR_NAME && chown -R www-data:www-data onlyoffice"
 }
 
 check_ready() {
