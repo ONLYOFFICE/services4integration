@@ -56,7 +56,8 @@ for i in {1..30}; do
 done
 }
 complete_installation(){
-  echo "\e[0;32m Then you can go to the owncloud web interface at: http://$EXT_IP and check the connector operation. \e[0m"
+  EXT_IP=`wget -q -O - ifconfig.me/ip`
+  echo -e "\e[0;32m Then you can go to the owncloud web interface at: http://$EXT_IP and check the connector operation. \e[0m"
   echo -e "\e[0;32m The script is finished \e[0m"
 }
 install_owncloud_with_onlyoffice
