@@ -13,6 +13,7 @@ services:
       
   db:
     image: mariadb
+    container_name: nextcloud_db
     restart: always
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-file-per-table=1 --skip-innodb-read-only-compressed
     depends_on:
@@ -27,6 +28,7 @@ services:
   
   app:
     image: nextcloud:${SERVICE_TAG}
+    container_name: nextcloud_app
     restart: always
     ports:
       - 8080:80
