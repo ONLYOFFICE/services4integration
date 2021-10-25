@@ -17,18 +17,12 @@ prepare_connector(){
   source /app/common/get_connector.sh
   get_connector
   tar -C /apps -xvf /connectors/${CONNECTOR_NAME}
-  #chown -R www-data:www-data /apps/onlyoffice
 }
 prepare_files() {
-  #EXT_IP=`wget -q -O - ifconfig.me/ip`
   sed -i -e  "s!owncloud/server!owncloud/server:${SERVICE_TAG}!g" /apps/docker-compose.yml
-  #sed -i -e  "s!/ds-vpath/!http://${EXT_IP}/!g" /apps/run.sh
-}
-complete_installation(){
-  echo -e "\e[0;32m The script is finished \e[0m"
 }
 check_ready() {
-apt install jq
+apt install jq -y
 IP_DS=$(docker inspect onlyoffice-document-server | jq .[].NetworkSettings.Networks.apps_onlyoffice.IPAddress | tr -d '"')
 
 echo -e "\e[0;32m Waiting for the launch of owncloud \e[0m"
@@ -60,6 +54,10 @@ for i in {1..30}; do
 	exit 1
   fi
 done
+}
+complete_installation(){
+  echo "\e[0;32m Then you can go to the owncloud web interface at: http://$EXT_IP and check the connector operation. \e[0m"
+  echo -e "\e[0;32m The script is finished \e[0m"
 }
 install_owncloud_with_onlyoffice
 check_ready
