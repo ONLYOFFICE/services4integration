@@ -12,8 +12,6 @@ install_nextcloud() {
   install_dependencies
   cd /app/nextcloud/
   docker-compose up -d
-  echo $SERVICE_TAG
-  echo $EXT_IP
 }
 
 install_connector() {
