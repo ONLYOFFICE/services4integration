@@ -2,6 +2,7 @@
 
 install_plone(){
   source /app/common/install_dependencies.sh
+  install_dependencies
 }
 
 complete_installation(){
