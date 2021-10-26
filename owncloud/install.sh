@@ -22,38 +22,39 @@ prepare_files() {
   sed -i -e  "s!owncloud/server!owncloud/server:${SERVICE_TAG}!g" /apps/docker-compose.yml
 }
 check_ready() {
-apt install jq -y
-IP_DS=$(docker inspect onlyoffice-document-server | jq .[].NetworkSettings.Networks.apps_onlyoffice.IPAddress | tr -d '"')
 
-echo -e "\e[0;32m Waiting for the launch of owncloud \e[0m"
 for i in {1..30}; do
-  if [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://localhost)" != "200" ]]; then
+  curl -f -s http://localhost
+  if [[ "$?" != "0" ]]; then
 	echo -e "\e[0;32m Waiting for the launch of owncloud \e[0m"
       sleep 10
     else
       echo -e "\e[0;32m owncloud works \e[0m"
+      owncloud_started="true"
       break
-  fi
-  if [[ "$i" == '29' ]]; then
-	echo -e "\e[0;31m I didn't wait for the launch of owncloud. \e[0m"
-	exit 1
   fi
 done
 
-echo -e "\e[0;32m Waiting for the launch of document-server \e[0m"
+if [[ "$owncloud_started" != 'true' ]]; then
+  echo -e "\e[0;31m I didn't wait for the launch of owncloud. \e[0m"
+  exit 1
+fi
+
 for i in {1..30}; do
-  if [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://$IP_DS)" != "200" ]]; then
+  if [[ "$(curl -f -s http://localhost/ds-vpath/healthcheck)" != "true" ]]; then
 	echo -e "\e[0;32m Waiting for the launch of document-server \e[0m"
       sleep 10
     else
       echo -e "\e[0;32m document-server is running \e[0m"
+      ds_started="true"
       break
   fi
-  if [[ "$i" == '29' ]]; then
-	echo -e "\e[0;31m Document server did not start. Check the container logs using the command: sudo docker logs -f document-server \e[0m"
-	exit 1
-  fi
 done
+
+if [[ "$ds_started" != 'true' ]]; then
+  echo -e "\e[0;31m Document server did not start. Check the container logs using the command: sudo docker logs -f onlyoffice-document-server. \e[0m"
+  exit 1
+fi
 }
 complete_installation(){
   EXT_IP=`wget -q -O - ifconfig.me/ip`
