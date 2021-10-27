@@ -19,7 +19,7 @@ install_connector() {
   cd /connectors
   tar -xzf $CONNECTOR_NAME && rm -f $CONNECTOR_NAME
   docker cp /connectors/onlyoffice nextcloud_app:/var/www/html/apps
-  docker exec -d nextcloud_app sh -c "chown -R www-data:www-data app/onlyoffice"
+  docker exec -d nextcloud_app sh -c "chown -R www-data:www-data apps/onlyoffice"
 }
 
 check_ready() {
