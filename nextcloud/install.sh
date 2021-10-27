@@ -23,7 +23,6 @@ install_connector() {
 }
 
 check_ready() {
-check_ready(){
 for ((i=30; i>0 ; i--))
 	do
 		if [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://localhost:8080)" != "200" ]]
@@ -44,4 +43,3 @@ for ((i=30; i>0 ; i--))
 install_nextcloud
 check_ready
 install_connector
-
