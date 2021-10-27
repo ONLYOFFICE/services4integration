@@ -16,18 +16,28 @@ install_nextcloud() {
 
 install_connector() {
   get_connector
-  docker cp /connectors/$CONNECTOR_NAME nextcloud_app:/var/www/html/apps
-  docker exec -d nextcloud_app sh -c "cd apps && tar -xzf $CONNECTOR_NAME && rm -f $CONNECTOR_NAME && chown -R www-data:www-data onlyoffice"
+  cd /connectors
+  tar -xzf $CONNECTOR_NAME && rm -f $CONNECTOR_NAME
+  docker cp /connectors/onlyoffice nextcloud_app:/var/www/html/apps
+  docker exec -d nextcloud_app sh -c "chown -R www-data:www-data app/onlyoffice"
 }
 
 check_ready() {
-while [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://localhost:8080)" != "200" ]]
-  do 
-    echo Waiting to ready
-    sleep 5
-  done
-    echo Nextcloud is up on 
-    echo http://$EXT_IP:8080
+check_ready(){
+for ((i=30; i>0 ; i--))
+	do
+		if [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://localhost:8080)" != "200" ]]
+			then 
+				echo Waiting to ready
+				sleep 10
+			else
+				echo Nextcloud is up on 
+				echo http://$EXT_IP:8080
+				return 1
+		fi
+	done
+		echo Nextcloud is unavailable
+		exit 1
 }
 
 #main
