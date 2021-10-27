@@ -24,8 +24,8 @@ install_connector() {
 
 check_ready() {
 for ((i=30; i>0 ; i--))
-	do
-		if [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://localhost:8080)" != "200" ]]
+do
+	if [[ "$(curl --connect-timeout 2 -L -s -o /dev/null -w ''%{http_code}'' http://localhost:8080)" != "200" ]]
 			then 
 				echo Waiting to ready
 				sleep 10
