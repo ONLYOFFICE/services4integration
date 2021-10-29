@@ -1,0 +1,79 @@
+version: '3.1'
+services:
+  ds:
+    container_name: onlyoffice-document-server
+    image: onlyoffice/documentserver
+    restart: always
+    networks:
+      - onlyoffice
+    volumes:
+      - document_data:/var/www/onlyoffice/Data
+      - document_log:/var/log/onlyoffice
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  humhub:
+    container_name: humhub
+    image: mriedmann/humhub
+    restart: always
+    networks:
+      - onlyoffice
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    volumes:
+      - ./config:/var/www/localhost/htdocs/protected/config
+      - ./uploads:/var/www/localhost/htdocs/uploads
+      - ./modules:/var/www/localhost/htdocs/protected/modules
+      - ./nginx_conf:/tmp/nginx_conf
+#      - ./modules_folder:/var/www/localhost/htdocs/custommodules
+      - ./run.sh:/run.sh
+    environment:
+      HUMHUB_DB_USER: humhub
+      HUMHUB_DB_PASSWORD: humhub
+      HUMHUB_DB_NAME: humhub
+      HUMHUB_DB_HOST: db
+      HUMHUB_AUTO_INSTALL: 1
+      HUMHUB_PROTO: 'http'
+      HUMHUB_HOST: "localhost"
+#      HUMHUB_ADMIN_LOGIN: admin
+#      HUMHUB_ADMIN_EMAIL: humhub@example.com
+#      HUMHUB_ADMIN_PASSWORD: admin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: sh /run.sh
+
+  db:
+    container_name: db
+    image: mariadb:10.2
+    restart: always
+    networks:
+      - onlyoffice
+    depends_on:
+      - ds
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: humhub
+      MYSQL_USER: humhub
+      MYSQL_PASSWORD: humhub
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+networks:
+  onlyoffice:
+    driver: 'bridge'
+volumes:
+  document_data:
+  document_log:
+  dbdata:
