@@ -19,6 +19,7 @@ install_humhub_with_onlyoffice(){
 prepare_connector(){
   source /app/common/get_connector.sh
   get_connector
+  apt install unzip -y
   unzip /connectors/${CONNECTOR_NAME} -d /app/humhub/modules
 }
 prepare_files() {
@@ -75,7 +76,6 @@ http://$EXT_IP and check the connector operation. \e[0m"
 main() {
   install_humhub_with_onlyoffice
   check_ready
-  
   complete_installation
 }
 main
