@@ -19,7 +19,7 @@ services:
       - onlyoffice-document-server
   app:
     container_name: app-server
-    image: docker.io/bitnami/moodle:3
+    image: bitnami/moodle
     restart: always
     ports:
       - 80
