@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-JIRA_NODES=(root-jira-node-2 root-jira-node-1)
+JIRA_NODES=(cluster-jira-node-2 cluster-jira-node-1)
 SERVICE_TAG=$(docker ps | grep -i ${JIRA_NODES[1]} | awk '{print$2}' | sed 's/[^:]*://')
 ALLIPADDR="$(hostname -I)"
 declare -a IPADDR=($ALLIPADDR)
@@ -8,16 +8,17 @@ add_second_node(){
   export SERVICE_TAG="${SERVICE_TAG}"
   export IP_PROXY="${IP_PROXY}"
   export JIRA_NODE_ID=jira_node_2
-  envsubst < /app/jira/cluster/docker-compose.yml | docker-compose -f - up -d --scale jira-node=2 --no-recreate
+  cd /app/jira/cluster/
+  envsubst < docker-compose.yml | docker-compose -f - up -d --scale jira-node=2 --no-recreate
 }
 check_cluster_readiness(){
   echo -e "\e[0;32m Wait until the Jira cluster nodes are ready \e[0m"
   for name in "${JIRA_NODES[@]}"; do
-    for i in {1..50}; do
+    for i in {1..100}; do
       echo "Waiting for $name to be ready: $i"
       docker logs ${name} | grep -w "Warmed cache(s)"
       if [ $? -ne 0 ]; then
-        if [[ "$i" == '49' ]]; then
+        if [[ "$i" == '99' ]]; then
           echo -e "\e[0;31m I didn't wait for the launch of $name. Check the container logs using the command: sudo docker logs -f $name \e[0m"
           exit 1
         else
@@ -25,7 +26,7 @@ check_cluster_readiness(){
         fi
       else
         echo -e "\e[0;32m Node $name is ready \e[0m"
-        if [[ "$name" == "root-jira-node-2" ]]; then
+        if [[ "$name" == "${JIRA_NODES[0]}" ]]; then
           docker restart ${JIRA_NODES[1]}
         fi
         break

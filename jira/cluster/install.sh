@@ -2,7 +2,7 @@
 SERVICE_TAG="latest"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar"
 CONNECTOR_NAME="onlyoffice-integration-web-jira.jar"
-JIRA_NODES=(root-jira-node-1)
+JIRA_NODES=(cluster-jira-node-1)
 ALLIPADDR="$(hostname -I)"
 declare -a IPADDR=($ALLIPADDR)
 IP_PROXY=${IPADDR[0]}
@@ -18,7 +18,8 @@ install_jira(){
   chown -R 2001:2001 /jira/share/
   cp /app/jira/cluster/haproxy.cfg /jira/haproxy/
   docker network create --driver bridge onlyoffice
-  envsubst < /app/jira/cluster/docker-compose.yml | docker-compose -f - up -d
+  cd /app/jira/cluster/
+  envsubst < docker-compose.yml | docker-compose -f - up -d
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"
 }
