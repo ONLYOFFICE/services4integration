@@ -20,6 +20,6 @@ sleep 10
 cd /var/www/localhost/htdocs/protected
 ./yii module/enable onlyoffice
 ./yii settings/set onlyoffice serverUrl /ds-vpath/
-./yii settings/set onlyoffice internalServerUrl http://ds
-./yii settings/set onlyoffice storageUrl http://humhub
+./yii settings/set onlyoffice internalServerUrl http://onlyoffice-document-server/
+./yii settings/set onlyoffice storageUrl http://app-server/
 tail -f /tmp/server.log
