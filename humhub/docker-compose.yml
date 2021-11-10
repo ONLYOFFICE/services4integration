@@ -23,7 +23,7 @@ services:
       - ./config:/var/www/localhost/htdocs/protected/config
       - ./uploads:/var/www/localhost/htdocs/uploads
       - ./modules:/var/www/localhost/htdocs/protected/modules
-      - ./nginx_conf:/tmp/nginx_conf
+      - ../common/nginx_conf:/tmp/nginx_conf
 #      - ./modules_folder:/var/www/localhost/htdocs/custommodules
       - ./run.sh:/run.sh
     depends_on:
