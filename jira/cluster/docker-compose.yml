@@ -25,17 +25,16 @@ services:
     ports:
       - 3000:80
 
-  jira-node-1:
+  jira-node:
     restart: unless-stopped
-    image: atlassian/jira-software:SERVICE_TAG
-    container_name: jira-node-1
+    image: "atlassian/jira-software:${SERVICE_TAG}"
     depends_on:
       - postgresql
     environment:
       - CLUSTERED=true
-      - JIRA_NODE_ID=jira_node_1
+      - JIRA_NODE_ID=${JIRA_NODE_ID}
       - JIRA_SHARED_HOME=/data/jira/sharedhome
-      - ATL_PROXY_NAME=EXTERNALIP
+      - ATL_PROXY_NAME=${IP_PROXY}
       - ATL_PROXY_PORT=80
       - ATL_TOMCAT_SCHEME=http
       - ATL_TOMCAT_SECURE=false
@@ -50,25 +49,6 @@ services:
       - ATL_DB_POOLMINSIZE=30
       - ATL_DB_MINEVICTABLEIDLETIMEMILLIS=60000
       - ATL_DB_TIMEBETWEENEVICTIONRUNSMILLIS=300000
-    volumes:
-      - /jira/share:/data/jira/sharedhome
-
-  jira-node-2:
-    restart: unless-stopped
-    image: atlassian/jira-software:SERVICE_TAG
-    container_name: jira-node-2
-    depends_on:
-      - postgresql
-      - jira-node-1
-    environment:
-      - CLUSTERED=true
-      - JIRA_NODE_ID=jira_node_2
-      - JIRA_SHARED_HOME=/data/jira/sharedhome
-      - ATL_PROXY_NAME=EXTERNALIP
-      - ATL_PROXY_PORT=80
-      - ATL_TOMCAT_SCHEME=http
-      - ATL_TOMCAT_SECURE=false
-      - ATL_TOMCAT_CONNECTIONTIMEOUT=600000
     volumes:
       - /jira/share:/data/jira/sharedhome
 

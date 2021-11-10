@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-JIRA_NODES=(jira-node-2 jira-node-1)
+JIRA_NODES=(root-jira-node-2 root-jira-node-1)
+SERVICE_TAG=$(docker ps | grep -i ${JIRA_NODES[1]} | awk '{print$2}' | sed 's/[^:]*://')
+ALLIPADDR="$(hostname -I)"
+declare -a IPADDR=($ALLIPADDR)
+IP_PROXY=${IPADDR[0]}
 add_second_node(){
-  docker cp jira-node-1:/var/atlassian/application-data/jira/dbconfig.xml /tmp/ 
-  docker cp jira-node-1:/opt/atlassian/jira/conf/server.xml /tmp/
-  chown -R 2001:2001 /tmp/dbconfig.xml
-  chown -R 2001:2001 /tmp/server.xml
-  docker cp /tmp/dbconfig.xml jira-node-2:/var/atlassian/application-data/jira/dbconfig.xml
-  docker cp /tmp/server.xml jira-node-2:/opt/atlassian/jira/conf/server.xml
-  docker restart jira-node-2
+  export SERVICE_TAG="${SERVICE_TAG}"
+  export IP_PROXY="${IP_PROXY}"
+  export JIRA_NODE_ID=jira_node_2
+  envsubst < /app/jira/cluster/docker-compose.yml | docker-compose -f - up -d --scale jira-node=2 --no-recreate
 }
 check_cluster_readiness(){
   echo -e "\e[0;32m Wait until the Jira cluster nodes are ready \e[0m"
@@ -24,8 +25,8 @@ check_cluster_readiness(){
         fi
       else
         echo -e "\e[0;32m Node $name is ready \e[0m"
-        if [[ "$name" == "jira-node-2" ]]; then
-          docker restart jira-node-1
+        if [[ "$name" == "root-jira-node-2" ]]; then
+          docker restart ${JIRA_NODES[1]}
         fi
         break
       fi
@@ -33,6 +34,8 @@ check_cluster_readiness(){
   done
 }
 complete_cluster_construction(){
+  sed -i 's/[^.]*server s2/   server s2/g' /jira/haproxy/haproxy.cfg
+  docker restart haproxy
   echo -e "\e[0;32m Cluster nodes have been added and are ready to work. In the System - Clustering menu, you can check their status \e[0m"
 }
 add_second_node

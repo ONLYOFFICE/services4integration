@@ -1,22 +1,24 @@
 #!/usr/bin/env bash
 SERVICE_TAG="latest"
-CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.0/onlyoffice-jira-app-1.0.0.jar"
+CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar"
 CONNECTOR_NAME="onlyoffice-integration-web-jira.jar"
-JIRA_NODES=(jira-node-1 jira-node-2)
+JIRA_NODES=(root-jira-node-1)
 ALLIPADDR="$(hostname -I)"
 declare -a IPADDR=($ALLIPADDR)
+IP_PROXY=${IPADDR[0]}
 source /app/common/check_parameters.sh ${@}
 install_jira(){
   source /app/common/install_dependencies.sh
   install_dependencies
+  export SERVICE_TAG="${SERVICE_TAG}"
+  export IP_PROXY="${IP_PROXY}"
+  export JIRA_NODE_ID=jira_node_1
   mkdir -p /jira/haproxy
   mkdir -p /jira/share/plugins/installed-plugins
   chown -R 2001:2001 /jira/share/
-  sed -i 's/EXTERNALIP/'${IPADDR[0]}'/g' /app/jira/cluster/docker-compose.yml
-  sed -i 's/SERVICE_TAG/'${SERVICE_TAG}'/g' /app/jira/cluster/docker-compose.yml
   cp /app/jira/cluster/haproxy.cfg /jira/haproxy/
   docker network create --driver bridge onlyoffice
-  docker-compose -f /app/jira/cluster/docker-compose.yml up -d
+  envsubst < /app/jira/cluster/docker-compose.yml | docker-compose -f - up -d
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"
 }
@@ -58,26 +60,28 @@ check_connector_in_container(){
   done
 }
 database_initialization(){
-  echo "Database initialization begins"
+  echo "Database initialization begins. Please wait..."
+  sleep 25
   curl -L http://${IPADDR[0]}
   for i in {1..50}; do
     echo "Readiness check: $i"
-    docker logs jira-node-1 | grep -w "Upgrade Succeeded! JIRA has been upgraded"
+    docker logs ${JIRA_NODES} | grep -w "Upgrade Succeeded! JIRA has been upgraded"
     if [ $? -ne 0 ]; then
       if [[ "$i" == '49' ]]; then
-        echo -e "\e[0;31m Readiness check failed. Check the container logs using the command: sudo docker logs -f jira-node-1 \e[0m"
+        echo -e "\e[0;31m Readiness check failed. Check the container logs using the command: sudo docker logs -f ${JIRA_NODES} \e[0m"
         exit 1
       else
         sleep 5
       fi
     else
-      echo -e "\e[0;32m Jira is ready for further configuration \e[0m"
+      echo -e "\e[0;32m Initialization completed successfully \e[0m"
       break
     fi
   done
 }
 complete_installation(){
   echo -e "\e[0;32m The script is finished \e[0m"
+  echo -e "\e[0;32m Jira is ready for further configuration \e[0m"
   echo -e "\e[0;32m Now you can go to the Jira web interface at http://${IPADDR[0]}/ and follow a few configuration steps \e[0m"
 }
 install_jira

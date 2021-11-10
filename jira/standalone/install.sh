@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 SERVICE_TAG="latest"
-CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.0/onlyoffice-jira-app-1.0.0.jar"
+CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar"
 CONNECTOR_NAME="onlyoffice-integration-web-jira.jar"
 source /app/common/check_parameters.sh ${@}
 install_jira(){

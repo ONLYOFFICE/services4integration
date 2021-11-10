@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/jira/standalone/install.sh -st 8.19.0 -cu https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.0/onlyoffice-jira-app-1.0.0.jar
+/app/jira/standalone/install.sh -st 8.20.0 -cu https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
