@@ -4,9 +4,9 @@ services:
     container_name: app-server
     image: bitnami/moodle
     restart: always
-    ports:
-      - 80
-      - 443
+    expose:
+      - 8080
+      - 8443
     networks:
       - onlyoffice
     environment:
