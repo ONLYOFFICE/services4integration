@@ -1,0 +1,59 @@
+version: '3'
+services:
+  app:
+    container_name: app-server
+    image: plone
+    restart: always
+    expose:
+      - 8080
+    networks:
+      - onlyoffice
+    environment:
+      - SITE="mysite"
+      - ADDONS="onlyoffice.connector"
+      - VERSIONS="onlyoffice.connector=2.0.0"
+    volumes:
+      - ./onlyofficeplone:/plone/instance/src/onlyoffice.connector
+#      - ./onlyoffice:/tmp/onlyoffice
+      - ./run.sh:/run.sh
+    healthcheck:
+      test: nc -z -w5 127.0.0.1 8080 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+#    command: bash /run.sh
+  onlyoffice-document-server:
+    container_name: onlyoffice-document-server
+    image: onlyoffice/documentserver
+    restart: always
+    networks:
+      - onlyoffice
+    volumes:
+      - document_data:/var/www/onlyoffice/Data
+      - document_log:/var/log/onlyoffice
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - onlyoffice
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+    depends_on:
+      - app
+networks:
+  onlyoffice:
+    driver: 'bridge'
+volumes:
+  document_data:
+  document_log:
