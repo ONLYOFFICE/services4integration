@@ -9,15 +9,6 @@ services:
     environment:
       POSTGRES_PASSWORD: my-secret
 
-  haproxy:
-    restart: unless-stopped
-    image: haproxy:latest
-    container_name: haproxy
-    ports:
-      - 80:80
-    volumes:
-      - /jira/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-
   onlyoffice-document-server:
     restart: unless-stopped
     image: onlyoffice/documentserver:latest
@@ -49,10 +40,26 @@ services:
       - ATL_DB_POOLMINSIZE=30
       - ATL_DB_MINEVICTABLEIDLETIMEMILLIS=60000
       - ATL_DB_TIMEBETWEENEVICTIONRUNSMILLIS=300000
+      - COOKIE=JSESSIONID prefix nocache
     volumes:
       - /jira/share:/data/jira/sharedhome
 
+  haproxy:
+    restart: unless-stopped
+    image: dockercloud/haproxy:latest
+    depends_on:
+      - jira-node
+    environment:
+      - BALANCE=roundrobin
+      - ADDITIONAL_SERVICES=cluster:jira-node
+      - STATS_AUTH=JiraCluster:JiraCluster
+      - TIMEOUT=connect 500000, client 500000, server 500000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 1936:1936
+
 networks:
   default:
-    external:
-      name: onlyoffice
+    name: onlyoffice
