@@ -50,7 +50,7 @@ prepare_connector() {
 }
 
 check_connector_in_container() {
-  docker exec ${JIRA_NODES} bash -c 'test -e /data/jira/sharedhome/plugins/installed-plugins/${CONNECTOR_NAME}'
+  docker exec -e CONNECTOR_NAME=$CONNECTOR_NAME ${JIRA_NODES} bash -c 'test -e /data/jira/sharedhome/plugins/installed-plugins/${CONNECTOR_NAME}'
   if [ $? -ne 0 ]; then
     echo -e "\e[0;31m The connector under test was not added to the container in the /data/jira/sharedhome/plugins/installed-plugins directory \e[0m"
     exit 1

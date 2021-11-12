@@ -31,8 +31,8 @@ check_cluster_readiness() {
       fi
     done
     if [[ "$NODE_READY" != "yes" ]]; then
-     echo -e "\e[0;31m I didn't wait for the launch of $name. Check the container logs using the command: sudo docker logs -f $name \e[0m"
-     exit 1
+      echo -e "\e[0;31m I didn't wait for the launch of $name. Check the container logs using the command: sudo docker logs -f $name \e[0m"
+      exit 1
     fi
   done
 }
