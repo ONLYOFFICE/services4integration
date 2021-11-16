@@ -1,0 +1,48 @@
+version: '3'
+
+volumes:
+  nextcloud:
+  db:
+
+services:
+  ds:
+    image: onlyoffice/documentserver
+    restart: always
+    ports:
+      - 3000:80
+      
+  db:
+    image: mariadb
+    container_name: nextcloud_db
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-file-per-table=1 --skip-innodb-read-only-compressed
+    depends_on:
+      - ds
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+  
+  app:
+    image: nextcloud:${SERVICE_TAG}
+    container_name: nextcloud_app
+    restart: always
+    ports:
+      - 8080:80
+    links:
+      - db
+    depends_on:
+      - db
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=db
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=admin
+      - NEXTCLOUD_TRUSTED_DOMAINS="${EXT_IP}"
