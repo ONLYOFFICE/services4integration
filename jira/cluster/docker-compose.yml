@@ -1,0 +1,65 @@
+version: "3.6"
+
+services:
+
+  postgresql:
+    restart: unless-stopped
+    image: postgres:12
+    container_name: postgresql
+    environment:
+      POSTGRES_PASSWORD: my-secret
+
+  onlyoffice-document-server:
+    restart: unless-stopped
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice-document-server
+    ports:
+      - 3000:80
+
+  jira-node:
+    restart: unless-stopped
+    image: "atlassian/jira-software:${SERVICE_TAG}"
+    depends_on:
+      - postgresql
+    environment:
+      - CLUSTERED=true
+      - JIRA_NODE_ID=${JIRA_NODE_ID}
+      - JIRA_SHARED_HOME=/data/jira/sharedhome
+      - ATL_PROXY_NAME=${IP_PROXY}
+      - ATL_PROXY_PORT=80
+      - ATL_TOMCAT_SCHEME=http
+      - ATL_TOMCAT_SECURE=false
+      - ATL_TOMCAT_CONNECTIONTIMEOUT=600000
+      - ATL_JDBC_URL=jdbc:postgresql://postgresql:5432/postgres
+      - ATL_DB_DRIVER=org.postgresql.Driver
+      - ATL_JDBC_USER=postgres
+      - ATL_JDBC_PASSWORD=my-secret
+      - ATL_DB_TYPE=postgres72
+      - ATL_DB_SCHEMA_NAME=public
+      - ATL_DB_MAXIDLE=30
+      - ATL_DB_POOLMINSIZE=30
+      - ATL_DB_MINEVICTABLEIDLETIMEMILLIS=60000
+      - ATL_DB_TIMEBETWEENEVICTIONRUNSMILLIS=300000
+      - COOKIE=JSESSIONID prefix nocache
+    volumes:
+      - /jira/share:/data/jira/sharedhome
+
+  haproxy:
+    restart: unless-stopped
+    image: dockercloud/haproxy:latest
+    depends_on:
+      - jira-node
+    environment:
+      - BALANCE=roundrobin
+      - ADDITIONAL_SERVICES=cluster:jira-node
+      - STATS_AUTH=JiraCluster:JiraCluster
+      - TIMEOUT=connect 500000, client 500000, server 500000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 1936:1936
+
+networks:
+  default:
+    name: onlyoffice

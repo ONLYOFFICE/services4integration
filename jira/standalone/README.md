@@ -1,4 +1,4 @@
-# Stand for testing the connector to Jira
+# Stand for testing the connector to Jira standalone
 
 Pass the following `cloud-init` directives to the instance with `user data`:
 ```
@@ -6,16 +6,16 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://username:password@github.com/ONLYOFFICE/services4integration.git /app
- - /app/jira/install.sh -st jira_tag -cu connector_url
+ - /app/jira/standalone/install.sh -st jira_tag -cu connector_url
 ```
 
 Where:
  - `jira_tag` - Jira version. The available versions of Jira can be viewed [here](https://hub.docker.com/r/atlassian/jira-software/tags?page=1&ordering=last_updated)
- - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-jira)
+ - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-jira/releases)
 
 For example:
 ```
-/app/jira/install.sh -st 8.18.0 -cu https://github.com/ONLYOFFICE/onlyoffice-jira
+/app/jira/standalone/install.sh -st 8.20.0 -cu https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
