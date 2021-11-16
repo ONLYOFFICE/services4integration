@@ -1,0 +1,77 @@
+version: '3.1'
+services:
+  app:
+    container_name: app-server
+    image: mriedmann/humhub
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - onlyoffice
+    environment:
+      HUMHUB_DB_USER: humhub
+      HUMHUB_DB_PASSWORD: humhub
+      HUMHUB_DB_NAME: humhub
+      HUMHUB_DB_HOST: mariadb
+      HUMHUB_AUTO_INSTALL: 1
+      HUMHUB_PROTO: 'http'
+      HUMHUB_HOST: "localhost"
+#      HUMHUB_ADMIN_LOGIN: admin
+#      HUMHUB_ADMIN_EMAIL: humhub@example.com
+#      HUMHUB_ADMIN_PASSWORD: test
+    volumes:
+      - ./config:/var/www/localhost/htdocs/protected/config
+      - ./uploads:/var/www/localhost/htdocs/uploads
+      - ./modules:/var/www/localhost/htdocs/protected/modules
+      - ../common/nginx_conf:/tmp/nginx_conf
+#      - ./modules_folder:/var/www/localhost/htdocs/custommodules
+      - ./run.sh:/run.sh
+    depends_on:
+      - mariadb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    command: sh /run.sh
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.2
+    restart: always
+    networks:
+      - onlyoffice
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: humhub
+      MYSQL_USER: humhub
+      MYSQL_PASSWORD: humhub
+    volumes:
+      - dbdata:/var/lib/mysql
+    depends_on:
+      - onlyoffice-document-server
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  onlyoffice-document-server:
+    container_name: onlyoffice-document-server
+    image: onlyoffice/documentserver
+    restart: always
+    networks:
+      - onlyoffice
+    volumes:
+      - document_data:/var/www/onlyoffice/Data
+      - document_log:/var/log/onlyoffice
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+networks:
+  onlyoffice:
+    driver: 'bridge'
+volumes:
+  document_data:
+  document_log:
+  dbdata:
