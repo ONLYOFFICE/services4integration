@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Prepare a stand with Jira standalone with a dependent service Only office Document Server and add a connector
+# Prepare a stand with Jira standalone with a dependent service Onlyoffice Document Server and add a connector
 
 SERVICE_TAG='latest'
 CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar'
