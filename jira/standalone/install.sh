@@ -5,6 +5,7 @@
 SERVICE_TAG='latest'
 CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar'
 CONNECTOR_NAME='onlyoffice-integration-web-jira.jar'
+PLUGIN_DIRECTORY='/var/atlassian/application-data/jira/plugins/installed-plugins/'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 
@@ -66,7 +67,7 @@ prepare_connector(){
   source /app/common/get_connector.sh
   get_connector
   chown -R 2001:2001 /connectors/
-  docker cp /connectors/${CONNECTOR_NAME} jira:/var/atlassian/application-data/jira/plugins/installed-plugins/
+  docker cp /connectors/${CONNECTOR_NAME} jira:${PLUGIN_DIRECTORY}
 }
 
 #############################################################################################
@@ -81,7 +82,7 @@ prepare_connector(){
 #   0, if the check was successful, non-zero on error
 #############################################################################################
 check_connector_in_container(){
-  docker exec -e CONNECTOR_NAME=${CONNECTOR_NAME} jira bash -c 'test -e /var/atlassian/application-data/jira/plugins/installed-plugins/${CONNECTOR_NAME}'
+  docker exec -e CONNECTOR_NAME=${CONNECTOR_NAME} -e PLUGIN_DIRECTORY=${PLUGIN_DIRECTORY} jira bash -c 'test -e ${PLUGIN_DIRECTORY}${CONNECTOR_NAME}'
   if [ $? -ne 0 ]; then
     err "\e[0;31m The connector under test was not added to the container in the /var/atlassian/application-data/jira/plugins directory \e[0m"
     exit 1
