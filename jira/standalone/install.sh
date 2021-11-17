@@ -26,7 +26,7 @@ install_jira(){
   echo -e "\e[0;32m Installation is complete \e[0m"
 }
 
-################################################################################################################
+#############################################################################################
 # Check Jira startup and status
 # Arguments:
 #   None
@@ -34,7 +34,7 @@ install_jira(){
 #   Writes a startup message to stdout
 # Returns:
 #   0, if the start is successful, non-zero on error
-################################################################################################################
+#############################################################################################
 check_launch_jira(){
   echo -e "\e[0;32m Waiting for the launch of Jira \e[0m"
   for ((i=1 ; i <= 100 ; i++)); do
@@ -55,13 +55,13 @@ check_launch_jira(){
   fi
 }
 
-################################################################################################################
+#############################################################################################
 # Add a connector to a Jira container
 # Globals:
 #   CONNECTOR_NAME
 # Arguments:
 #   None
-################################################################################################################
+#############################################################################################
 prepare_connector(){
   source /app/common/get_connector.sh
   get_connector
@@ -69,7 +69,7 @@ prepare_connector(){
   docker cp /connectors/${CONNECTOR_NAME} jira:/var/atlassian/application-data/jira/plugins/installed-plugins/
 }
 
-################################################################################################################
+#############################################################################################
 # Check for a connector in the plug-in directory in the Jira container
 # Globals:
 #   CONNECTOR_NAME
@@ -79,7 +79,7 @@ prepare_connector(){
 #   Writes the verification status message to stdout
 # Returns:
 #   0, if the check was successful, non-zero on error
-################################################################################################################
+#############################################################################################
 check_connector_in_container(){
   docker exec -e CONNECTOR_NAME=${CONNECTOR_NAME} jira bash -c 'test -e /var/atlassian/application-data/jira/plugins/installed-plugins/${CONNECTOR_NAME}'
   if [ $? -ne 0 ]; then
