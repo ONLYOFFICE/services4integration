@@ -24,7 +24,7 @@ prepare_connector() {
 }
 prepare_files() {
   readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)
-  sed -i -e "s!plone!plone:${SERVICE_TAG}!g" \
+  sed -i -e "s!plone:latest!plone:${SERVICE_TAG}!g" \
     /app/plone/docker-compose.yml
   sed -i -e "s!https://documentserver/!http://${EXT_IP}/ds-vpath/!g" \
     /app/plone/onlyoffice/src/onlyoffice/connector/browser/controlpanel.py
@@ -35,7 +35,7 @@ check_ready() {
   local ds_started
 
   for i in {1..30}; do
-    curl -f -s http://localhost > /dev/null
+    nc -z -w5 127.0.0.1 8080 > /dev/null
     if [[ "$?" -ne 0 ]]; then
       echo -e "\e[0;32m Waiting for the launch of plone \e[0m"
         sleep 10
