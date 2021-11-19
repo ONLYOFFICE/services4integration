@@ -9,19 +9,17 @@ services:
     networks:
       - onlyoffice
     environment:
-      - SITE="mysite"
-      - ADDONS="onlyoffice.connector"
-      - VERSIONS="onlyoffice.connector=2.0.0"
+      - SITE=mysite
+      - PROFILES=onlyoffice.connector:default
+      - ADDONS=onlyoffice.connector
+      - DEVELOP=src/onlyoffice.connector
     volumes:
-      - ./onlyofficeplone:/plone/instance/src/onlyoffice.connector
-#      - ./onlyoffice:/tmp/onlyoffice
-      - ./run.sh:/run.sh
+      - ./onlyoffice:/plone/instance/src/onlyoffice.connector
     healthcheck:
       test: nc -z -w5 127.0.0.1 8080 || exit 1
       interval: 30s
       timeout: 10s
       retries: 5
-#    command: bash /run.sh
   onlyoffice-document-server:
     container_name: onlyoffice-document-server
     image: onlyoffice/documentserver
