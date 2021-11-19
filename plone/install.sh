@@ -35,7 +35,7 @@ check_ready() {
   local ds_started
 
   for i in {1..30}; do
-    nc -z -w5 127.0.0.1 8080 > /dev/null
+    curl -f -s http://localhost > /dev/null
     if [[ "$?" -ne 0 ]]; then
       echo -e "\e[0;32m Waiting for the launch of plone \e[0m"
         sleep 10
