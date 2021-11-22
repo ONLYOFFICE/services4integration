@@ -1,0 +1,63 @@
+version: "3.6"
+
+services:
+
+  postgresql:
+    restart: unless-stopped
+    image: postgres:11
+    container_name: postgresql
+    environment:
+      POSTGRES_PASSWORD: my-secret
+
+  onlyoffice-document-server:
+    restart: unless-stopped
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice-document-server
+    ports:
+      - 3000:80
+
+  confluence-node:
+    restart: unless-stopped
+    image: "atlassian/confluence:${SERVICE_TAG}"
+    depends_on:
+      - postgresql
+    environment:
+      - ATL_CLUSTER_TYPE=multicast
+      - ATL_CLUSTER_NAME=confluencecluster
+      - ATL_PRODUCT_HOME_SHARED=/data/confluence/sharedhome
+      - ATL_CLUSTER_ADDRESS=230.174.42.22
+      - ATL_CLUSTER_TTL=1
+      - ATL_PROXY_NAME=${IP_PROXY}
+      - ATL_PROXY_PORT=80
+      - ATL_TOMCAT_SCHEME=http
+      - ATL_TOMCAT_SECURE=false
+      - ATL_TOMCAT_CONNECTIONTIMEOUT=600000
+      - ATL_JDBC_URL=jdbc:postgresql://postgresql:5432/postgres
+      - ATL_JDBC_USER=postgres
+      - ATL_JDBC_PASSWORD=my-secret
+      - ATL_DB_TYPE=postgresql
+      - COOKIE=JSESSIONID prefix nocache
+      - EXCLUDE_PORTS=8091
+    volumes:
+      - /confluence/share:/data/confluence/sharedhome
+      - /confluence/onlyoffice-integration-web-confluence.jar:/opt/atlassian/confluence/confluence/WEB-INF/atlassian-bundled-plugins/onlyoffice-integration-web-confluence.jar
+
+  haproxy:
+    restart: unless-stopped
+    image: dockercloud/haproxy:latest
+    depends_on:
+      - confluence-node
+    environment:
+      - BALANCE=roundrobin
+      - ADDITIONAL_SERVICES=cluster:confluence-node
+      - STATS_AUTH=ConfluenceCluster:ConfluenceCluster
+      - TIMEOUT=connect 500000, client 500000, server 500000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 1936:1936
+
+networks:
+  default:
+    name: onlyoffice
