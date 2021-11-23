@@ -6,7 +6,7 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://username:password@github.com/ONLYOFFICE/services4integration.git /app
- - /app/chamilo/install.sh -st liferay_tag -cu connector_url
+ - /app/chamilo/install.sh -st chamilo_tag -cu connector_url
 ```
 
 Where:
@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/chamilo/install.sh -st 1.11.14 -cu https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar
+/app/chamilo/install.sh -st 1.11.16 -cu https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/tag/v1.1.2
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
@@ -27,4 +27,4 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Liferay web interface at: `http://IP-SERVER/` and check the connector operation.
+Then you can go to the Chamilo web interface at: `http://IP-SERVER/` and check the connector operation. Access to the database: login:admin  password:jx7bqzRo

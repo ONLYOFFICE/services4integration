@@ -3,7 +3,7 @@ SERVICE_TAG="1.11.16"
 PHP_VERSION="7.2"
 IP=""
 DB_USER="chamilouser"
-DB_PWD="123456789"
+DB_PWD="jx7bqzRo"
 CONNECTOR_NAME="onlyoffice.zip"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.0.0/onlyoffice.zip"
 
