@@ -40,7 +40,6 @@ services:
       - EXCLUDE_PORTS=8091
     volumes:
       - /confluence/share:/data/confluence/sharedhome
-      - /confluence/onlyoffice-integration-web-confluence.jar:/opt/atlassian/confluence/confluence/WEB-INF/atlassian-bundled-plugins/onlyoffice-integration-web-confluence.jar
 
   haproxy:
     restart: unless-stopped
