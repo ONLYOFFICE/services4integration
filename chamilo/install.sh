@@ -1,5 +1,5 @@
 #!/bin/bash
-CHAMILO_VERSION="1.11.16"
+SERVICE_TAG="1.11.16"
 PHP_VERSION="7.2"
 IP=""
 DB_USER="chamilouser"
@@ -7,29 +7,9 @@ DB_PWD="123456789"
 CONNECTOR_NAME="onlyoffice.zip"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.0.0/onlyoffice.zip"
 
-while [ "$1" != "" ]; do
-  case $1 in
-    -ct | --chamilo_tag )
-       if [ "$2" != "" ]; then
-         CHAMILO_VERSION=$2
-         shift
-       fi
-    ;;
-  esac
-  shift
-done
-CHAMILO_URL="https://github.com/chamilo/chamilo-lms/releases/download/v$CHAMILO_VERSION/chamilo-$CHAMILO_VERSION.zip"
-OIFS=$IFS
-IFS='.'
-VERSION_ARR=($CHAMILO_VERSION)
-IFS=$OIFS
-
-if [ ${VERSION_ARR[0]} -le 1 ]; then
-  if [ ${VERSION_ARR[1]} -le 11 ]; then
-    if [ ${VERSION_ARR[2]} -le 14 ]; then PHP_VERSION="7.1"
-    fi
-  fi
-fi
+source /app/common/check_parameters.sh "${@}"
+check_parameters
+CHAMILO_URL="https://github.com/chamilo/chamilo-lms/releases/download/v$SERVICE_TAG/chamilo-$SERVICE_TAG.zip"
 
 dependencies_install () {
 apt update
@@ -50,6 +30,18 @@ EOF
 apt-get install -y software-properties-common
 add-apt-repository ppa:ondrej/php -y
 apt update
+OIFS=$IFS
+IFS='.'
+VERSION_ARR=($SERVICE_TAG)
+IFS=$OIFS
+
+if [ ${VERSION_ARR[0]} -le 1 ]; then
+  if [ ${VERSION_ARR[1]} -le 11 ]; then
+    if [ ${VERSION_ARR[2]} -le 14 ]; then PHP_VERSION="7.1"
+    fi
+  fi
+fi
+            
 apt install -y php$PHP_VERSION libapache2-mod-php$PHP_VERSION php$PHP_VERSION-common php$PHP_VERSION-sqlite3 php$PHP_VERSION-curl php$PHP_VERSION-intl php$PHP_VERSION-mbstring php$PHP_VERSION-xmlrpc php$PHP_VERSION-mysql php$PHP_VERSION-gd php$PHP_VERSION-xml php$PHP_VERSION-cli php$PHP_VERSION-ldap php$PHP_VERSION-apcu php$PHP_VERSION-zip
 }
 
@@ -76,7 +68,7 @@ EOF
 install_chamilo () {
 cd /tmp && wget $CHAMILO_URL
 apt install -y unzip
-unzip chamilo-$CHAMILO_VERSION.zip
+unzip chamilo-$SERVICE_TAG.zip
 find ./ -maxdepth 1 -name "chamilo*zip" -exec rm -f {} \;
 find ./ -maxdepth 1 -name "chamilo*" -exec mv {} /var/www/html/Chamilo \;
 chown -R www-data:www-data /var/www/html/Chamilo/
@@ -115,14 +107,11 @@ rm -rf vendor/*
 composer install
 }
 
+main () {
 dependencies_install
 configure_php
 configure_database
 install_chamilo
-
-if [ ${VERSION_ARR[0]} -le 1 ]; then
-  if [ ${VERSION_ARR[1]} -le 11 ]; then
-    if [ ${VERSION_ARR[2]} -le 14 ]; then plugin_install
-    fi
-  fi
-fi
+plugin_install
+}
+main
