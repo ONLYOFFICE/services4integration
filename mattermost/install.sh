@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 #
 # Deploying a stand for testing Mattermost
-DN="cert3.k8s.onlyoffice.co"
+DN=""
 CONNECTOR_NAME="com.onlyoffice.mattermost.tar.gz"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/download/v1.0.0/com.onlyoffice.mattermost-1.0.0.tar.gz"
 SERVICE_TAG="6.1"
+source /app/common/install_dependencies.sh
 
 if [ "$1" == "" ]; then
   echo "Basic parameters are missing. Use: -? | -h | --help"
@@ -13,7 +14,7 @@ fi
 
 while [ "$1" != "" ]; do
   case $1 in
-  	-dn | --domain_name )
+      -dn | --domain_name )
       if [ "$2" != "" ]; then
         DN=$2
         shift
@@ -35,12 +36,10 @@ while [ "$1" != "" ]; do
   shift
 done
 
-source /app/common/install_dependencies.sh
-install_dependencies
 #########################################
 # Getting a certificate from letsencrypt
 #########################################
-get_cert () {
+get_cert() {
   docker run -it --rm --name certbot -p 80:80 \
   -v "/etc/letsencrypt:/etc/letsencrypt" \
   -v "/lib/letsencrypt:/var/lib/letsencrypt" \
@@ -54,20 +53,20 @@ get_cert () {
 #############################################################################################
 nginx_configure() {
   arr=($( grep -n "}" /opt/mattermost/nginx/conf.d/default.conf | cut -d: -f1 ))
-  for var in ${arr[*]}; do
-  	if [[ "$(grep -n "location / {" /opt/mattermost/nginx/conf.d/default.conf | cut -d: -f1)" -le "${var}" ]]; then
-  	  var=$(($var+1))
-  	  sed -i $var'i\    }' /opt/mattermost/nginx/conf.d/default.conf
-  	  sed -i $var'i\       proxy_http_version 1.1;' /opt/mattermost/nginx/conf.d/default.conf
-  	  sed -i $var'i\       proxy_pass http://documentserver/;' /opt/mattermost/nginx/conf.d/default.conf
-  	  sed -i $var'i\    location /ds/ {' /opt/mattermost/nginx/conf.d/default.conf
-  	  sed -i $var'i\ ' /opt/mattermost/nginx/conf.d/default.conf
-  	  break
+  for var in ${arr[@]}; do
+    if [[ "$(grep -n "location / {" /opt/mattermost/nginx/conf.d/default.conf | cut -d: -f1)" -le "${var}" ]]; then
+      var=$(($var+1))
+      sed -i $var'i\    }' /opt/mattermost/nginx/conf.d/default.conf
+      sed -i $var'i\       proxy_http_version 1.1;' /opt/mattermost/nginx/conf.d/default.conf
+      sed -i $var'i\       proxy_pass http://documentserver/;' /opt/mattermost/nginx/conf.d/default.conf
+      sed -i $var'i\    location /ds/ {' /opt/mattermost/nginx/conf.d/default.conf
+      sed -i $var'i\ ' /opt/mattermost/nginx/conf.d/default.conf
+      break
     fi
   done
 
-echo 'include /etc/nginx/conf.d/ds.conf;' >> /opt/mattermost/nginx/conf.d/default.conf
- cp /app/mattermost/ds.conf /opt/mattermost/nginx/conf.d/
+  echo 'include /etc/nginx/conf.d/ds.conf;' >> /opt/mattermost/nginx/conf.d/default.conf
+  cp /app/mattermost/ds.conf /opt/mattermost/nginx/conf.d/
 }
 #############################################################################################
 # Deploying and configuring mattermost
@@ -76,7 +75,7 @@ echo 'include /etc/nginx/conf.d/ds.conf;' >> /opt/mattermost/nginx/conf.d/defaul
 #   SERVICE_TAG
 #   CONNECTOR_NAME
 #############################################################################################
-install () {
+install() {
   git clone --depth=1 https://github.com/mattermost/docker /opt/mattermost
   cp /opt/mattermost/env.example /opt/mattermost/.env
   sed -i 's/DOMAIN=.*/DOMAIN='${DN}'/' /opt/mattermost/.env
@@ -99,11 +98,11 @@ complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
 }
 
-main () {
+main() {
+  install_dependencies
   get_cert
   install
   complete_installation
 }
 
 main
-
