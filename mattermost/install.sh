@@ -40,11 +40,7 @@ done
 # Getting a certificate from letsencrypt
 #########################################
 get_cert() {
-  docker run -it --rm --name certbot -p 80:80 \
-  -v "/etc/letsencrypt:/etc/letsencrypt" \
-  -v "/lib/letsencrypt:/var/lib/letsencrypt" \
-  certbot/certbot certonly --standalone -n -m example@gmail.com -d "${DN}" \
-  --agree-tos
+  docker run --rm --name certbot -p 80:80 -v "/etc/letsencrypt:/etc/letsencrypt" -v "/lib/letsencrypt:/var/lib/letsencrypt" certbot/certbot certonly --standalone -n -m example@gmail.com -d "${DN}" --agree-tos
 }
 #############################################################################################
 # Configure NGINX as a reverse proxy for documentserver
