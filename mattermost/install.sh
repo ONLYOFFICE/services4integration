@@ -14,7 +14,7 @@ fi
 
 while [ "$1" != "" ]; do
   case $1 in
-      -dn | --domain_name )
+    -dn | --domain_name )
       if [ "$2" != "" ]; then
         DN=$2
         shift
@@ -56,17 +56,12 @@ nginx_configure() {
   for var in ${arr[@]}; do
     if [[ "$(grep -n "location / {" /opt/mattermost/nginx/conf.d/default.conf | cut -d: -f1)" -le "${var}" ]]; then
       var=$(($var+1))
-      sed -i $var'i\    }' /opt/mattermost/nginx/conf.d/default.conf
-      sed -i $var'i\       proxy_http_version 1.1;' /opt/mattermost/nginx/conf.d/default.conf
-      sed -i $var'i\       proxy_pass http://documentserver/;' /opt/mattermost/nginx/conf.d/default.conf
-      sed -i $var'i\    location /ds/ {' /opt/mattermost/nginx/conf.d/default.conf
-      sed -i $var'i\ ' /opt/mattermost/nginx/conf.d/default.conf
+      sed -i $var'i\    include /etc/nginx/conf.d/ds/ds.conf;' /opt/mattermost/nginx/conf.d/default.conf
       break
     fi
   done
-
-  echo 'include /etc/nginx/conf.d/ds.conf;' >> /opt/mattermost/nginx/conf.d/default.conf
-  cp /app/mattermost/ds.conf /opt/mattermost/nginx/conf.d/
+  mkdir /opt/mattermost/nginx/conf.d/ds
+  cp /app/mattermost/ds.conf /opt/mattermost/nginx/conf.d/ds
 }
 #############################################################################################
 # Deploying and configuring mattermost
