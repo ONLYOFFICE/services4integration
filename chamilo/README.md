@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/chamilo/install.sh -st 1.11.16 -cu https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/tag/v1.1.2
+/app/chamilo/install.sh -st 1.11.16 -cu https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.1.2/onlyoffice.zip
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
