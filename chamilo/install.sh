@@ -104,7 +104,8 @@ chmod -R go+rx /var/www/html/Chamilo/plugin/onlyoffice/
 chown -R www-data:www-data /var/www/html/Chamilo/plugin/onlyoffice/
 cd /var/www/html/Chamilo
 rm -rf vendor/*
-/usr/bin/composer install
+composer install -d /var/www/html/Chamilo
+
 }
 
 main () {
