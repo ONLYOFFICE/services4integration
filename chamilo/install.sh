@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 SERVICE_TAG="1.11.16"
 PHP_VERSION="7.2"
 IP=""
@@ -41,7 +41,7 @@ if [ ${VERSION_ARR[0]} -le 1 ]; then
     fi
   fi
 fi
-            
+
 apt install -y php$PHP_VERSION libapache2-mod-php$PHP_VERSION php$PHP_VERSION-common php$PHP_VERSION-sqlite3 php$PHP_VERSION-curl php$PHP_VERSION-intl php$PHP_VERSION-mbstring php$PHP_VERSION-xmlrpc php$PHP_VERSION-mysql php$PHP_VERSION-gd php$PHP_VERSION-xml php$PHP_VERSION-cli php$PHP_VERSION-ldap php$PHP_VERSION-apcu php$PHP_VERSION-zip
 }
 
@@ -52,6 +52,8 @@ sed -i 's/short_open_tag.*/short_open_tag = On/' /etc/php/$PHP_VERSION/apache2/p
 sed -i 's/memory_limit.*/memory_limit = 256M/' /etc/php/$PHP_VERSION/apache2/php.ini
 sed -i 's/upload_max_filesize.*/upload_max_filesize = 100M/' /etc/php/$PHP_VERSION/apache2/php.ini
 sed -i 's/max_execution_time.*/max_execution_time = 360/' /etc/php/$PHP_VERSION/apache2/php.ini
+sed -i 's/session.cookie_httponly =/session.cookie_httponly = On/' /etc/php/$PHP_VERSION/apache2/php.ini
+sed -i 's/post_max_size =.*/post_max_size = 10M/' /etc/php/$PHP_VERSION/apache2/php.ini
 systemctl restart apache2.service
 }
 
@@ -102,17 +104,21 @@ cp -r /connectors/onlyoffice /var/www/html/Chamilo/plugin
 chmod -R u+rwx /var/www/html/Chamilo/plugin/onlyoffice/
 chmod -R go+rx /var/www/html/Chamilo/plugin/onlyoffice/
 chown -R www-data:www-data /var/www/html/Chamilo/plugin/onlyoffice/
-cd /var/www/html/Chamilo
-rm -rf vendor/*
+rm -rf /var/www/html/Chamilo/vendor/*
+export COMPOSER_HOME="$HOME/.config/composer";
 composer install -d /var/www/html/Chamilo
 
 }
 
+complete_installation(){
+  echo -e "\e[0;32m The script is finished \e[0m"
+}
 main () {
 dependencies_install
 configure_php
 configure_database
 install_chamilo
 plugin_install
+complete_installation
 }
 main
