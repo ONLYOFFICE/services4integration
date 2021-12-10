@@ -11,9 +11,10 @@ runcmd:
 
 Where:
  - `content_repo_tag` - alfresco content-repository-community version. The available versions can be viewed [here](https://hub.docker.com/r/alfresco/alfresco-content-repository-community/tags)
- - `content_repo_tag` - alfresco share version. The available versions can be viewed [here](https://hub.docker.com/r/alfresco/alfresco-share/tags)
- If you do not assign these parameters, the latest versions of images will be installed.
+ - `share_tag` - alfresco share version. The available versions can be viewed [here](https://hub.docker.com/r/alfresco/alfresco-share/tags)
  - `content_repo_url` and `share_url` - The addresses at which the connectors under test is available. The available versions of the connectors can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases)
+
+*Note: If you do not assign `content_repo_tag` and `share_tag`  parameters, the latest versions of images will be installed.*
 
 For example:
 ```
@@ -29,4 +30,6 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Alfresco web interface at: `http://IP-SERVER:8080/alfresco` and check the connector operation.
+Then you can go to the Alfresco web interface at: `http://IP-SERVER:8080/alfresco` and check the connector operation. Default login: Admin password: admin
+
+To configure the onlyoffice plugin follow the link: `http://IP-SERVER:8080/alfresco/s/onlyoffice/onlyoffice-config`

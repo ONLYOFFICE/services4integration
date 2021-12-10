@@ -67,7 +67,7 @@ get_connector() {
   fi
 }
 
-configure_compose () {
+configure_compose() {
   source /app/common/install_dependencies.sh
   install_dependencies
   IP=$(hostname -I)
@@ -84,14 +84,19 @@ configure_compose () {
   sed -i 's/localhost/'${IP_ARR[0]}'/g' /opt/alfresco/docker-compose/community-docker-compose.yml
   sed -i 's/127.0.0.1/'${IP_ARR[0]}'/g' /opt/alfresco/docker-compose/community-docker-compose.yml
   if [ -n "$CONTENT_REPO_TAG" ]; then
-    sed -i 's/image: image: alfresco\/alfresco-content-repository-community:.*/image: alfresco\/alfresco-content-repository-community:'${CONTENT_REPO_TAG}'/' /opt/alfresco/docker-compose/community-docker-compose.yml
+    sed -i 's/image: alfresco\/alfresco-content-repository-community:.*/image: alfresco\/alfresco-content-repository-community:'${CONTENT_REPO_TAG}'/' /opt/alfresco/docker-compose/community-docker-compose.yml
     sed -i 's/image: alfresco\/alfresco-share:.*/image: alfresco\/alfresco-share:'${SHARE_TAG}'/' /opt/alfresco/docker-compose/community-docker-compose.yml
   fi
   docker-compose -f /opt/alfresco/docker-compose/community-docker-compose.yml up -d
 }
 
-main () {
+complete_installation(){
+  echo -e "\e[0;32m The script is finished \e[0m"
+}
+
+main() {
   get_connector
   configure_compose
+  complete_installation
 }
 main
