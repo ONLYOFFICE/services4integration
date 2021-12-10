@@ -27,4 +27,4 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Chamilo web interface at: `http://IP-SERVER/` and check the connector operation. Access to the database: login:admin  password:jx7bqzRo
+Then you can go to the Chamilo web interface at: `http://IP-SERVER/` and check the connector operation. Access to the database: login:chamilouser  password:jx7bqzRo
