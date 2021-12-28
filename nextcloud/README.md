@@ -5,7 +5,7 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 #cloud-config
 
 runcmd:
- - git clone --depth=1 https://USERNAME:ACCESSKEY@github.com/ONLYOFFICE/services4integration.git /app
+ - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
  - /bin/bash /app/nextcloud/install.sh -st nextcloud_tag -cu connector_url
 ```
 
