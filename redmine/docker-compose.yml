@@ -11,7 +11,7 @@ services:
       - POSTGRES_USER=redmine
 
   redmine:
-    image: redmine:latest
+    image: redmine:${TAG}
     restart: unless-stopped
     container_name: redmine
     ports:
@@ -35,4 +35,4 @@ services:
 networks:
   default:
     name: redmine
-    
+
