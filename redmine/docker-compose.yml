@@ -1,0 +1,38 @@
+version: "3.6"
+
+services:
+
+  postgres:
+    image: postgres:13
+    restart: unless-stopped
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=wreiguerEI
+      - POSTGRES_USER=redmine
+
+  redmine:
+    image: redmine:${TAG}
+    restart: unless-stopped
+    container_name: redmine
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    environment:
+      - REDMINE_DB_POSTGRES=postgres
+      - REDMINE_DB_USERNAME=redmine
+      - REDMINE_DB_PASSWORD=wreiguerEI
+    volumes:
+      - /connectors:/usr/src/redmine/plugins
+
+  onlyoffice-document-server:
+    restart: unless-stopped
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice-document-server
+    ports:
+      - 80:80
+
+networks:
+  default:
+    name: redmine
+
