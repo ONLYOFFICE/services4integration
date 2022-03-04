@@ -44,9 +44,9 @@ install_redmine() {
 #   0, if the start is successful, non-zero on error
 #############################################################################################
 check_redmine() {
-  echo -e "\e[0;32m Waiting for the launch of Liferay \e[0m"  
+  echo -e "\e[0;32m Waiting for the launch of Redmine \e[0m"  
   for i in {1..15}; do
-    echo "Getting the Liferay status: ${i}"
+    echo "Getting the Redmine status: ${i}"
     OUTPUT="$(curl -Is http://${IP_ARR[0]}:3000/ | head -1 | awk '{ print $2 }')"
     if [ "${OUTPUT}" == "200" ]; then
       echo -e "\e[0;32m redmine is ready to serve \e[0m"
