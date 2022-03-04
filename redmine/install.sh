@@ -8,6 +8,7 @@ SERVICE_TAG='latest'
 IP=$(hostname -I)
 IP_ARR=($IP)
 source /app/common/check_parameters.sh "${@}"
+source /app/common/error.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install Redmine and dependent service
@@ -30,18 +31,31 @@ install_redmine() {
   export TAG="${SERVICE_TAG}"
   cd /app/redmine/
   envsubst < docker-compose.yml | docker-compose -f - up -d
+}
+
+#############################################################################################
+# Check redmine startup and status
+# Globals:
+#   SERVICE_TAG
+#   OUTPUT
+# Outputs:
+#   Writes a startup message to stdout
+# Returns
+#   0, if the start is successful, non-zero on error
+#############################################################################################
+check_redmine() {  
   for i in {1..15}; do
     OUTPUT="$(curl -Is http://${IP_ARR[0]}:3000/ | head -1 | awk '{ print $2 }')"
     if [ "${OUTPUT}" == "200" ]; then
       echo -e "\e[0;32m redmine is ready to serve \e[0m"
-      local NODE_READY
-      NODE_READY='yes'
+      local REDMINE_READY
+      REDMINE_READY='yes'
       break
     else  
       sleep 10
     fi
   done
-  if [[ "${NODE_READY}" != 'yes' ]]; then
+  if [[ "${REDMINE_READY}" != 'yes' ]]; then
     err "\e[0;31m I didn't wait for the launch of Redmine. Check the container logs using the command: sudo docker logs -f redmine \e[0m"
     exit 1
   fi
@@ -53,6 +67,7 @@ complete_installation() {
 
 main() {
 install_redmine
+check_redmine
 complete_installation
 }
 
