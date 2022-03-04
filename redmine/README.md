@@ -27,4 +27,4 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Redmine web interface at: `http://IP-SERVER:3000/` and check the connector operation.
+Then you can go to the Redmine web interface at: `http://IP-SERVER:3000/` and check the connector operation. Default login: Admin password: admin
