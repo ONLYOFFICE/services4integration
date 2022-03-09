@@ -4,6 +4,7 @@
 IP=$(hostname -I)
 IP_ARR=($IP)
 source /app/common/error.sh
+
 #############################################################################################
 # Install the necessary dependencies on the host and install drupal and dependent service
 # Globals:
