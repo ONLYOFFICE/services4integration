@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 #
 # Prepare a stand with drupal with a dependent service Onlyoffice Document Server and add a connector
+
 IP=$(hostname -I)
 IP_ARR=($IP)
+SERVICE_TAG=8
 source /app/common/error.sh
+source /app/common/check_parameters.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install drupal and dependent service
@@ -17,7 +20,9 @@ source /app/common/error.sh
 install_drupal() {
 source /app/common/install_dependencies.sh
 install_dependencies
-docker-compose up -d
+export TAG="${SERVICE_TAG}"
+cd /app/drupal/
+envsubst < docker-compose.yml | docker-compose -f - up -d
 }
 
 #############################################################################################
