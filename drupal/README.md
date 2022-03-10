@@ -6,11 +6,11 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/drupal/install.sh -st redmine_tag
+ - /app/drupal/install.sh -st drupal_tag
 ```
 
 Where:
- - `drupal_tag` - drupal version. The available versions of Drupal can be viewed [here](https://hub.docker.com/r/bitnami/drupal/tags)
+ - `drupal_tag` - Drupal version. The available versions of Drupal can be viewed [here](https://hub.docker.com/r/bitnami/drupal/tags)
 
 For example:
 ```
@@ -26,4 +26,4 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Redmine web interface at: `http://IP-SERVER/` and check the connector operation. Default login: user password: bitnami
+Then you can go to the Drupal web interface at: `http://IP-SERVER/` and check the connector operation. Default login: user password: bitnami
