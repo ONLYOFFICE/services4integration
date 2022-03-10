@@ -6,7 +6,15 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/redmine/install.sh
+ - /app/drupal/install.sh
+```
+
+Where:
+ - `drupal_tag` - drupal version. The available versions of Drupal can be viewed [here](https://hub.docker.com/r/bitnami/drupal/tags)
+
+For example:
+```
+/app/drupal/install.sh -st 8
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
