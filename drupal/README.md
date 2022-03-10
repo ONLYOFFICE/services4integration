@@ -6,7 +6,7 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/drupal/install.sh
+ - /app/drupal/install.sh -st redmine_tag
 ```
 
 Where:
