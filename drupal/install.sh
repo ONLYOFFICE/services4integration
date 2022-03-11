@@ -11,7 +11,7 @@ source /app/common/check_parameters.sh
 #############################################################################################
 # Install the necessary dependencies on the host and install drupal and dependent service
 # Globals:
-#   None
+#   SERVICE_TAG
 # Arguments:
 #   None
 # Outputs:
@@ -28,8 +28,7 @@ envsubst < docker-compose.yml | docker-compose -f - up -d
 #############################################################################################
 # Check drupal startup and status
 # Globals:
-#   SERVICE_TAG
-#   OUTPUT
+#   IP_ARR
 # Outputs:
 #   Writes a startup message to stdout
 # Returns
