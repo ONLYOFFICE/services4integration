@@ -9,6 +9,6 @@ set -x
 /opt/bitnami/scripts/moodle/entrypoint.sh \
 '/opt/bitnami/scripts/moodle/run.sh' &> /tmp/server.log &
 sleep 10
-cp -r /tmp/onlyoffice /opt/bitnami/moodle/mod/onlyoffice
-chown -R daemon:daemon /opt/bitnami/moodle/mod/onlyoffice/
+cp -r /tmp/onlyoffice /opt/bitnami/moodle/mod/onlyofficeeditor
+chown -R daemon:daemon /opt/bitnami/moodle/mod/onlyofficeeditor/
 tail -f /tmp/server.log

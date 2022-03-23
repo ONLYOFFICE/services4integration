@@ -20,7 +20,7 @@ prepare_connector() {
   source /app/common/get_connector.sh
   get_connector
   tar -C /app/moodle -xvf /connectors/${CONNECTOR_NAME}
-  mv /app/moodle/onlyoffice* /app/moodle/onlyoffice
+  mv /app/moodle/moodle-mod_onlyoffice* /app/moodle/onlyoffice
 }
 prepare_files() {
   readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)

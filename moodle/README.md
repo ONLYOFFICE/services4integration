@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/moodle/install.sh -st latest -cu https://github.com/ONLYOFFICE/onlyoffice-moodle/archive/refs/tags/v1.0.0.tar.gz
+bash /app/moodle/install.sh -st latest -cu https://github.com/ONLYOFFICE/moodle-mod_onlyofficeeditor/archive/refs/tags/v2.1.0.tar.gz
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
