@@ -42,7 +42,7 @@ check_wordpress() {
   for i in {1..15}; do
     echo "Getting the Wordpress status: ${i}"
     OUTPUT="$(curl -Is http://${IP_ARR[0]}/ | head -1 | awk '{ print $2 }')"
-    if [ "${OUTPUT}" == "200" ]; then
+    if [ "${OUTPUT}" == "302" ]; then
       echo -e "\e[0;32m wordpress is ready to serve \e[0m"
       local WORDPRESS_READY
       WORDPRESS_READY='yes'

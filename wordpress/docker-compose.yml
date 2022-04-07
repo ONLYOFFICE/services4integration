@@ -3,7 +3,7 @@ version: '3.1'
 services:
 
   wordpress:
-    image: wordpress: ${TAG}
+    image: wordpress:${TAG}
     restart: always
     container_name: wordpress
     ports:
@@ -32,7 +32,7 @@ services:
     image: onlyoffice/documentserver:latest
     container_name: onlyoffice-document-server
     ports:
-      - 80:3000
+      - 3000:80
 
 volumes:
   wordpress:
