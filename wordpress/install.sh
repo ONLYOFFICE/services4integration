@@ -10,7 +10,7 @@ source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 
 #############################################################################################
-# Install the necessary dependencies on the host and install Redmine and dependent service
+# Install the necessary dependencies on the host and install Wordpress and dependent service
 # Globals:
 #   SERVICE_TAG
 # Arguments:
@@ -29,7 +29,7 @@ install_wordpress() {
 }
 
 #############################################################################################
-# Check redmine startup and status
+# Check wordpress startup and status
 # Globals:
 #   SERVICE_TAG
 # Outputs:

@@ -10,7 +10,7 @@ runcmd:
 ```
 
 Where:
- - `ordpress_tag` - Wordpress version. The available versions of Wordpress can be viewed [here](https://hub.docker.com/_/wordpress?tab=tags)
+ - `wordpress_tag` - Wordpress version. The available versions of Wordpress can be viewed [here](https://hub.docker.com/_/wordpress?tab=tags)
 
 For example:
 ```
