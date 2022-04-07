@@ -67,3 +67,5 @@ main() {
   check_wordpress
   complete_installation
 }
+
+main
