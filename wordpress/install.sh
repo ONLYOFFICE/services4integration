@@ -33,7 +33,6 @@ install_wordpress() {
 #############################################################################################
 # Check wordpress startup and status
 # Globals:
-#   SERVICE_TAG
 # Outputs:
 #   Writes a startup message to stdout
 # Returns
