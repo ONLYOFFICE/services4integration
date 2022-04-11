@@ -21,11 +21,13 @@ source /app/common/error.sh
 install_wordpress() {
   source /app/common/install_dependencies.sh
   install_dependencies
-  mkdir -p /var/lib/wordpress/wp-content/plugins
-  git clone --branch=develop https://github.com/ONLYOFFICE/onlyoffice-wordpress.git /var/lib/wordpress/wp-content/plugins/onlyoffice-wordpress
+  mkdir -p /var/wordpress
+  
   export TAG="${SERVICE_TAG}"
   cd /app/wordpress/
   envsubst < docker-compose.yml | docker-compose -f - up -d
+  check_wordpress
+  git clone --branch=develop https://github.com/ONLYOFFICE/onlyoffice-wordpress.git /var/wordpress/wp-content/plugins/onlyoffice-wordpress
 }
 
 #############################################################################################
@@ -38,16 +40,16 @@ install_wordpress() {
 #   0, if the start is successful, non-zero on error
 #############################################################################################
 check_wordpress() {
-  echo -e "\e[0;32m Waiting for the launch of Wordpress \e[0m"  
+  echo -e "\e[0;32m Waiting for the launch of Wordpress \e[0m"
   for i in {1..15}; do
     echo "Getting the Wordpress status: ${i}"
     OUTPUT="$(curl -Is http://${IP_ARR[0]}/ | head -1 | awk '{ print $2 }')"
-    if [ "${OUTPUT}" == "302" ]; then
+    if [ "${OUTPUT}" == "200" || "${OUTPUT}" == "302" ]; then
       echo -e "\e[0;32m wordpress is ready to serve \e[0m"
       local WORDPRESS_READY
       WORDPRESS_READY='yes'
       break
-    else  
+    else
       sleep 10
     fi
   done
@@ -59,13 +61,13 @@ check_wordpress() {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the Wordpress web interface at http://${IP_ARR[0]}/ and follow a few configuration steps \e[0m"
-}
+  echo -e "\e[0;32m Now you can go to the Wordpress web interface at http://${IP_ARR[0]}/wp-admin/ and follow a few configuration steps \e[0m"
+  }
 
 main() {
   install_wordpress
-  check_wordpress
   complete_installation
 }
 
 main
+

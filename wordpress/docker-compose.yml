@@ -1,39 +1,41 @@
-version: '3.1'
-
+version: '2'
 services:
-
+  mariadb:
+    image: docker.io/bitnami/mariadb:10.6
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=bn_wordpress
+      - MARIADB_DATABASE=bitnami_wordpress
   wordpress:
-    image: wordpress:${TAG}
-    restart: always
-    container_name: wordpress
+    image: bitnami/wordpress:${TAG}
+    user: root
     ports:
-      - 80:80
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_USER: exampleuser
-      WORDPRESS_DB_PASSWORD: examplepass
-      WORDPRESS_DB_NAME: exampledb
+      - '80:8080'
+      - '443:8443'
     volumes:
-      - /var/lib/wordpress:/var/www/html
-
-  db:
-    image: mysql:5.7
-    restart: always
+      - '/var/wordpress:/bitnami/wordpress'
+    depends_on:
+      - mariadb
     environment:
-      MYSQL_DATABASE: exampledb
-      MYSQL_USER: exampleuser
-      MYSQL_PASSWORD: examplepass
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
-    volumes:
-      - db:/var/lib/mysql
-
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - WORDPRESS_DATABASE_HOST=mariadb
+      - WORDPRESS_DATABASE_PORT_NUMBER=3306
+      - WORDPRESS_DATABASE_USER=bn_wordpress
+      - WORDPRESS_DATABASE_NAME=bitnami_wordpress
+      - WORDPRESS_USERNAME=adm
+      - WORDPRESS_PASSWORD=Z65uGXkr
   onlyoffice-document-server:
     restart: unless-stopped
     image: onlyoffice/documentserver:latest
     container_name: onlyoffice-document-server
     ports:
       - 3000:80
-
 volumes:
-  wordpress:
-  db:
+  mariadb_data:
+    driver: local
+  wordpress_data:
+    driver: local

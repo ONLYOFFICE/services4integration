@@ -10,7 +10,7 @@ runcmd:
 ```
 
 Where:
- - `wordpress_tag` - Wordpress version. The available versions of Wordpress can be viewed [here](https://hub.docker.com/_/wordpress?tab=tags)
+ - `ordpress_tag` - Wordpress version. The available versions of Wordpress can be viewed [here](https://hub.docker.com/_/wordpress?tab=tags)
 
 For example:
 ```
@@ -26,4 +26,4 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Redmine web interface at: `http://IP-SERVER/` and check the connector operation.
+Then you can go to the Redmine web interface at: `http://IP-SERVER/wp-admin/` and check the connector operation. Default login:adm password:Z65uGXkr
