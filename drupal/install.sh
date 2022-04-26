@@ -23,6 +23,8 @@ install_dependencies
 export TAG="${SERVICE_TAG}"
 cd /app/drupal/
 envsubst < docker-compose.yml | docker-compose -f - up -d
+check_drupal
+docker exec --workdir /opt/bitnami/drupal drupal composer require firebase/php-jwt
 }
 
 #############################################################################################
@@ -61,7 +63,6 @@ complete_installation() {
 
 main() {
 install_drupal
-check_drupal
 complete_installation
 }
 
