@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 SERVICE_TAG="1.11.16"
-PHP_VERSION="7.2"
+PHP_VERSION="7.4"
 IP=""
 DB_USER="chamilouser"
 DB_PWD="jx7bqzRo"
