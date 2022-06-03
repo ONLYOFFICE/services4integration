@@ -25,14 +25,14 @@ while [ "$1" != "" ]; do
 
     -cu | --content_repo_url )
       if [ "$2" != "" ]; then
-        ADM_PASS=$2
+        CONNECTOR_REPO_URL=$2
         shift
       fi
     ;;
 
     -su | --share_url )
       if [ "$2" != "" ]; then
-        ADM_PASS=$2
+        CONNECTOR_SHARE_URL=$2
         shift
       fi
     ;;
