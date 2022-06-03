@@ -25,7 +25,6 @@ mysql -u root << EOF
 use mysql
 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('ewigwf242h3');
 FLUSH PRIVILEGES;
-QUIT;
 EOF
 apt-get install -y software-properties-common
 add-apt-repository ppa:ondrej/php -y
@@ -63,7 +62,6 @@ CREATE DATABASE chamilo;
 CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PWD}';
 GRANT ALL ON chamilo.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PWD}' WITH GRANT OPTION;
 FlUSH PRIVILEGES;
-QUIT;
 EOF
 }
 
