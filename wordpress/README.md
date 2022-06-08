@@ -26,4 +26,8 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Wordpress web interface at: `http://IP-SERVER/wp-admin/` and check the connector operation. Default login:adm password:Z65uGXkr
+Then you can go to the Wordpress web interface at: `http://IP-SERVER/wp-admin/` and check the connector operation. 
+```
+log: adm 
+pass: Z65uGXkr
+```

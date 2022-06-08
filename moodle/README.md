@@ -28,3 +28,7 @@ If successful, the following line will appear:
 The script is finished
 ```
 Then you can go to the moodle web interface at: `http://IP-SERVER/` and check the connector operation.
+``` 
+log: admin
+pass: admin
+```
