@@ -29,6 +29,6 @@ The script is finished
 ```
 Then you can go to the Redmine web interface at: `http://IP-SERVER:3000/` and check the connector operation. 
 ```
-log: admin 
+log: Admin 
 pass: admin
 ```
