@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/plone/install.sh -st latest -cu https://github.com/ONLYOFFICE/onlyoffice-plone/archive/refs/tags/v1.0.0.tar.gz
+/app/plone/install.sh -st latest -cu https://github.com/ONLYOFFICE/onlyoffice-plone/archive/refs/tags/v2.1.0.tar.gz
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
@@ -28,3 +28,7 @@ If successful, the following line will appear:
 The script is finished
 ```
 Then you can go to the plone web interface at: `http://IP-SERVER/` and check the connector operation.
+``` 
+log: user
+pass: bitnami
+```

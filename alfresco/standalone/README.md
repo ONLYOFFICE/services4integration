@@ -30,6 +30,10 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Alfresco web interface at: `http://IP-SERVER:8080/alfresco` and check the connector operation. Default login: Admin password: admin
+Then you can go to the Alfresco web interface at: `http://IP-SERVER:8080/alfresco` and check the connector operation. 
+```
+log: Admin 
+pass: admin
+```
 
 To configure the onlyoffice plugin follow the link: `http://IP-SERVER:8080/alfresco/s/onlyoffice/onlyoffice-config`

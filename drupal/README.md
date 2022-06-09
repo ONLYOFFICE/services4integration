@@ -26,4 +26,8 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Drupal web interface at: `http://IP-SERVER/` and check the connector operation. Default login: user password: bitnami
+Then you can go to the Drupal web interface at: `http://IP-SERVER/` and check the connector operation. 
+```
+log: user 
+pass: bitnami
+```
