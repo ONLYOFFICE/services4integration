@@ -29,3 +29,6 @@ If successful, the following line will appear:
 The script is finished
 ```
 Then you can go to the Mattermost web interface at: `https://domain_name/` and check the connector operation. Stand also has a documenserver. To use it, specify in the plugin settings `https://<domain_name>/ds`
+``` 
+You can enter credentials at the first login.
+```
