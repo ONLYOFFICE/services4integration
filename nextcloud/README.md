@@ -28,3 +28,7 @@ If successful, the following line will appear:
 The script is finished
 ```
 Then you can go to the Nextcloud web interface at: `http://IP-SERVER:8080/` and check the connector operation.
+```
+log: admin
+pass: admin
+```
