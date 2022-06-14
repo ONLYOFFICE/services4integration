@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/humhub/install.sh -st stable -cu https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.2.2/onlyoffice.zip
+/app/humhub/install.sh -st stable -cu https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
@@ -28,3 +28,7 @@ If successful, the following line will appear:
 The script is finished
 ```
 Then you can go to the humhub web interface at: `http://IP-SERVER/` and check the connector operation.
+```
+log: admin
+pass: test
+```

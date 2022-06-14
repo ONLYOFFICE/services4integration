@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/liferay/install.sh -st 7.4.0-ga1 -cu https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar
+/app/liferay/install.sh -st 7.4.0-ga1 -cu https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.2.0/onlyoffice.integration.web-2.2.0-CE7.4-GA18.jar
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
@@ -28,3 +28,7 @@ If successful, the following line will appear:
 The script is finished
 ```
 Then you can go to the Liferay web interface at: `http://IP-SERVER/` and check the connector operation.
+```
+log: test@liferay.com
+pass: test
+```
