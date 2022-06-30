@@ -24,7 +24,7 @@ prepare_connector() {
 }
 prepare_files() {
   readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)
-  sed -i -e "s!bitnami/moodle!bitnami/moodle:${SERVICE_TAG}!g" \
+  sed -i -e "s!bitnami/moodle:latest!bitnami/moodle:${SERVICE_TAG}!g" \
     /app/moodle/docker-compose.yml
   sed -i -e "s!https://documentserver.url!http://${EXT_IP}/ds-vpath/!g" \
     /app/moodle/onlyoffice/settings.php
