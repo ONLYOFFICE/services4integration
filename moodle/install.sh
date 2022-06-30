@@ -8,6 +8,7 @@ CONNECTOR_NAME="${CONNECTOR_URL##*/}"
 source /app/common/error.sh
 source /app/common/check_parameters.sh $@
 install_moodle_with_onlyoffice() {
+  export SERVICE_TAG="${SERVICE_TAG}"
   source /app/common/install_dependencies.sh
   install_dependencies
   prepare_connector
@@ -24,8 +25,6 @@ prepare_connector() {
 }
 prepare_files() {
   readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)
-  sed -i -e "s!bitnami/moodle:latest!bitnami/moodle:${SERVICE_TAG}!g" \
-    /app/moodle/docker-compose.yml
   sed -i -e "s!https://documentserver.url!http://${EXT_IP}/ds-vpath/!g" \
     /app/moodle/onlyoffice/settings.php
 }
