@@ -6,8 +6,8 @@ pipeline {
   }  
   parameters {
     choice(name: 'Connector', choices: ['humhub','alfresco/standalone','chamilo'], description: '')
-    string(name: 'st', defaultValue: 'latest', description: 'service_tag. default: latest')
-    string(name: 'cu', defaultValue: 'from_pipeline', description: 'connector_url. Add custom url or will be used url from pipeline')
+    string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. default: latest')
+    string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline')
     booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
   }
     
