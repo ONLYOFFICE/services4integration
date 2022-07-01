@@ -17,7 +17,7 @@ pipeline {
       steps {
         withCredentials([string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN')]) {
           sh '''
-            echo "Old VM were deleted."
+            echo "Old VMs were deleted."
           '''
         }
       }
@@ -25,7 +25,11 @@ pipeline {
     stage ('Create VM with connector') {
       when { expression { return env.EXECUTE == "true" } }
       steps {
-        withCredentials([string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN')]) {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN'),
+                          usernamePassword(credentialsId: 'gitrobot_token', 
+                            usernameVariable: 'GIT_USER',
+                            passwordVariable: 'GIT_TOKEN'), ]) 
+        {
           sh '''
             echo "Connector ${Connector} created."
           '''
