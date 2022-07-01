@@ -1,0 +1,36 @@
+pipeline {
+  agent {label 'ubuntu'}
+  options {
+    disableConcurrentBuilds()
+    buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+  }  
+  parameters {
+    choice(name: 'Connector', choices: ['humhub','alfresco/standalone','chamilo'], description: '')
+    string(name: 'st', defaultValue: 'latest', description: 'service_tag. default: latest')
+    string(name: 'cu', defaultValue: 'from_pipeline', description: 'connector_url. Add custom url or will be used url from pipeline')
+    booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
+  }
+    
+  stages {
+    stage ('Delete old VM') {
+      when { expression { return env.EXECUTE == "true" } }
+      steps {
+        withCredentials([string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN')]) {
+          sh '''
+            echo "Old VM were deleted."
+          '''
+        }
+      }
+    }
+    stage ('Create VM with connector') {
+      when { expression { return env.EXECUTE == "true" } }
+      steps {
+        withCredentials([string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN')]) {
+          sh '''
+            echo "Connector ${Connector} created."
+          '''
+        }
+      }
+    }
+  }
+}
