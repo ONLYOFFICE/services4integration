@@ -6,8 +6,8 @@ pipeline {
   }  
   parameters {
     choice(name: 'Connector', choices: ['humhub','alfresco/standalone','chamilo'], description: '')
-    string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. default: latest')
-    string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline')
+    string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
+    string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
     booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
   }
     
@@ -31,7 +31,24 @@ pipeline {
                             passwordVariable: 'GIT_TOKEN'), ]) 
         {
           sh '''
+            #!/usr/bin/env bash
+            
+            if [[ ${Connector} == "humhub" ]]; then
+              
+              cu='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
+
+              USER_DATA="#cloud-config \
+              runcmd: \
+              - git clone --depth=1 https://GIT_USER:GIT_TOKEN@github.com/ONLYOFFICE/services4integration.git /app \
+              - bash /app/humhub/install.sh -st ${st} -cu ${cu}"
+              
+              curl -X POST -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${DO_TOKEN}" \
+              -d '{"name":"'${Connector}'","region":"nyc3","size":"s-2vcpu-4gb","image":"50351003","ssh_keys":[24171932,23859650],"backups":false,"ipv6":false,"user_data":${USER_DATA},"private_networking":null,"volumes": null,"tags":["connectors"]}' \
+              "https://api.digitalocean.com/v2/droplets"
+            fi
             echo "Connector ${Connector} created."
+            
           '''
         }
       }
