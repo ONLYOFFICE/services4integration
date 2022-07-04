@@ -32,8 +32,7 @@ pipeline {
         {
           sh '''
             #!/usr/bin/env bash
-            ls -la
-            
+
             if [[ ${Connector} == "humhub" ]]; then
               if [[ ${cu} == "from_pipeline" ]]; then
                 connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
@@ -41,7 +40,7 @@ pipeline {
                 connector_url=${cu}
               fi
 
-              bash .jenkins/connector_install.sh ${connector_url} 
+              bash .jenkins/connector_install.sh ${Connector} ${connector_url} 
             fi
             
             echo "Connector ${Connector} created."
