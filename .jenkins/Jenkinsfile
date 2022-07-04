@@ -38,7 +38,7 @@ pipeline {
               fi
                 
                 date=$(date '+%Y%m%d%H%M');
-                sed -i "s,%connector_url%,${cu},g" .jenkins/user-data.yml
+                sed -i "s,%connector_url%,${connector_url},g" .jenkins/user-data.yml
                 sed -i "s,%connector%,humhub,g" .jenkins/user-data.yml
                 sed -i "s,%tag%,${st},g" .jenkins/user-data.yml
 
