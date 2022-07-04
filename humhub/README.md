@@ -5,7 +5,7 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 #cloud-config
 
 runcmd:
- - git clone --depth=1 https://username:password@github.com/ONLYOFFICE/services4integration.git /app
+ - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
  - bash /app/humhub/install.sh -st humhub_tag -cu connector_url
 ```
 
