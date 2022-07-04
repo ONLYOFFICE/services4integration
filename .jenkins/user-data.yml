@@ -1,0 +1,5 @@
+#cloud-config
+
+runcmd:
+  - git clone --depth=1 %connector_url% /app
+  - /app/%connector%/install.sh -st %tag%
