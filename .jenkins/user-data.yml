@@ -1,5 +1,5 @@
 #cloud-config
 
 runcmd:
-  - git clone --depth=1 %connector_url% /app
-  - /app/%connector%/install.sh -st %tag%
+  - git clone https://github.com/ONLYOFFICE/services4integration.git --depth=1  /app
+  - /app/%connector%/install.sh -st %tag% -cu %connector_url%
