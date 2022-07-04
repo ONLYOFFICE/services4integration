@@ -2,4 +2,4 @@
 
 runcmd:
   - git clone https://github.com/ONLYOFFICE/services4integration.git --depth=1  /app
-  - /app/%connector%/install.sh -st %tag% -cu %connector_url%
+  - bash /app/%connector%/install.sh -st %tag% -cu %connector_url%
