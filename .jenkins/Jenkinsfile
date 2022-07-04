@@ -34,21 +34,16 @@ pipeline {
             #!/usr/bin/env bash
             
             if [[ ${Connector} == "humhub" ]]; then
-              
-              cu='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
+              if [[ ${cu} == "from_pipeline" ]]; then
+                connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
+              else
+                connector_url=${cu}
+              fi
 
-              USER_DATA="#cloud-config \
-              runcmd: \
-              - git clone --depth=1 https://GIT_USER:GIT_TOKEN@github.com/ONLYOFFICE/services4integration.git /app \
-              - bash /app/humhub/install.sh -st ${st} -cu ${cu}"
-              
-              curl -X POST -H "Content-Type: application/json" \
-              -H "Authorization: Bearer ${DO_TOKEN}" \
-              -d '{"name":"'${Connector}'","region":"nyc3","size":"s-2vcpu-4gb","image":"50351003","ssh_keys":[24171932,23859650],"backups":false,"ipv6":false,"user_data":${USER_DATA},"private_networking":null,"volumes": null,"tags":["connectors"]}' \
-              "https://api.digitalocean.com/v2/droplets"
+              bash connector_install.sh ${connector_url} 
             fi
-            echo "Connector ${Connector} created."
             
+            echo "Connector ${Connector} created."
           '''
         }
       }
