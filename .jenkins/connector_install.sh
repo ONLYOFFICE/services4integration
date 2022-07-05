@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+default_url=$1
+cu=$2
+connector_path=$3
+st=$4
+Connector=$5
+
 function create_vm() {
   if [[ ${cu} == "from_pipeline" ]]; then
     connector_url=${default_url}
@@ -8,7 +14,7 @@ function create_vm() {
   fi
     
   date=$(date '+%Y%m%d%H%M');
-  
+
   sed -i "s,%connector_url%,${connector_url},g" .jenkins/user-data.yml
   sed -i "s,%path%,${connector_path},g" .jenkins/user-data.yml
   sed -i "s,%tag%,${st},g" .jenkins/user-data.yml
@@ -37,12 +43,7 @@ function check_vm_condition() {
 }
 
 function main() {
-  default_url=$1
-  cu=$2
-  connector_path=$3
-  st=$4
-  Connector=$5
-  
+
   create_vm
   # check_vm_condition
 }
