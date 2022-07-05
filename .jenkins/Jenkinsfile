@@ -22,7 +22,7 @@ pipeline {
         }
       }
     }
-    stage ('Create VM with connector') {
+    stage ('humhub') {
       when { 
         allOf{
           expression { return env.EXECUTE == "true" }
