@@ -23,7 +23,12 @@ pipeline {
       }
     }
     stage ('Create VM with connector') {
-      when { expression { return env.EXECUTE == "true" } }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "humhub" }
+        }
+      }
       steps {
         withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
         {
