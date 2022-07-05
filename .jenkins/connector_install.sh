@@ -15,9 +15,12 @@ function create_vm() {
     
   date=$(date '+%Y%m%d%H%M');
 
-  sed -i "s,%connector_url%,${connector_url},g" .jenkins/user-data.yml
-  sed -i "s,%path%,${connector_path},g" .jenkins/user-data.yml
-  sed -i "s,%tag%,${st},g" .jenkins/user-data.yml
+  cp .jenkins/user-data.yml .jenkins/user-data.yml.tmp
+  tmp_path=".jenkins/user-data.yml.tmp"
+
+  sed -i "s,%connector_url%,${connector_url},g" ${tmp_path}
+  sed -i "s,%path%,${connector_path},g" ${tmp_path}
+  sed -i "s,%tag%,${st},g" ${tmp_path}
 
   curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer ${DO_TOKEN}" \
@@ -29,7 +32,7 @@ function create_vm() {
     "ssh_keys":[30223004,29633232,29102049,28963692,30876815,35168967],
     "backups":false,
     "ipv6":false,
-    "user_data":"'" $(cat .jenkins/user-data.yml) "'",
+    "user_data":"'" $(cat .jenkins/user-data.yml.tmp) "'",
     "private_networking":null,
     "volumes": null,
     "tags":["connectors"]}' \
