@@ -23,6 +23,10 @@ pipeline {
       }
     }
     stage ('humhub') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
+        connector_path='humhub'
+      }
       when { 
         allOf{
           expression { return env.EXECUTE == "true" }
@@ -34,9 +38,6 @@ pipeline {
         {
           sh '''
             #!/usr/bin/env bash
-
-            connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
-            connector_path='humhub'
 
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
           '''
