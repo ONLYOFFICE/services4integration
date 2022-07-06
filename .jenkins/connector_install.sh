@@ -96,7 +96,7 @@ function check_vm_condition() {
 }
 
 function check_web_status() {
-  for ((i=0; i<=30 ; i++))
+  for ((i=0; i<=45 ; i++))
   do
     web_status=$(curl -s -o /dev/null -L -w ''%{http_code}'' ${1})
 
@@ -109,7 +109,7 @@ function check_web_status() {
     fi
   done 
   
-  echo "Error! Droplet was not created during 10 minuts."
+  echo "Error! Droplet was not created during 15 minuts."
   exit 1
 }
 
