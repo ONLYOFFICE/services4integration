@@ -97,20 +97,20 @@ function check_vm_condition() {
 }
 
 function check_web_status() {
-  for ((i=0; i<=15 ; i++))
+  for ((i=0; i<=30 ; i++))
   do
     web_status=$(curl -s -o /dev/null -L -w ''%{http_code}'' ${1})
 
     if [[ ${web_status} = 200 ]]; then
       return
     else
-      echo "$i attempt. web site ${1} has status ${status}."
+      echo "$i attempt. web site ${1} has status ${web_status}."
       sleep 20
       continue
     fi
   done 
   
-  echo "Error! Droplet was not created during 5 minuts."
+  echo "Error! Droplet was not created during 10 minuts."
   exit 1
 }
 
