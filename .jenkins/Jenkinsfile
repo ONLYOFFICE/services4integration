@@ -43,7 +43,7 @@ pipeline {
                   break
               fi
 
-              created_date=$(echo ${created_at} | cut -f 2 -d'"'| cut -f 1 -d'T')
+              created_date=$(echo ${CREATED_AT} | cut -f 2 -d'"'| cut -f 1 -d'T')
               expiry_date=$(date "+%Y-%m-%d" -d "${days} days ago")
 
               if [[ ${expiry_date} > ${created_date} ]]; then
