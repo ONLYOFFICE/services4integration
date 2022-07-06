@@ -85,7 +85,7 @@ function check_vm_condition() {
   for ((i=0; i<=30 ; i++))
   do
     NAME=$(jq ".droplets[$i].name" $OUTPUT | cut -f 2 -d'"')
-    IP=$(jq ".droplets[$i].networks.v4[1].ip_address" $OUTPUT | cut -f 2 -d'"')
+    IP=$(jq ".droplets[$i].networks.v4[0].ip_address" $OUTPUT | cut -f 2 -d'"')
 
     if [[ ${NAME} == ${droplet_name} ]]; then
       break
