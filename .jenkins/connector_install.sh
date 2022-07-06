@@ -97,13 +97,27 @@ function check_vm_condition() {
 }
 
 function check_web_status() {
-  echo "Done"
+  for ((i=0; i<=15 ; i++))
+  do
+    web_status=$(curl -s -o /dev/null -L -w ''%{http_code}'' ${1})
+
+    if [[ ${web_status} = 200 ]]; then
+      return
+    else
+      echo "$i attempt. web site ${1} has status ${status}."
+      sleep 20
+      continue
+    fi
+  done 
+  
+  echo "Error! Droplet was not created during 5 minuts."
+  exit 1
 }
 
 function main() {
   create_vm
   check_vm_condition
-  check_web_status
+  check_web_status "http://${ip_address}"
 }
 
 main
