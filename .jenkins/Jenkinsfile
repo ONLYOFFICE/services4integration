@@ -13,11 +13,47 @@ pipeline {
     
   stages {
     stage ('Delete old VM') {
+      environment { OUTPUT=".jenkins/output.json" }
       when { expression { return env.EXECUTE == "true" } }
       steps {
         withCredentials([string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN')]) {
           sh '''
-            echo "Old VMs were deleted."
+            # delete after
+            days=30
+
+            # check file
+            if [ -f "$OUTPUT" ]; then
+              touch $OUTPUT;
+            fi
+
+            # get droplets list with tag_name=connectors
+            (curl -X GET -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${DO_TOKEN}" \
+              "https://api.digitalocean.com/v2/droplets?tag_name=connectors") > ${OUTPUT}
+            
+            # delete old droplets
+            for ((i=0; i<=30 ; i++))
+            do
+              NAME=$(jq ".droplets[$i].name" $OUTPUT)
+              ID=$(jq ".droplets[$i].id" $OUTPUT)
+              CREATED_AT=$(jq ".droplets[$i].created_at" $OUTPUT)
+
+              # end of list
+              if [ "$NAME" == "null" ]; then
+                  break
+              fi
+
+              created_date=$(echo ${created_at} | cut -f 1 -d'T')
+              expiry_date=$(date "+%Y-%m-%d" -d "${days} days ago")
+
+              if [[ ${expiry_date} > ${created_date} ]]; then
+                echo "Droplet ${NAME} was deleted."
+
+                curl -X DELETE -H "Content-Type: application/json" \
+                -H "Authorization: Bearer ${DO_TOKEN}" \
+                "https://api.digitalocean.com/v2/droplets/${ID}"
+              fi
+            done
           '''
         }
       }

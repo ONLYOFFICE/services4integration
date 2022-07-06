@@ -77,10 +77,9 @@ function create_vm() {
 
 function check_vm_condition() {
   # get droplets list with tag_name=connectors
-  curl -X GET -H "Content-Type: application/json" \
+  (curl -X GET -H "Content-Type: application/json" \
   -H "Authorization: Bearer ${DO_TOKEN}" \
-  "https://api.digitalocean.com/v2/droplets?tag_name=connectors" \
-  -o $OUTPUT
+  "https://api.digitalocean.com/v2/droplets?tag_name=connectors") > $OUTPUT
 
   # search droplet`s ip
   for ((i=0; i<=30 ; i++))
