@@ -5,6 +5,29 @@ cu=$2
 connector_path=$3
 st=$4
 Connector=$5
+OUTPUT=".jenkins/output.json"
+ip_address=""
+droplet_name=""
+
+function droplet_status() {
+  for ((i=0; i<=15 ; i++))
+  do
+    status=$(curl -X GET -H "Content-Type: application/json" \
+      -H "Authorization: Bearer ${DO_TOKEN}" \
+      "https://api.digitalocean.com/v2/droplets/$1/actions" | jq .actions[].status | cut -f 2 -d'"') 
+
+    echo "$i attempt has status ${status}."
+    if [[ ${status} == "completed" ]]; then
+      return
+    else
+      sleep 20
+      continue
+    fi
+  done
+  
+  echo "Error! Droplet was not created during 5 minuts."
+  exit 1 
+}
 
 function create_vm() {
   if [[ ${cu} == "from_pipeline" ]]; then
@@ -12,9 +35,14 @@ function create_vm() {
   else
     connector_url=${cu}
   fi
-    
+
+  if [ -f "$OUTPUT" ]; then
+	  touch $OUTPUT;
+  fi
+
   date=$(date '+%Y%m%d%H%M');
 
+  # prepare user_data
   cp .jenkins/user-data.yml .jenkins/user-data.yml.tmp
   tmp_path=".jenkins/user-data.yml.tmp"
 
@@ -22,7 +50,8 @@ function create_vm() {
   sed -i "s,%path%,${connector_path},g" ${tmp_path}
   sed -i "s,%tag%,${st},g" ${tmp_path}
 
-  curl -X POST -H "Content-Type: application/json" \
+  # create droplet
+  (curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer ${DO_TOKEN}" \
   -d '{
     "name":"'${Connector}-${date}'",
@@ -36,19 +65,45 @@ function create_vm() {
     "private_networking":null,
     "volumes": null,
     "tags":["connectors"]}' \
-  "https://api.digitalocean.com/v2/droplets" 
+  "https://api.digitalocean.com/v2/droplets" ) > ${OUTPUT}
 
-  echo "Connector ${Connector} was created."
+  # wait for os to start
+  droplet_name=$(jq ".droplet.name" $OUTPUT | cut -f 2 -d'"')
+  droplet_id=$(jq ".droplet.id" $OUTPUT | cut -f 2 -d'"')
+  droplet_status ${droplet_id}
+
+  echo "Droplet was created."
 }
 
 function check_vm_condition() {
-  echo "vm was run."
+  # get droplets list with tag_name=connectors
+  curl -X GET -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${DO_TOKEN}" \
+  "https://api.digitalocean.com/v2/droplets?tag_name=connectors" \
+  -o $OUTPUT
+
+  # search droplet`s ip
+  for ((i=0; i<=30 ; i++))
+  do
+    NAME=$(jq ".droplets[$i].name" $OUTPUT | cut -f 2 -d'"')
+    IP=$(jq ".droplets[$i].networks.v4[1].ip_address" $OUTPUT | cut -f 2 -d'"')
+
+    if [[ ${NAME} == ${droplet_name} ]]; then
+      break
+    fi
+	done
+
+  ip_address=${IP}
+}
+
+function check_web_status() {
+  echo "Done"
 }
 
 function main() {
-
   create_vm
-  # check_vm_condition
+  check_vm_condition
+  check_web_status
 }
 
 main
