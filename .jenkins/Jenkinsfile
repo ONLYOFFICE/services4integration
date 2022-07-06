@@ -46,7 +46,7 @@ pipeline {
               created_date=$(echo ${CREATED_AT} | cut -f 2 -d'"'| cut -f 1 -d'T')
               expiry_date=$(date "+%Y-%m-%d" -d "${days} days ago")
 
-              if [[ ${expiry_date} > ${created_date} ]]; then
+              if [[ ${expiry_date} > ${created_date} ]] && [[ ! -z ${created_date} ]]; then
                 echo "Droplet ${NAME} was deleted."
 
                 curl -X DELETE -H "Content-Type: application/json" \
