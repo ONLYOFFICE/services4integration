@@ -62,6 +62,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.2.0/onlyoffice.zip'
         connector_path='chamilo'
+        port=80
       }
       when { 
         allOf{
@@ -75,7 +76,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  chamilouser "
+            echo "pass: jx7bqzRo"
           '''
         }
       }
@@ -84,6 +87,7 @@ pipeline {
       environment {
         connector_url="null"
         connector_path='confluence/cluster'
+        port=80
       }
       when { 
         allOf{
@@ -97,7 +101,8 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "See github.com for configure."
           '''
         }
       }
@@ -106,6 +111,7 @@ pipeline {
       environment {
         connector_url="null"
         connector_path='drupal'
+        port=80
       }
       when { 
         allOf{
@@ -119,7 +125,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  user"
+            echo "pass: bitnami"
           '''
         }
       }
@@ -128,6 +136,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
         connector_path='humhub'
+        port=80
       }
       when { 
         allOf{
@@ -141,7 +150,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  admin"
+            echo "pass: test"
           '''
         }
       }
@@ -169,6 +180,7 @@ pipeline {
             fi
 
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "See github.com for configure."
           '''
         }
       }
@@ -177,6 +189,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.2.0/onlyoffice.integration.web-2.2.0-CE7.4-GA18.jar'
         connector_path='liferay'
+        port=80
       }
       when { 
         allOf{
@@ -190,7 +203,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  test@liferay.com"
+            echo "pass: test"
           '''
         }
       }
@@ -199,6 +214,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/moodle-mod_onlyofficeeditor/archive/refs/tags/v2.1.0.tar.gz'
         connector_path='moodle'
+        port=80
       }
       when { 
         allOf{
@@ -212,7 +228,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  user"
+            echo "pass: bitnami"
           '''
         }
       }
@@ -221,6 +239,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.2/onlyoffice.tar.gz'
         connector_path='nextcloud'
+        port=8080
       }
       when { 
         allOf{
@@ -234,7 +253,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  admin"
+            echo "pass: admin"
           '''
         }
       }
@@ -243,6 +264,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-owncloud/releases/download/v7.3.3/onlyoffice.tar.gz'
         connector_path='owncloud'
+        port=80
       }
       when { 
         allOf{
@@ -256,7 +278,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  owncloud"
+            echo "pass: owncloud"
           '''
         }
       }
@@ -265,6 +289,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-plone/releases/download/v2.1.1/onlyoffice.connector-2.1.1.tar.gz'
         connector_path='plone'
+        port=80
       }
       when { 
         allOf{
@@ -278,7 +303,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  user"
+            echo "pass: bitnami"
           '''
         }
       }
@@ -287,6 +314,7 @@ pipeline {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-redmine/releases/download/v1.1.0/onlyoffice-redmine.zip'
         connector_path='redmine'
+        port=3000
       }
       when { 
         allOf{
@@ -300,7 +328,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  Admin"
+            echo "pass: admin"
           '''
         }
       }
@@ -309,6 +339,7 @@ pipeline {
       environment {
         connector_url="null"
         connector_path='wordpress'
+        port=80
       }
       when { 
         allOf{
@@ -322,7 +353,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  adm"
+            echo "pass: Z65uGXkr"
           '''
         }
       }
