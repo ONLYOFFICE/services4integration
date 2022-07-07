@@ -104,7 +104,7 @@ pipeline {
     }
     stage ('confluence') {
       environment {
-        connector_url=""
+        connector_url="null"
         connector_path='confluence/cluster'
       }
       when { 
@@ -126,7 +126,7 @@ pipeline {
     }
     stage ('drupal') {
       environment {
-        connector_url=""
+        connector_url="null"
         connector_path='drupal'
       }
       when { 
@@ -306,7 +306,7 @@ pipeline {
     }
     stage ('wordpress') {
       environment {
-        connector_url=""
+        connector_url="null"
         connector_path='wordpress'
       }
       when { 
