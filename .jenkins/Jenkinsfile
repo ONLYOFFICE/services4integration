@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
   }  
   parameters {
-    choice(name: 'Connector', choices: ['humhub','alfresco/standalone','chamilo'], description: '')
+    choice(name: 'Connector', choices: ['chamilo','confluence','drupal','humhub','jira','liferay','moodle','nextcloud','owncloud'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
     booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
@@ -67,6 +67,249 @@ pipeline {
         allOf{
           expression { return env.EXECUTE == "true" }
           expression { return env.Connector == "humhub" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('chamilo') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.2.0/onlyoffice.zip'
+        connector_path='chamilo'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "chamilo" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('confluence') {
+      environment {
+        connector_url=""
+        connector_path='confluence/cluster'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "confluence" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('drupal') {
+      environment {
+        connector_url=""
+        connector_path='drupal'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "drupal" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('jira') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.1.0/onlyoffice-jira-app-1.1.0.jar'
+        connector_path='jira/standalone'
+        st='8.18.0'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "jira" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('liferay') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.2.0/onlyoffice.integration.web-2.2.0-CE7.4-GA18.jar'
+        connector_path='liferay'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "liferay" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('moodle') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/moodle-mod_onlyofficeeditor/archive/refs/tags/v2.1.0.tar.gz'
+        connector_path='moodle'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "moodle" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('nextcloud') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.2/onlyoffice.tar.gz'
+        connector_path='nextcloud'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "nextcloud" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }    
+    stage ('owncloud') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-owncloud/releases/download/v7.3.3/onlyoffice.tar.gz'
+        connector_path='owncloud'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "owncloud" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    } 
+    stage ('plone') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-plone/releases/download/v2.1.1/onlyoffice.connector-2.1.1.tar.gz'
+        connector_path='plone'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "plone" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('redmine') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-redmine/releases/download/v1.1.0/onlyoffice-redmine.zip'
+        connector_path='redmine'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "redmine" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
+    stage ('wordpress') {
+      environment {
+        connector_url=""
+        connector_path='wordpress'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "wordpress" }
         }
       }
       steps {
