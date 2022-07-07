@@ -164,7 +164,7 @@ pipeline {
             #!/usr/bin/env bash
 
             if [[ ${st} == "latest" ]]; then
-              ${st}='8.18.0'
+              st="8.18.0"
             fi
 
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
