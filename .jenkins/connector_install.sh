@@ -86,6 +86,12 @@ function check_vm_condition() {
   do
     NAME=$(jq ".droplets[$i].name" $OUTPUT | cut -f 2 -d'"')
     IP=$(jq ".droplets[$i].networks.v4[0].ip_address" $OUTPUT | cut -f 2 -d'"')
+    TYPE=$(jq ".droplets[$i].networks.v4[0].type" $OUTPUT | cut -f 2 -d'"')
+
+    # get public ip address
+    if [[ ${TYPE} == "private" ]]; then
+      IP=$(jq ".droplets[$i].networks.v4[1].ip_address" $OUTPUT | cut -f 2 -d'"')
+    fi
 
     if [[ ${NAME} == ${droplet_name} ]]; then
       break
