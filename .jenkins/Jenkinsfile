@@ -328,6 +328,10 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
+            if [[ ${st} == "latest" ]]; then
+              st="4.2"
+            fi
+
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
             echo "log:  Admin"
             echo "pass: admin"
