@@ -58,28 +58,6 @@ pipeline {
         }
       }
     }
-    stage ('humhub') {
-      environment {
-        connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
-        connector_path='humhub'
-      }
-      when { 
-        allOf{
-          expression { return env.EXECUTE == "true" }
-          expression { return env.Connector == "humhub" }
-        }
-      }
-      steps {
-        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
-        {
-          sh '''
-            #!/usr/bin/env bash
-
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
-          '''
-        }
-      }
-    }
     stage ('chamilo') {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.2.0/onlyoffice.zip'
@@ -146,10 +124,33 @@ pipeline {
         }
       }
     }
+    stage ('humhub') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
+        connector_path='humhub'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "humhub" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+          '''
+        }
+      }
+    }
     stage ('jira') {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.1.0/onlyoffice-jira-app-1.1.0.jar'
         connector_path='jira/standalone'
+        port=80
       }
       when { 
         allOf{
@@ -167,7 +168,7 @@ pipeline {
               st="8.18.0"
             fi
 
-            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector}
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
           '''
         }
       }

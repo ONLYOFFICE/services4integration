@@ -5,6 +5,7 @@ cu=$2
 connector_path=$3
 st=$4
 Connector=$5
+port=$6
 OUTPUT=".jenkins/output.json"
 ip_address=""
 droplet_name=""
@@ -122,7 +123,7 @@ function check_web_status() {
 function main() {
   create_vm
   check_vm_condition
-  check_web_status "http://${ip_address}"
+  check_web_status "http://${ip_address}:${port}"
 }
 
 main
