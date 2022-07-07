@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
   }  
   parameters {
-    choice(name: 'Connector', choices: ['chamilo','confluence','drupal','humhub','jira','liferay','moodle','nextcloud','owncloud'], description: '')
+    choice(name: 'Connector', choices: ['chamilo','confluence','drupal','humhub','jira','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
     booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
