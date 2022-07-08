@@ -29,6 +29,6 @@ The script is finished
 ```
 Then you can go to the plone web interface at: `http://IP-SERVER/` and check the connector operation.
 ``` 
-log: user
-pass: bitnami
+log: admin
+pass: admin
 ```
