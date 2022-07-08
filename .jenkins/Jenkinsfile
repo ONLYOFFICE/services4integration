@@ -12,7 +12,12 @@ pipeline {
   }
     
   stages {
-    stage ('Delete old VM') {
+    stage ('workspace clean up') {
+      steps {
+        sh 'git clean -fdx'
+      }
+    }
+    stage ('delete old VM') {
       environment { OUTPUT=".jenkins/output.json" }
       when { expression { return env.EXECUTE == "true" } }
       steps {
