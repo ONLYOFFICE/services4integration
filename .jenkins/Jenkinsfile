@@ -343,8 +343,8 @@ pipeline {
             #!/usr/bin/env bash
 
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
-            echo "log:  user"
-            echo "pass: bitnami"
+            echo "log:  admin"
+            echo "pass: admin"
           '''
         }
       }
