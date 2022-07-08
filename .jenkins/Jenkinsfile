@@ -93,6 +93,7 @@ pipeline {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.2.0/onlyoffice.zip'
         connector_path='chamilo'
         port=80
+        cu='1.11.16'
       }
       when { 
         allOf{
