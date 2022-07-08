@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
   }  
   parameters {
-    choice(name: 'Connector', choices: ['chamilo','confluence','drupal','humhub','jira','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
+    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
     booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
@@ -54,6 +54,37 @@ pipeline {
                 "https://api.digitalocean.com/v2/droplets/${ID}"
               fi
             done
+          '''
+        }
+      }
+    }
+    stage ('alfresco') {
+      environment {
+        content_repo_tag=7.0.0
+        share_tag=7.0.0
+        content_repo_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar'
+        share_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-share.jar'
+        connector_path='alfresco/standalone'
+        port=8080
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "alfresco" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            tmp="-ct ${content_repo_tag} -st ${share_tag} -cu ${content_repo_url} -su ${share_url}"
+            sed -i "s,-st %tag% -cu %connector_url%,${tmp},g" .jenkins/user-data.yml.tmp
+
+            bash .jenkins/connector_install.sh null null ${connector_path} null ${Connector} ${port}
+            echo "log:  Admin"
+            echo "pass: admin"
           '''
         }
       }
