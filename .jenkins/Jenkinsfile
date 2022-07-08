@@ -79,10 +79,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            tmp="-ct ${content_repo_tag} -st ${share_tag} -cu ${content_repo_url} -su ${share_url}"
-            sed -i "s,-st %tag% -cu %connector_url%,${tmp},g" .jenkins/user-data.yml.tmp
+            tmp="${content_repo_url} -ct ${content_repo_tag} -su ${share_url}"
 
-            bash .jenkins/connector_install.sh null null ${connector_path} null ${Connector} ${port}
+            bash .jenkins/connector_install.sh null ${tmp} ${connector_path} ${share_tag} ${Connector} ${port}
             echo "log:  Admin"
             echo "pass: admin"
           '''
