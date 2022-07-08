@@ -106,8 +106,8 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            if [[ ${cu} == "from_pipeline" ]]; then
-              cu='1.11.16'
+            if [[ ${st} == "latest" ]]; then
+              st='1.11.16'
             fi
 
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
