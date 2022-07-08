@@ -60,8 +60,8 @@ pipeline {
     }
     stage ('alfresco') {
       environment {
-        content_repo_tag=7.0.0
-        share_tag=7.0.0
+        content_repo_tag='7.0.0'
+        share_tag='7.0.0'
         content_repo_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar'
         share_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-share.jar'
         connector_path='alfresco/standalone'
