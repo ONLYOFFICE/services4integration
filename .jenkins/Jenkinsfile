@@ -79,7 +79,7 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            tmp="${content_repo_url} -ct ${content_repo_tag} -su ${share_url}"
+            tmp="${content_repo_url}%space%-ct%space%${content_repo_tag}%space%-su%space%${share_url}"
 
             bash .jenkins/connector_install.sh null ${tmp} ${connector_path} ${share_tag} ${Connector} ${port}
             echo "log:  Admin"
