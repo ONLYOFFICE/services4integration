@@ -58,7 +58,7 @@ function create_vm() {
   -d '{
     "name":"'${Connector}-${date}'",
     "region":"nyc3",
-    "size":"s-2vcpu-4gb",
+    "size":"s-4vcpu-8gb",
     "image":"ubuntu-20-04-x64",
     "ssh_keys":[30223004,29633232,29102049,28963692,30876815,35168967],
     "backups":false,
