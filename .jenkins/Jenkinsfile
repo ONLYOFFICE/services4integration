@@ -6,6 +6,7 @@ pipeline {
   }  
   parameters {
     choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
+    choice(name: 'vm_size', choices: ['s-2vcpu-4gb','s-4vcpu-8gb'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
     booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')

@@ -52,13 +52,16 @@ function create_vm() {
   sed -i "s,%tag%,${st},g" ${tmp_path}
   sed -i "s,%space%, ,g" ${tmp_path}
 
+  echo "# ${vm_size} #"
+  exit 0
+  
   # create droplet
   (curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer ${DO_TOKEN}" \
   -d '{
     "name":"'${Connector}-${date}'",
     "region":"nyc3",
-    "size":"s-4vcpu-8gb",
+    "size":"'${vm_size}'",
     "image":"ubuntu-20-04-x64",
     "ssh_keys":[30223004,29633232,29102049,28963692,30876815,35168967,30296916],
     "backups":false,
