@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
   }  
   parameters {
-    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira_standalone','jira_cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
+    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
     booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
@@ -196,7 +196,7 @@ pipeline {
         }
       }
     }
-    stage ('jira_standalone') {
+    stage ('jira-standalone') {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.1.0/onlyoffice-jira-app-1.1.0.jar'
         connector_path='jira/standalone'
@@ -205,7 +205,7 @@ pipeline {
       when { 
         allOf{
           expression { return env.EXECUTE == "true" }
-          expression { return env.Connector == "jira_standalone" }
+          expression { return env.Connector == "jira-standalone" }
         }
       }
       steps {
@@ -224,7 +224,7 @@ pipeline {
         }
       }
     }
-    stage ('jira_cluster') {
+    stage ('jira-cluster') {
       environment {
         connector_url='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar'
         connector_path='jira/cluster'
@@ -233,7 +233,7 @@ pipeline {
       when { 
         allOf{
           expression { return env.EXECUTE == "true" }
-          expression { return env.Connector == "jira_cluster" }
+          expression { return env.Connector == "jira-cluster" }
         }
       }
       steps {
