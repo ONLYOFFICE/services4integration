@@ -52,9 +52,6 @@ function create_vm() {
   sed -i "s,%tag%,${st},g" ${tmp_path}
   sed -i "s,%space%, ,g" ${tmp_path}
 
-  echo "# ${vm_size} #"
-  exit 0
-  
   # create droplet
   (curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer ${DO_TOKEN}" \
