@@ -60,7 +60,7 @@ function create_vm() {
     "region":"nyc3",
     "size":"s-4vcpu-8gb",
     "image":"ubuntu-20-04-x64",
-    "ssh_keys":[30223004,29633232,29102049,28963692,30876815,35168967],
+    "ssh_keys":[30223004,29633232,29102049,28963692,30876815,35168967,30296916],
     "backups":false,
     "ipv6":false,
     "user_data":"'" $(cat .jenkins/user-data.yml.tmp) "'",
