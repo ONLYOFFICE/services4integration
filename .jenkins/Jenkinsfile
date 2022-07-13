@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
   }  
   parameters {
-    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
+    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','strapi','wordpress'], description: '')
     choice(name: 'vm_size', choices: ['s-2vcpu-4gb','s-4vcpu-8gb'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
@@ -403,6 +403,33 @@ pipeline {
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
             echo "log:  Admin"
             echo "pass: admin"
+          '''
+        }
+      }
+    }
+    stage ('strapi') {
+      environment {
+        connector_url='null'
+        connector_path='strapi'
+        port=1337
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "strapi" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            if [[ ${st} == "latest" ]]; then
+              st="1.0.6"
+            fi
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
           '''
         }
       }
