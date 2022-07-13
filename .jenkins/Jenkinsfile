@@ -1,0 +1,436 @@
+pipeline {
+  agent {label 'ubuntu'}
+  options {
+    disableConcurrentBuilds()
+    buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+  }  
+  parameters {
+    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','wordpress'], description: '')
+    choice(name: 'vm_size', choices: ['s-2vcpu-4gb','s-4vcpu-8gb'], description: '')
+    string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
+    string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
+    booleanParam (name:'EXECUTE', defaultValue: true, description: 'Run this item ?')
+  }
+    
+  stages {
+    stage ('workspace clean up') {
+      steps {
+        sh 'git clean -fdx'
+      }
+    }
+    stage ('delete old VM') {
+      environment { OUTPUT=".jenkins/output.json" }
+      when { expression { return env.EXECUTE == "true" } }
+      steps {
+        withCredentials([string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN')]) {
+          sh '''
+            # delete after
+            days=30
+
+            # check file
+            if [ -f "$OUTPUT" ]; then
+              touch $OUTPUT;
+            fi
+
+            # get droplets list with tag_name=connectors
+            (curl -X GET -H "Content-Type: application/json" \
+              -H "Authorization: Bearer ${DO_TOKEN}" \
+              "https://api.digitalocean.com/v2/droplets?tag_name=connectors") > ${OUTPUT}
+            
+            # delete old droplets
+            for ((i=0; i<=30 ; i++))
+            do
+              NAME=$(jq ".droplets[$i].name" $OUTPUT)
+              ID=$(jq ".droplets[$i].id" $OUTPUT)
+              CREATED_AT=$(jq ".droplets[$i].created_at" $OUTPUT)
+
+              # end of list
+              if [ "$NAME" == "null" ]; then
+                  break
+              fi
+
+              created_date=$(echo ${CREATED_AT} | cut -f 2 -d'"'| cut -f 1 -d'T')
+              expiry_date=$(date "+%Y-%m-%d" -d "${days} days ago")
+
+              if [[ ${expiry_date} > ${created_date} ]] && [[ ! -z ${created_date} ]]; then
+                echo "Droplet ${NAME} was deleted."
+
+                curl -X DELETE -H "Content-Type: application/json" \
+                -H "Authorization: Bearer ${DO_TOKEN}" \
+                "https://api.digitalocean.com/v2/droplets/${ID}"
+              fi
+            done
+          '''
+        }
+      }
+    }
+    stage ('alfresco') {
+      environment {
+        content_repo_tag='7.0.0'
+        share_tag='7.0.0'
+        content_repo_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar'
+        share_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-share.jar'
+        connector_path='alfresco/standalone'
+        port=8080
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "alfresco" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            tmp="${content_repo_url}%space%-ct%space%${content_repo_tag}%space%-su%space%${share_url}"
+
+            bash .jenkins/connector_install.sh null ${tmp} ${connector_path} ${share_tag} ${Connector} ${port}
+            echo "log:  Admin"
+            echo "pass: admin"
+          '''
+        }
+      }
+    }
+    stage ('chamilo') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.2.0/onlyoffice.zip'
+        connector_path='chamilo'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "chamilo" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            if [[ ${st} == "latest" ]]; then
+              st='1.11.16'
+            fi
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  chamilouser "
+            echo "pass: jx7bqzRo"
+          '''
+        }
+      }
+    }
+    stage ('confluence') {
+      environment {
+        connector_url="null"
+        connector_path='confluence/cluster'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "confluence" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "See github.com for configure."
+          '''
+        }
+      }
+    }
+    stage ('drupal') {
+      environment {
+        connector_url="null"
+        connector_path='drupal'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "drupal" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  user"
+            echo "pass: bitnami"
+          '''
+        }
+      }
+    }
+    stage ('humhub') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/download/v2.4.0/onlyoffice.zip'
+        connector_path='humhub'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "humhub" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  admin"
+            echo "pass: test"
+          '''
+        }
+      }
+    }
+    stage ('jira-standalone') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.1.0/onlyoffice-jira-app-1.1.0.jar'
+        connector_path='jira/standalone'
+        port=8080
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "jira-standalone" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            if [[ ${st} == "latest" ]]; then
+              st="8.18.0"
+            fi
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "See github.com for configure."
+          '''
+        }
+      }
+    }
+    stage ('jira-cluster') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar'
+        connector_path='jira/cluster'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "jira-cluster" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            if [[ ${st} == "latest" ]]; then
+              st="8.20.0"
+            fi
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "See github.com for configure."
+          '''
+        }
+      }
+    }
+    stage ('liferay') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.2.0/onlyoffice.integration.web-2.2.0-CE7.4-GA18.jar'
+        connector_path='liferay'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "liferay" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  test@liferay.com"
+            echo "pass: test"
+          '''
+        }
+      }
+    }
+    stage ('moodle') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/moodle-mod_onlyofficeeditor/archive/refs/tags/v2.1.0.tar.gz'
+        connector_path='moodle'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "moodle" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  user"
+            echo "pass: bitnami"
+          '''
+        }
+      }
+    }
+    stage ('nextcloud') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.2/onlyoffice.tar.gz'
+        connector_path='nextcloud'
+        port=8080
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "nextcloud" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  admin"
+            echo "pass: admin"
+          '''
+        }
+      }
+    }    
+    stage ('owncloud') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-owncloud/releases/download/v7.3.3/onlyoffice.tar.gz'
+        connector_path='owncloud'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "owncloud" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  owncloud"
+            echo "pass: owncloud"
+          '''
+        }
+      }
+    } 
+    stage ('plone') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-plone/releases/download/v2.1.1/onlyoffice.connector-2.1.1.tar.gz'
+        connector_path='plone'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "plone" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  admin"
+            echo "pass: admin"
+          '''
+        }
+      }
+    }
+    stage ('redmine') {
+      environment {
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-redmine/releases/download/v1.1.0/onlyoffice-redmine.zip'
+        connector_path='redmine'
+        port=3000
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "redmine" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            if [[ ${st} == "latest" ]]; then
+              st="4.2"
+            fi
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  Admin"
+            echo "pass: admin"
+          '''
+        }
+      }
+    }
+    stage ('wordpress') {
+      environment {
+        connector_url="null"
+        connector_path='wordpress'
+        port=80
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "wordpress" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  adm"
+            echo "pass: Z65uGXkr"
+          '''
+        }
+      }
+    }
+  }
+}
