@@ -5,14 +5,15 @@ IP=""
 DB_USER="chamilouser"
 DB_PWD="jx7bqzRo"
 CONNECTOR_NAME="onlyoffice.zip"
-CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.0.0/onlyoffice.zip"
+CONNECTOR_URL=""
 
 source /app/common/check_parameters.sh "${@}"
 check_parameters
 CHAMILO_URL="https://github.com/chamilo/chamilo-lms/releases/download/v$SERVICE_TAG/chamilo-$SERVICE_TAG.zip"
 
 dependencies_install () {
-apt update
+source /app/common/install_dependencies.sh
+install_dependencies
 apt install -y apache2
 systemctl stop apache2.service
 systemctl start apache2.service
@@ -105,7 +106,10 @@ chown -R www-data:www-data /var/www/html/Chamilo/plugin/onlyoffice/
 rm -rf /var/www/html/Chamilo/vendor/*
 export COMPOSER_HOME="$HOME/.config/composer";
 composer install -d /var/www/html/Chamilo
+}
 
+documentserver_install() {
+docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver
 }
 
 complete_installation(){
@@ -116,7 +120,10 @@ dependencies_install
 configure_php
 configure_database
 install_chamilo
-plugin_install
+if [ "$CONNECTOR_URL" != "" ]; then
+  plugin_install
+fi
+documentserver_install
 complete_installation
 }
 main
