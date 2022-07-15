@@ -68,10 +68,6 @@ get_connector() {
 }
 
 configure_compose() {
-  source /app/common/install_dependencies.sh
-  install_dependencies
-  IP=$(hostname -I)
-  IP_ARR=($IP)
   git clone https://github.com/Alfresco/acs-deployment.git /opt/alfresco
   str=$(grep -n "  alfresco:" /opt/alfresco/docker-compose/community-docker-compose.yml | cut -d: -f1)
   str=$(($str+1))
@@ -90,13 +86,38 @@ configure_compose() {
   docker-compose -f /opt/alfresco/docker-compose/community-docker-compose.yml up -d
 }
 
+configure_compose_6_X() {
+  export HOST="${IP_ARR[0]}"
+  export CONTENT_REPO_TAG="${CONTENT_REPO_TAG}"
+  export SHARE_TAG="${SHARE_TAG}"
+  cd /app/alfresco/standalone
+  envsubst < docker-compose.yml | docker-compose -f - up -d
+}
+
+install_alfresco() {
+  source /app/common/install_dependencies.sh
+  install_dependencies
+  IP=$(hostname -I)
+  IP_ARR=($IP)
+  if [ ${CONTENT_REPO_TAG:0:1} == 6 ]; then
+    configure_compose_6_X;
+  else 
+    configure_compose;
+  fi
+}
+
+install_documentserver() {
+  docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver
+}
+
 complete_installation(){
   echo -e "\e[0;32m The script is finished \e[0m"
 }
 
 main() {
   get_connector
-  configure_compose
+  install_alfresco
+  install_documentserver
   complete_installation
 }
 main
