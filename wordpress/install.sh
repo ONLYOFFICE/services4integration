@@ -2,7 +2,8 @@
 #
 # Prepare a stand with Wordpress with a dependent service Onlyoffice Document Server and add a connector
 
-CONNECTOR_URL=''
+CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-wordpress/releases/download/v1.0.2/onlyoffice.zip'
+CONNECTOR_NAME='onlyoffice.zip'
 SERVICE_TAG='latest'
 IP=$(hostname -I)
 IP_ARR=($IP)
@@ -20,14 +21,16 @@ source /app/common/error.sh
 #############################################################################################
 install_wordpress() {
   source /app/common/install_dependencies.sh
+  source /app/common/get_connector.sh
   install_dependencies
+  apt-get install unzip -y
   mkdir -p /var/wordpress
-  
   export TAG="${SERVICE_TAG}"
   cd /app/wordpress/
   envsubst < docker-compose.yml | docker-compose -f - up -d
   check_wordpress
-  git clone --branch=develop https://github.com/ONLYOFFICE/onlyoffice-wordpress.git /var/wordpress/wp-content/plugins/onlyoffice-wordpress
+  get_connector
+  unzip /connectors/$CONNECTOR_NAME -d /var/wordpress/wp-content/plugins
 }
 
 #############################################################################################
