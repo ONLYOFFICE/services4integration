@@ -11,8 +11,8 @@ services:
     environment:
       - SITE=mysite
       - PROFILES=onlyoffice.connector:default
-      - ADDONS=onlyoffice.connector
-      - DEVELOP=src/onlyoffice.connector
+      - ADDONS=onlyoffice.plone
+      - DEVELOP=src/onlyoffice.plone
     volumes:
       - ./onlyoffice:/plone/instance/src/onlyoffice.connector
     healthcheck:
