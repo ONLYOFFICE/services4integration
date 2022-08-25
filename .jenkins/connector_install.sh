@@ -50,7 +50,10 @@ function create_vm() {
   sed -i "s,%connector_url%,${connector_url},g" ${tmp_path}
   sed -i "s,%path%,${connector_path},g" ${tmp_path}
   sed -i "s,%tag%,${st},g" ${tmp_path}
+  sed -i "s,%branch%,${GIT_BRANCH},g" ${tmp_path}
   sed -i "s,%space%, ,g" ${tmp_path}
+
+  exit 0
 
   # create droplet
   (curl -X POST -H "Content-Type: application/json" \
