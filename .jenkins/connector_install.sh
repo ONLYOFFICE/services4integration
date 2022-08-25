@@ -46,10 +46,12 @@ function create_vm() {
   # prepare user_data
   cp .jenkins/user-data.yml .jenkins/user-data.yml.tmp
   tmp_path=".jenkins/user-data.yml.tmp"
+  branch=${GIT_BRANCH#*/}
 
   sed -i "s,%connector_url%,${connector_url},g" ${tmp_path}
   sed -i "s,%path%,${connector_path},g" ${tmp_path}
   sed -i "s,%tag%,${st},g" ${tmp_path}
+  sed -i "s,%branch%,${branch},g" ${tmp_path}
   sed -i "s,%space%, ,g" ${tmp_path}
 
   # create droplet
