@@ -10,7 +10,7 @@ services:
       - onlyoffice
     environment:
       - SITE=mysite
-      - PROFILES=onlyoffice.connector:default
+#      - PROFILES=onlyoffice.connector:default
       - ADDONS=onlyoffice.plone
       - DEVELOP=src/onlyoffice.plone
     volumes:
