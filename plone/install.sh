@@ -20,7 +20,8 @@ prepare_connector() {
   source /app/common/get_connector.sh
   get_connector
   tar -C /app/plone -xvf /connectors/${CONNECTOR_NAME}
-  mv /app/plone/onlyoffice* /app/plone/onlyoffice/onlyoffice.plone
+  mv /app/plone/onlyoffice.* /app/plone/onlyoffice
+  mv /app/plone/onlyoffice/onlyoffice.* /app/plone/onlyoffice/onlyoffice.plone
 }
 prepare_files() {
   readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)
