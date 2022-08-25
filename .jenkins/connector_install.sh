@@ -53,8 +53,6 @@ function create_vm() {
   sed -i "s,%branch%,${GIT_BRANCH},g" ${tmp_path}
   sed -i "s,%space%, ,g" ${tmp_path}
 
-  exit 0
-
   # create droplet
   (curl -X POST -H "Content-Type: application/json" \
   -H "Authorization: Bearer ${DO_TOKEN}" \
