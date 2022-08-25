@@ -14,7 +14,7 @@ services:
       - ADDONS=onlyoffice.plone
       - DEVELOP=src/onlyoffice.plone
     volumes:
-      - ./onlyoffice:/plone/instance/src/onlyoffice.connector
+      - ./onlyoffice:/plone/instance/src
     healthcheck:
       test: nc -z -w5 127.0.0.1 8080 || exit 1
       interval: 30s
