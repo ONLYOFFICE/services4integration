@@ -24,7 +24,7 @@ install_app() {
   export IP="${IP}"
   cd /app/seafile
   envsubst < docker-compose.yaml | docker-compose -f - up -d
-  sleep 10
+  check_app
   docker exec seafile /run.sh
   docker-compose restart
 }
@@ -41,7 +41,7 @@ check_app() {
   echo -e "\e[0;32m Waiting for the launch of ${APP} \e[0m"
   for i in {1..15}; do
     echo "Getting the ${APP} status: ${i}"
-    if [ $(curl -Ss "http://${IP}/api2/ping/") == "\"pong\"" ]; then
+    if [ "$(curl -Ss "http://${IP}/api2/ping/")" == "\"pong\"" ]; then
       echo -e "\e[0;32m ${APP} is ready to serve \e[0m"
       local APP_READY
       APP_READY='yes'
