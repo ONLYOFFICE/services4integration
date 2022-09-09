@@ -1,1 +1,1 @@
-##Stand for testing DocumentServer pure installation
+# Stand for testing DocumentServer pure installation
