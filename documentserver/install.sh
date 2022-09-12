@@ -9,14 +9,14 @@ IP_ADDR_EXT="$(wget -q -O - ifconfig.me/ip)"
 install_onlyoffice_documentserver() {
   source /app/common/install_dependencies.sh
   install_dependencies
-  docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver:${SERVICE_TAG}
+  docker run -i -t -d -p 80:80 --restart=always onlyoffice/documentserver:${SERVICE_TAG}
 }
 
 ready_check () {
   while [ "$STATUS" != "200" ]
     do
     echo "Waiting to ready document-server..."
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}\n" http:/localhost:3000/healthcheck/)
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}\n" http:/localhost/healthcheck/)
     sleep 10
   done
   echo -e "\e[0;32m Document-Server is running \e[0m"
