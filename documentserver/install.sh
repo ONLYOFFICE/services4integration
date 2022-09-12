@@ -10,7 +10,6 @@ install_onlyoffice_documentserver() {
   source /app/common/install_dependencies.sh
   install_dependencies
   docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver:${SERVICE_TAG}
-  ready_check
 }
 
 ready_check () {
