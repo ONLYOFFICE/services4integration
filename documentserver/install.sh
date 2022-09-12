@@ -37,7 +37,7 @@ ready_check () {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can get access to DocumentServer at http://${IP_ADDR_INT}/ or http://${IP_ADDR_EXT}/ and start testing functionality \e[0m"
+  echo -e "\e[0;32m Now you can get access to DocumentServer at internal http://${IP_ADDR_INT}/ or external http://${IP_ADDR_EXT}/ addresses and start testing functionality \e[0m"
 }
 
 main() {
