@@ -459,5 +459,28 @@ pipeline {
         }
       }
     }
+    stage ('documentserver') {
+      environment {
+        connector_url="null"
+        connector_path='documentserver'
+        port=80
+      }
+      when {
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "documentserver" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ])
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+          '''
+        }
+      }
+    }
   }
 }
