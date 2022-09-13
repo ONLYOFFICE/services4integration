@@ -2,7 +2,7 @@
   
 # Prepare a pure documentserver standalone stand without any connectors.
 
-SERVICE_TAG="7.1.1"
+SERVICE_TAG="latest"
 IP_ADDR_INT="$(hostname -I | awk '{print $1}')"
 IP_ADDR_EXT="$(wget -q -O - ifconfig.me/ip)"
 
