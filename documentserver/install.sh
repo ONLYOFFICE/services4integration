@@ -12,14 +12,18 @@ install_onlyoffice_documentserver() {
   docker run -i -t -d -p 80:80 --restart=always onlyoffice/documentserver:${SERVICE_TAG}
 }
 
-ready_check () {
-  while [ "$STATUS" != "200" ]
-    do
-    echo "Waiting to ready document-server..."
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}\n" http:/localhost/healthcheck/)
-    sleep 10
+ready_check() {
+  echo -e "\e[0;32m Waiting for the launch of DocumentServer... \e[0m"  
+  for i in {1..30}; do
+    echo "Getting the DocumentServer status: ${i}"
+    OUTPUT="$(curl -Is http://localhost/healthcheck/ | head -1 | awk '{ print $2 }')"
+    if [ "${OUTPUT}" == "200" ]; then
+      echo -e "\e[0;32m DocumentServer is ready \e[0m"
+      break
+    else
+      sleep 10
+    fi
   done
-  echo -e "\e[0;32m Document-Server is running \e[0m"
 }
 
 complete_installation() {
