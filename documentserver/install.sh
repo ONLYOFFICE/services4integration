@@ -45,7 +45,7 @@ ready_check() {
     fi
   done
   if [[ "${DS_READY}" != 'yes' ]]; then
-    err "\e[0;31m Something goes wrong documentserver does no started, check logs with command --> docker logs -f <ds-container-id> \e[0m"
+    err "\e[0;31m Something goes wrong documentserver does not started, check logs with command --> docker logs -f <ds-container-id> \e[0m"
     exit 1
   fi
 }
