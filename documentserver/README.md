@@ -6,9 +6,17 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /bin/bash /app/documentserver/install.sh 
-
+ - /bin/bash /app/documentserver/install.sh -st ds_docker_tag
 ```
+
+Where:
+ - `ds_docker_tag` - DocumentServer version. The available versions of DocumentServer can be viewed [here](https://hub.docker.com/r/onlyoffice/documentserver/tags)
+
+For example:
+```
+/app/documentserver/install.sh -st 7.1.1
+```
+
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
 ```
 sudo tail -f /var/log/cloud-init-output.log
