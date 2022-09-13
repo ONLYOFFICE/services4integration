@@ -5,11 +5,14 @@
 SERVICE_TAG="latest"
 IP_ADDR_INT="$(hostname -I | awk '{print $1}')"
 IP_ADDR_EXT="$(wget -q -O - ifconfig.me/ip)"
+CONTAINER_NAME=documentserver
+source /app/common/check_parameters.sh
+source /app/common/error.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and run DocumentServer 
 # Globals:
-#   SERVICE_TAG
+#   SERVICE_TAG CONTAINER_NAME
 # Arguments:
 #   None
 # Outputs:
@@ -18,13 +21,13 @@ IP_ADDR_EXT="$(wget -q -O - ifconfig.me/ip)"
 install_onlyoffice_documentserver() {
   source /app/common/install_dependencies.sh
   install_dependencies
-  docker run -i -t -d -p 80:80 --restart=always onlyoffice/documentserver:${SERVICE_TAG}
+  docker run -i -t -d -p 80:80 --name ${CONTAINER_NAME} --restart=always onlyoffice/documentserver:${SERVICE_TAG}
 }
 
 #############################################################################################
 # Check DocumentServer startup and status
 # Globals:
-#   None
+#   CONTAINER_NAME
 # Outputs:
 #   Writes a startup message to stdout
 # Returns
@@ -45,7 +48,7 @@ ready_check() {
     fi
   done
   if [[ "${DS_READY}" != 'yes' ]]; then
-    err "\e[0;31m Something goes wrong documentserver does not started, check logs with command --> docker logs -f <ds-container-id> \e[0m"
+    err "\e[0;31m Something goes wrong documentserver does not started, check logs with command --> docker logs -f ${CONTAINER_NAME} \e[0m"
     exit 1
   fi
 }
