@@ -18,7 +18,7 @@ Where:
 
 For example:
 ```
-/app/alfresco/standalone/install.sh -ct 7.2.1 -st 7.2.1 -cu https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar -su https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-share.jar
+/app/alfresco/standalone/install.sh -ct 7.2.1 -st 7.2.1 -cu https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar -su https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/6.0.0/onlyoffice-integration-share.jar
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
