@@ -66,10 +66,10 @@ pipeline {
     }
     stage ('alfresco') {
       environment {
-        content_repo_tag='7.0.0'
-        share_tag='7.0.0'
-        content_repo_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar'
-        share_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-share.jar'
+        content_repo_tag='7.2.1'
+        share_tag='7.2.1'
+        content_repo_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/6.0.0/onlyoffice-integration-repo.jar'
+        share_url='https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/6.0.0/onlyoffice-integration-share.jar'
         connector_path='alfresco/standalone'
         port=8080
       }
@@ -280,7 +280,7 @@ pipeline {
     }
     stage ('moodle') {
       environment {
-        connector_url='https://github.com/ONLYOFFICE/moodle-mod_onlyofficeeditor/archive/refs/tags/v2.1.0.tar.gz'
+        connector_url='https://github.com/ONLYOFFICE/moodle-mod_onlyofficeeditor/archive/refs/tags/v3.0.0.tar.gz'
         connector_path='moodle'
         port=80
       }
@@ -305,7 +305,7 @@ pipeline {
     }
     stage ('nextcloud') {
       environment {
-        connector_url='https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.2/onlyoffice.tar.gz'
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.4/onlyoffice.tar.gz'
         connector_path='nextcloud'
         port=8080
       }
@@ -330,7 +330,7 @@ pipeline {
     }    
     stage ('owncloud') {
       environment {
-        connector_url='https://github.com/ONLYOFFICE/onlyoffice-owncloud/releases/download/v7.3.3/onlyoffice.tar.gz'
+        connector_url='https://github.com/ONLYOFFICE/onlyoffice-owncloud/releases/download/v7.5.3/onlyoffice.tar.gz'
         connector_path='owncloud'
         port=80
       }

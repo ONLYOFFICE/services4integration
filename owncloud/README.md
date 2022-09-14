@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/owncloud/install.sh -st latest -cu https://github.com/ONLYOFFICE/onlyoffice-owncloud/releases/download/v7.1.1/onlyoffice.tar.gz
+/app/owncloud/install.sh -st latest -cu https://github.com/ONLYOFFICE/onlyoffice-owncloud/releases/download/v7.5.3/onlyoffice.tar.gz
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
