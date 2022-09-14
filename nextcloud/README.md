@@ -15,7 +15,7 @@ Where:
 
 For example:
 ```
-/app/nextcloud/install.sh -st 22.0 -cu https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.1.2/onlyoffice.tar.gz
+/app/nextcloud/install.sh -st 22.0 -cu https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.4/onlyoffice.tar.gz
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
