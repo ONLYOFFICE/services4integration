@@ -53,6 +53,34 @@ ready_check() {
   fi
 }
 
+#############################################################################################
+# Replace http-common $scheme 
+# Globals:
+#   CONTAINER_NAME
+# Outputs:
+#   Nginx restart result message
+# Returns
+#   None 
+#############################################################################################
+prepare_nginx() {
+  local HTTP_COMMON="/etc/onlyoffice/documentserver/nginx/includes/http-common.conf"
+  docker exec ${CONTAINER_NAME} sed -i 's/$scheme/https/' ${HTTP_COMMON}
+  docker exec -it ${CONTAINER_NAME} /bin/bash -c "service nginx restart"
+}
+
+#############################################################################################
+# Run example after ready_check will be passed
+# Globals:
+#   CONTAINER_NAME
+# Outputs:
+#   Writes message that ds:example started correct
+# Returns
+#   None
+#############################################################################################
+start_example() {
+  docker exec -it ${CONTAINER_NAME} /bin/bash -c "supervisorctl start ds:example"
+}
+
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
   echo -e "\e[0;32m Now you can get access to DocumentServer at http://${IP_ADDR_INT}/ or http://${IP_ADDR_EXT}/ and start testing functionality \e[0m"
@@ -61,6 +89,7 @@ complete_installation() {
 main() {
 install_onlyoffice_documentserver
 ready_check
+start_example
 complete_installation
 }
 
