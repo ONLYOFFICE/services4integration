@@ -65,7 +65,7 @@ ready_check() {
 prepare_nginx() {
   local HTTP_COMMON="/etc/onlyoffice/documentserver/nginx/includes/http-common.conf"
   docker exec ${CONTAINER_NAME} sed -i 's/$scheme/https/' ${HTTP_COMMON}
-  docker exec -it ${CONTAINER_NAME} /bin/bash -c "service nginx restart"
+  docker exec ${CONTAINER_NAME} service nginx restart
 }
 
 #############################################################################################
@@ -78,7 +78,7 @@ prepare_nginx() {
 #   None
 #############################################################################################
 start_example() {
-  docker exec -it ${CONTAINER_NAME} /bin/bash -c "supervisorctl start ds:example"
+  docker exec ${CONTAINER_NAME} supervisorctl start ds:example
 }
 
 complete_installation() {
