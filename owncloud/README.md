@@ -29,6 +29,6 @@ The script is finished
 ```
 Then you can go to the owncloud web interface at: `http://IP-SERVER/` and check the connector operation.
 ```
-log: owncloud
-pass: owncloud
+log: admin
+pass: admin
 ```
