@@ -1,0 +1,40 @@
+version: '3'
+services:
+  nuxeo:
+    container_name: nuxeo
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - onlyoffice
+    environment:
+      - NUXEO_URL="http://${IP}:8080/nuxeo"
+    volumes:
+      - /app/nuxeo/cpf.sh:/docker-entrypoint-initnuxeo.d/cpf.sh
+      - /connectors:/connectors
+  onlyoffice-document-server:
+    container_name: onlyoffice-document-server
+    image: onlyoffice/documentserver
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      - JWT_SECRET=mysecret
+    networks:
+      - onlyoffice
+    volumes:
+      - document_data:/var/www/onlyoffice/Data
+      - document_log:/var/log/onlyoffice
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+networks:
+  onlyoffice:
+    driver: 'bridge'
+volumes:
+  document_data:
+  document_log:
+
