@@ -35,7 +35,7 @@ onlyoffice.jwt.secret=mysecret
 org.nuxeo.dev=true
 ' > /app/nuxeo/nuxeo.conf
 echo 'FROM nuxeo:'${SERVICE_TAG}'
-COPY /app/nuxeo/nuxeo.conf /docker-entrypoint-initnuxeo.d/nuxeo.conf
+COPY nuxeo.conf /docker-entrypoint-initnuxeo.d/nuxeo.conf
 ' > /app/nuxeo/Dockerfile
 }
 
