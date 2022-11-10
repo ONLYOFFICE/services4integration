@@ -82,7 +82,7 @@ install() {
   get_connector
   tar -xf /connectors/$CONNECTOR_NAME -C /opt/mattermost/volumes/app/mattermost/plugins
   docker restart mattermost
-  docker run -i -t -d --name documentserver --net mattermost onlyoffice/documentserver
+  docker run -i -t -d --name documentserver --net mattermost -e JWT_SECRET=mysecret onlyoffice/documentserver
 }
 
 complete_installation() {

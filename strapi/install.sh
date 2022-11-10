@@ -43,7 +43,7 @@ fi
 npm install onlyoffice-strapi$SERVICE_TAG --save
 npm run build
 pm2 start "npm run develop"
-docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver
+docker run -i -t -d -p 3000:80 -e JWT_SECRET=mysecret --restart=always onlyoffice/documentserver
 }
 
 #############################################################################################

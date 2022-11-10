@@ -20,7 +20,7 @@ source /app/common/error.sh
 install_liferay() {
   source /app/common/install_dependencies.sh
   install_dependencies
-  docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 onlyoffice/documentserver
+  docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 -e JWT_SECRET=mysecret onlyoffice/documentserver
   docker run -i -t -d --restart=always --name liferay -p 80:8080 liferay/portal:"${SERVICE_TAG}"
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"

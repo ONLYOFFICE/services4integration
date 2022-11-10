@@ -31,4 +31,5 @@ Then you can go to the Nextcloud web interface at: `http://IP-SERVER:8080/` and 
 ```
 log: admin
 pass: admin
+jwt: mysecret
 ```

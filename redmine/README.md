@@ -31,4 +31,5 @@ Then you can go to the Redmine web interface at: `http://IP-SERVER:3000/` and ch
 ```
 log: Admin 
 pass: admin
+jwt: mysecret
 ```

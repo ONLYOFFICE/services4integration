@@ -30,6 +30,8 @@ services:
     restart: unless-stopped
     image: onlyoffice/documentserver:latest
     container_name: onlyoffice-document-server
+    environment:
+      - JWT_SECRET=mysecret
     ports:
       - 3000:80
 volumes:

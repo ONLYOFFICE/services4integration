@@ -30,4 +30,5 @@ Then you can go to the Drupal web interface at: `http://IP-SERVER/` and check th
 ```
 log: user 
 pass: bitnami
+jwt: mysecret
 ```

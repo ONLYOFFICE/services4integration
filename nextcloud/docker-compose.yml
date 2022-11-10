@@ -8,6 +8,8 @@ services:
   ds:
     image: onlyoffice/documentserver
     restart: always
+    environment:
+      - JWT_SECRET=mysecret
     ports:
       - 3000:80
       

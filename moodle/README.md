@@ -31,4 +31,5 @@ Then you can go to the moodle web interface at: `http://IP-SERVER/` and check th
 ``` 
 log: user
 pass: bitnami
+jwt: mysecret
 ```

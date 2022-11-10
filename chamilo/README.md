@@ -32,4 +32,5 @@ Access to the database:
 ```
 log: chamilouser  
 pass: jx7bqzRo
+jwt: mysecret
 ```

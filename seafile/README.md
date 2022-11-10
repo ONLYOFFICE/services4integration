@@ -30,5 +30,6 @@ Then you can go to the Seafile web interface at: `http://IP-SERVER/` and check t
 ```
 login: me@example.com
 pass: secret
+jwt: mysecret
 ```
 

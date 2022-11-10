@@ -31,4 +31,5 @@ Then you can go to the humhub web interface at: `http://IP-SERVER/` and check th
 ```
 log: admin
 pass: test
+jwt: mysecret
 ```

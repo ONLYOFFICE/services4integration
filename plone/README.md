@@ -31,4 +31,5 @@ Then you can go to the plone web interface at: `http://IP-SERVER/` and check the
 ``` 
 log: admin
 pass: admin
+jwt: mysecret
 ```

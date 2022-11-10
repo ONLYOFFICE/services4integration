@@ -107,7 +107,7 @@ install_alfresco() {
 }
 
 install_documentserver() {
-  docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver
+  docker run -i -t -d -p 3000:80 -e JWT_SECRET=mysecret --restart=always onlyoffice/documentserver
 }
 
 complete_installation(){

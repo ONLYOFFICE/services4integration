@@ -109,7 +109,7 @@ composer install -d /var/www/html/Chamilo
 }
 
 documentserver_install() {
-docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver
+docker run -i -t -d -p 3000:80 -e JWT_SECRET=mysecret --restart=always onlyoffice/documentserver
 }
 
 complete_installation(){

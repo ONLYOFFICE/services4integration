@@ -31,4 +31,5 @@ Then you can go to the Wordpress web interface at: `http://IP-SERVER/wp-admin/` 
 ```
 log: adm 
 pass: Z65uGXkr
+jwt: mysecret
 ```

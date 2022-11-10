@@ -31,4 +31,5 @@ Then you can go to the Liferay web interface at: `http://IP-SERVER/` and check t
 ```
 log: test@liferay.com
 pass: test
+jwt: mysecret
 ```

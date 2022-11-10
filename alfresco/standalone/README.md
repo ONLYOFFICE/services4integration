@@ -34,6 +34,7 @@ Then you can go to the Alfresco web interface at: `http://IP-SERVER:8080/alfresc
 ```
 log: Admin 
 pass: admin
+jwt: mysecret
 ```
 
 To configure the onlyoffice plugin follow the link: `http://IP-SERVER:8080/alfresco/s/onlyoffice/onlyoffice-config`
