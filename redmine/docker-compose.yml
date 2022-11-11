@@ -30,7 +30,7 @@ services:
     image: onlyoffice/documentserver:latest
     container_name: onlyoffice-document-server
     environment:
-      - JWT_SECRET=mysecret
+      - ${JWT_ENV}
     ports:
       - 80:80
 

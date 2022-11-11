@@ -5,14 +5,20 @@ SERVICE_TAG="latest"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-plone/releases/\
 download/v2.0.0/onlyoffice.connector-2.0.0.tar.gz"
 CONNECTOR_NAME="${CONNECTOR_URL##*/}"
+JWT_SECRET='mysecret'
 source /app/common/error.sh
 source /app/common/check_parameters.sh $@
+source /app/common/jwt_configuration.sh
+
 install_plone_with_onlyoffice() {
   source /app/common/install_dependencies.sh
   install_dependencies
   prepare_connector
   prepare_files
-  docker-compose -f /app/plone/docker-compose.yml up -d 
+  jwt_configuration
+  export JWT_ENV="${JWT_ENV}"
+  cd /app/plone/
+  envsubst < docker-compose.yml | docker-compose -f - up -d
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"
 }

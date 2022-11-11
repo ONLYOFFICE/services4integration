@@ -5,7 +5,9 @@ DN=""
 CONNECTOR_NAME="com.onlyoffice.mattermost.tar.gz"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-mattermost/releases/download/v1.0.0/com.onlyoffice.mattermost-1.0.0.tar.gz"
 SERVICE_TAG="6.1"
+JWT_SECRET="mysecret"
 source /app/common/install_dependencies.sh
+source /app/common/jwt_configuration.sh
 
 if [ "$1" == "" ]; then
   echo "Basic parameters are missing. Use: -? | -h | --help"
@@ -82,7 +84,8 @@ install() {
   get_connector
   tar -xf /connectors/$CONNECTOR_NAME -C /opt/mattermost/volumes/app/mattermost/plugins
   docker restart mattermost
-  docker run -i -t -d --name documentserver --net mattermost -e JWT_SECRET=mysecret onlyoffice/documentserver
+  jwt_configuration
+  docker run -i -t -d --name documentserver --net mattermost -e $JWT_ENV onlyoffice/documentserver
 }
 
 complete_installation() {

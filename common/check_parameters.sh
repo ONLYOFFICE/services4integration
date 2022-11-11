@@ -22,6 +22,19 @@ while [ "$1" != "" ]; do
         shift
       fi
       ;;
+    -je | --jwt_enabled )
+      if [ "$2" != "" ]; then
+        JWT_ENABLED=$2
+        shift
+      fi
+    ;;
+
+    -js | --jwt_secret )
+      if [ "$2" != "" ]; then
+        JWT_SECRET=$2
+        shift
+      fi
+    ;;
   esac
   shift
 done

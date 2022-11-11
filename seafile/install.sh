@@ -4,8 +4,10 @@
 
 APP='seafile'
 SERVICE_TAG='latest'
+JWT_SECRET='mysecret'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
+source /app/common/jwt_configuration.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install seafile and dependent service
@@ -19,9 +21,11 @@ source /app/common/error.sh
 install_app() {
   source /app/common/install_dependencies.sh
   install_dependencies
+  jwt_configuration
   IP=$(wget -qO- ifconfig.me/ip)
   export TAG="${SERVICE_TAG}"
   export IP="${IP}"
+  export JWT_ENV="${JWT_ENV}"
   cd /app/seafile
   envsubst < docker-compose.yaml | docker-compose -f - up -d
   check_app

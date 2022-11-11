@@ -5,7 +5,10 @@ CONNECTOR_REPO_NAME=onlyoffice-integration-repo.jar
 CONNECTOR_SHARE_NAME=onlyoffice-integration-share.jar
 CONNECTOR_REPO_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar
 CONNECTOR_SHARE_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-share.jar
-  
+JWT_ENABLED=""
+JWT_SECRET=mysecret
+source /app/common/jwt_configuration.sh
+
 while [ "$1" != "" ]; do
   case $1 in
  
@@ -33,6 +36,20 @@ while [ "$1" != "" ]; do
     -su | --share_url )
       if [ "$2" != "" ]; then
         CONNECTOR_SHARE_URL=$2
+        shift
+      fi
+    ;;
+    
+    -je | --jwt_enabled )
+      if [ "$2" != "" ]; then
+        JWT_ENABLED=$2
+        shift
+      fi
+    ;;
+
+    -js | --jwt_secret )
+      if [ "$2" != "" ]; then
+        JWT_SECRET=$2
         shift
       fi
     ;;
@@ -107,7 +124,8 @@ install_alfresco() {
 }
 
 install_documentserver() {
-  docker run -i -t -d -p 3000:80 -e JWT_SECRET=mysecret --restart=always onlyoffice/documentserver
+  jwt_configuration
+  docker run -i -t -d -p 3000:80 -e $JWT_ENV --restart=always onlyoffice/documentserver
 }
 
 complete_installation(){

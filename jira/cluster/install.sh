@@ -9,8 +9,10 @@ JIRA_NODES='cluster-jira-node-1'
 ALLIPADDR="$(hostname -I)"
 declare -a IPADDR=($ALLIPADDR)
 IP_PROXY=${IPADDR[0]}
+JWT_SECRET='mysecret'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
+source /app/common/jwt_configuration.sh
 
 ################################################################################################################
 # Install the necessary dependencies on the host and install the first node of the cluster and the dependent services
@@ -26,6 +28,7 @@ source /app/common/error.sh
 install_jira() {
   source /app/common/install_dependencies.sh
   install_dependencies
+  jwt_configuration
   export SERVICE_TAG="${SERVICE_TAG}"
   export IP_PROXY="${IP_PROXY}"
   export JIRA_NODE_ID=jira_node_1

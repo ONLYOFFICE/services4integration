@@ -5,8 +5,10 @@
 IP=$(hostname -I)
 IP_ARR=($IP)
 SERVICE_TAG=8
+JWT_SECRET='mysecret'
 source /app/common/error.sh
 source /app/common/check_parameters.sh
+source /app/common/jwt_configuration.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install drupal and dependent service
@@ -20,7 +22,9 @@ source /app/common/check_parameters.sh
 install_drupal() {
 source /app/common/install_dependencies.sh
 install_dependencies
+jwt_configuration
 export TAG="${SERVICE_TAG}"
+export JWT_ENV="${JWT_ENV}"
 cd /app/drupal/
 envsubst < docker-compose.yml | docker-compose -f - up -d
 check_drupal
@@ -62,6 +66,7 @@ complete_installation() {
 }
 
 main() {
+jwt_configuration
 install_drupal
 complete_installation
 }

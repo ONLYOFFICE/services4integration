@@ -7,11 +7,12 @@ CONNECTOR_URL=''
 CONNECTOR_NAME=''
 CONFLUENCE_NODES='cluster-confluence-node-1'
 ALLIPADDR="$(hostname -I)"
+JWT_SECRET='mysecret'
 declare -a IPADDR=($ALLIPADDR)
 IP_PROXY=${IPADDR[0]}
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
-
+source /app/common/jwt_configuration.sh
 ##############################################################################
 # Install the first node of the cluster and dependent services
 # Globals:
@@ -25,10 +26,12 @@ source /app/common/error.sh
 install_confluence() {
   source /app/common/install_dependencies.sh
   install_dependencies
+  jwt_configuration
   mkdir -p /confluence/share
   chown -R 2002:2002 /confluence/share/
   export SERVICE_TAG="${SERVICE_TAG}"
   export IP_PROXY="${IP_PROXY}"
+  export JWT_ENV="${JWT_ENV}"
   docker network create --driver bridge onlyoffice
   cd /app/confluence/cluster/
   envsubst < docker-compose.yml | docker-compose -f - up -d
@@ -74,6 +77,7 @@ complete_installation() {
 }
 
 main() {
+  jwt_configuration
   install_confluence
   check_launch_confluence
   complete_installation

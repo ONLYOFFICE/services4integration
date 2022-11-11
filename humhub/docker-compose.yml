@@ -59,7 +59,7 @@ services:
     image: onlyoffice/documentserver
     restart: always
     environment:
-      - JWT_SECRET=mysecret
+      - ${JWT_ENV}
     networks:
       - onlyoffice
     volumes:
