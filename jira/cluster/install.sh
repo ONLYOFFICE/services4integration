@@ -32,6 +32,7 @@ install_jira() {
   export SERVICE_TAG="${SERVICE_TAG}"
   export IP_PROXY="${IP_PROXY}"
   export JIRA_NODE_ID=jira_node_1
+  export JWT_ENV="${JWT_ENV}"
   mkdir -p /jira/share/plugins/installed-plugins
   chown -R 2001:2001 /jira/share/
   docker network create --driver bridge onlyoffice

@@ -24,7 +24,7 @@ source /app/common/jwt_configuration.sh
 install_redmine() {
   source /app/common/install_dependencies.sh
   source /app/common/get_connector.sh
-
+  jwt_configuration
   install_dependencies
   get_connector
   apt-get install unzip -y
