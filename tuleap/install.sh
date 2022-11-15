@@ -7,6 +7,7 @@ SERVICE_TAG='latest'
 TULEAP_SYS_DBPASSWD='yYNgQ1'
 SITE_ADMINISTRATOR_PASSWORD='yYNgQ1'
 MYSQL_ROOT_PASSWORD='yYNgQ1'
+JWT_SECRET='MfqqGX16TiFHsKfJwOjdRx6DSL49gbAY'
 
 ###############################################################################################
 # Check the passed parameters and their values and assign the received values to variables
@@ -68,12 +69,15 @@ get_cert() {
 #############################################################################################
 install_app() {
   source /app/common/install_dependencies.sh
+  source /app/common/jwt_configuration.sh
   install_dependencies
-    export SERVICE_TAG="${SERVICE_TAG}"
+  jwt_configuration
+  export SERVICE_TAG="${SERVICE_TAG}"
   export TULEAP_FQDN="${TULEAP_FQDN}"
   export TULEAP_SYS_DBPASSWD="${TULEAP_SYS_DBPASSWD}"
   export SITE_ADMINISTRATOR_PASSWORD="${SITE_ADMINISTRATOR_PASSWORD}"
   export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
+  export JWT_ENV="${JWT_ENV}"
   cd /app/tuleap
   envsubst < docker-compose.yml | docker-compose -f - up -d
   docs_ready_check

@@ -58,7 +58,7 @@ services:
     networks:
       - onlyoffice
     environment:
-      - JWT_SECRET=MfqqGX16TiFHsKfJwOjdRx6DSL49gbAY
+      - ${JWT_ENV}
 
   nginx:
     container_name: nginx-server
