@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
   }  
   parameters {
-    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','strapi','wordpress','documentserver'], description: '')
+    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','strapi','wordpress','documentserver','nuxeo'], description: '')
     choice(name: 'vm_size', choices: ['s-2vcpu-4gb','s-4vcpu-8gb'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
@@ -478,6 +478,31 @@ pipeline {
             #!/usr/bin/env bash
 
             bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+          '''
+        }
+      }
+    }
+    stage ('nuxeo') {
+      environment {
+        connector_url="https://github.com/ONLYOFFICE/onlyoffice-nuxeo/releases/download/v2.0.0/onlyoffice-nuxeo-package-2.0.0.zip"
+        connector_path='nuxeo'
+        port=8080
+      }
+      when {
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "nuxeo" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ])
+        {
+          sh '''
+            #!/usr/bin/env bash
+            bash .jenkins/connector_install.sh ${connector_url} ${cu} ${connector_path} ${st} ${Connector} ${port}
+            echo "log:  Administrator"
+            echo "pass: Administrator"
+            echo "jwt:  mysecret"
           '''
         }
       }
