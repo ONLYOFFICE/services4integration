@@ -6,8 +6,10 @@ APP='nuxeo'
 SERVICE_TAG='latest'
 CONNECTOR_URL=https://github.com/ONLYOFFICE/onlyoffice-nuxeo/releases/download/v2.0.0/onlyoffice-nuxeo-package-2.0.0.zip
 CONNECTOR_NAME='onlyoffice.zip'
+JWT_SECRET='mysecret'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
+source /app/common/jwt_configuration.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install nuxeo and dependent service
@@ -24,8 +26,10 @@ install_app() {
   install_dependencies
   get_connector
   IP=$(wget -qO- ifconfig.me/ip)
+  jwt_configuration
   create_config
   export IP="${IP}"
+  export JWT_ENV="${JWT_ENV}"
   cd /app/nuxeo
   envsubst < docker-compose.yml | docker-compose -f - up -d
 }
