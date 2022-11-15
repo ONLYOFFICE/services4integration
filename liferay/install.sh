@@ -5,8 +5,10 @@
 SERVICE_TAG='7.4.0-ga1'
 CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-liferay/releases/download/v2.0.0/onlyoffice.integration.web-2.0.0-CE7.4GA1.jar'
 CONNECTOR_NAME='onlyoffice-integration-web-liferay.jar'
+JWT_SECRET="mysecret"
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
+source /app/common/jwt_configuration.sh
 
 ###################################################################################################
 # Install the necessary dependencies on the host and install Liferay and the dependent service
@@ -20,7 +22,8 @@ source /app/common/error.sh
 install_liferay() {
   source /app/common/install_dependencies.sh
   install_dependencies
-  docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 onlyoffice/documentserver
+  jwt_configuration
+  docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 -e $JWT_ENV onlyoffice/documentserver
   docker run -i -t -d --restart=always --name liferay -p 80:8080 liferay/portal:"${SERVICE_TAG}"
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"

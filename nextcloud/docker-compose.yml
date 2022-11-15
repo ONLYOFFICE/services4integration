@@ -8,6 +8,8 @@ services:
   ds:
     image: onlyoffice/documentserver
     restart: always
+    environment:
+      - ${JWT_ENV}
     ports:
       - 3000:80
       

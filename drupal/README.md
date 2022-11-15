@@ -6,11 +6,13 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/drupal/install.sh -st drupal_tag
+ - /app/drupal/install.sh -st drupal_tag <-je jwt_enabled | -js jwt_secret>
 ```
 
 Where:
  - `drupal_tag` - Drupal version. The available versions of Drupal can be viewed [here](https://hub.docker.com/r/bitnami/drupal/tags)
+ - `jwt_enabled` - jwt is enabled by default. if you need to disable it - pass this parameter with a value of `false`
+ - `jwt_secret` - the default value is `mysecret`. if you need to change the secret - pass this parameter with the value of the secret
 
 For example:
 ```
@@ -28,6 +30,7 @@ The script is finished
 ```
 Then you can go to the Drupal web interface at: `http://IP-SERVER/` and check the connector operation. 
 ```
-log: user 
+log: user
 pass: bitnami
+jwt: mysecret
 ```

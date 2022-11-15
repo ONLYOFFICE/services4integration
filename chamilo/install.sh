@@ -6,8 +6,10 @@ DB_USER="chamilouser"
 DB_PWD="jx7bqzRo"
 CONNECTOR_NAME="onlyoffice.zip"
 CONNECTOR_URL=""
+JWT_SECRET="mysecret"
 
 source /app/common/check_parameters.sh "${@}"
+source /app/common/jwt_configuration.sh
 check_parameters
 CHAMILO_URL="https://github.com/chamilo/chamilo-lms/releases/download/v$SERVICE_TAG/chamilo-$SERVICE_TAG.zip"
 
@@ -108,8 +110,9 @@ export COMPOSER_HOME="$HOME/.config/composer";
 composer install -d /var/www/html/Chamilo
 }
 
-documentserver_install() {
-docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver
+install_documentserver() {
+  jwt_configuration
+  docker run -i -t -d -p 3000:80 -e $JWT_ENV --restart=always onlyoffice/documentserver
 }
 
 complete_installation(){

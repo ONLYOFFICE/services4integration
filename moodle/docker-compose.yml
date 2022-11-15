@@ -57,6 +57,8 @@ services:
     container_name: onlyoffice-document-server
     image: onlyoffice/documentserver
     restart: always
+    environment:
+      - ${JWT_ENV}
     networks:
       - onlyoffice
     volumes:

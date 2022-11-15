@@ -21,7 +21,7 @@ source /app/common/error.sh
 install_onlyoffice_documentserver() {
   source /app/common/install_dependencies.sh
   install_dependencies
-  docker run -i -t -d -p 80:80 --name ${CONTAINER_NAME} --restart=always onlyoffice/documentserver:${SERVICE_TAG}
+  docker run -i -t -d -p 80:80 -e JWT_SECRET=mysecret --name ${CONTAINER_NAME} --restart=always onlyoffice/documentserver:${SERVICE_TAG}
 }
 
 #############################################################################################

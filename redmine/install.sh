@@ -7,8 +7,10 @@ CONNECTOR_NAME=onlyoffice-redmine.zip
 SERVICE_TAG='latest'
 IP=$(hostname -I)
 IP_ARR=($IP)
+JWT_SECRET='mysecret'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
+source /app/common/jwt_configuration.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install Redmine and dependent service
@@ -22,13 +24,14 @@ source /app/common/error.sh
 install_redmine() {
   source /app/common/install_dependencies.sh
   source /app/common/get_connector.sh
-
+  jwt_configuration
   install_dependencies
   get_connector
   apt-get install unzip -y
   unzip /connectors/$CONNECTOR_NAME -d /connectors
   mv /connectors/onlyoffice-redmine /connectors/onlyoffice_redmine
   export TAG="${SERVICE_TAG}"
+  export JWT_ENV="${JWT_ENV}"
   cd /app/redmine/
   envsubst < docker-compose.yml | docker-compose -f - up -d
 }

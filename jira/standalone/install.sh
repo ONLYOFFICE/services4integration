@@ -6,8 +6,10 @@ SERVICE_TAG='latest'
 CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar'
 CONNECTOR_NAME='onlyoffice-integration-web-jira.jar'
 PLUGIN_DIRECTORY='/var/atlassian/application-data/jira/plugins/installed-plugins/'
+JWT_SECRET='mysecret'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
+source /app/common/jwt_configuration.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install Jira and dependent service
@@ -21,7 +23,8 @@ source /app/common/error.sh
 install_jira(){
   source /app/common/install_dependencies.sh
   install_dependencies
-  docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 onlyoffice/documentserver
+  jwt_configuration
+  docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 -e $JWT_ENV onlyoffice/documentserver
   docker run -i -t -d --restart=always --name jira -p 8080:8080 atlassian/jira-software:"${SERVICE_TAG}"
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"

@@ -2,12 +2,16 @@
 SERVICE_TAG="latest"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.1.2/onlyoffice.tar.gz"
 CONNECTOR_NAME="onlyoffice.tar.gz"
+JWT_SECRET='mysecret'
 source /app/common/check_parameters.sh ${@}
 source /app/common/get_connector.sh
+source /app/common/jwt_configuration.sh
 
 install_nextcloud() {
+  jwt_configuration
   export SERVICE_TAG="$(echo "$SERVICE_TAG")"
   export EXT_IP="$(wget -q -O - ifconfig.me/ip)"
+  export JWT_ENV="$(echo "$JWT_ENV")"
   source /app/common/install_dependencies.sh
   install_dependencies
   cd /app/nextcloud/

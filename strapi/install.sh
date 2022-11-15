@@ -5,9 +5,10 @@
 SERVICE_TAG=""
 IP=$(hostname -I)
 IP_ARR=($IP)
-
+JWT_SECRET='mysecret'
 source /app/common/error.sh
 source /app/common/check_parameters.sh
+source /app/common/jwt_configuration.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install strapi and dependent service
@@ -43,7 +44,8 @@ fi
 npm install onlyoffice-strapi$SERVICE_TAG --save
 npm run build
 pm2 start "npm run develop"
-docker run -i -t -d -p 3000:80 --restart=always onlyoffice/documentserver
+jwt_configuration
+docker run -i -t -d -p 3000:80 -e $JWT_ENV --restart=always onlyoffice/documentserver
 }
 
 #############################################################################################

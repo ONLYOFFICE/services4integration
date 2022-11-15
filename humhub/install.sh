@@ -5,14 +5,34 @@ SERVICE_TAG="stable"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-humhub/releases/\
 download/v2.2.2/onlyoffice.zip"
 CONNECTOR_NAME="${CONNECTOR_URL##*/}"
+$JWT_SECRET='mysecret'
 source /app/common/error.sh
 source /app/common/check_parameters.sh $@
+
+#############################################################################################
+# Configuration jwt secret in documentserver
+# Globals:
+#   JWT_SECRET, JWT_ENV
+# Arguments:
+#   None
+# Outputs:
+#   None
+#############################################################################################
+jwt_configuration() {
+  if [ "${JWT_ENABLED}" == 'false' ]; then
+    JWT_ENV='JWT_ENABLED=false';
+  else
+    JWT_ENV='JWT_SECRET='$JWT_SECRET
+  fi
+}
 install_humhub_with_onlyoffice() {
   source /app/common/install_dependencies.sh
   install_dependencies
   prepare_connector
   prepare_files
-  docker-compose -f /app/humhub/docker-compose.yml up -d 
+  export JWT_ENV="${JWT_ENV}"
+  cd /app/humhub/
+  envsubst < docker-compose.yml | docker-compose -f - up -d
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"
 }

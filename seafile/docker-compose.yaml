@@ -45,6 +45,8 @@ services:
     container_name: onlyoffice-document-server
     image: onlyoffice/documentserver
     restart: always
+    environment:
+      - ${JWT_ENV}
     ports:
       - "3000:80"
     networks:
