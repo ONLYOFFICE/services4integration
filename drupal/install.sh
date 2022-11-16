@@ -4,8 +4,10 @@
 
 IP=$(hostname -I)
 IP_ARR=($IP)
-SERVICE_TAG=8
+SERVICE_TAG=latest
 JWT_SECRET='mysecret'
+CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-drupal/archive/refs/tags/v1.0.1.zip'
+CONNECTOR_NAME='onlyoffice.zip'
 source /app/common/error.sh
 source /app/common/check_parameters.sh
 source /app/common/jwt_configuration.sh
@@ -23,14 +25,25 @@ install_drupal() {
 source /app/common/install_dependencies.sh
 install_dependencies
 jwt_configuration
+create_dockerfile
 export TAG="${SERVICE_TAG}"
 export JWT_ENV="${JWT_ENV}"
 cd /app/drupal/
 envsubst < docker-compose.yml | docker-compose -f - up -d
 check_drupal
 docker exec --workdir /opt/bitnami/drupal drupal composer require firebase/php-jwt
+docker exec drupal drush pm:enable onlyoffice -y
 }
 
+create_dockerfile() {
+echo 'FROM bitnami/drupal:'${SERVICE_TAG}'
+USER 0
+RUN install_packages wget
+RUN wget -O '${CONNECTOR_URL}' '${CONNECTOR_NAME}'
+RUN unzip '${CONNECTOR_NAME}' -d /opt/bitnami/drupal/modules/
+CMD [ "/opt/bitnami/scripts/apache/run.sh" ]
+' > /app/drupal/Dockerfile
+}
 #############################################################################################
 # Check drupal startup and status
 # Globals:
