@@ -24,6 +24,10 @@ source /app/common/jwt_configuration.sh
 install_wordpress() {
   source /app/common/install_dependencies.sh
   source /app/common/get_connector.sh
+  if [ "${VAR}" ]; then
+    source /app/common/get_cert.sh
+    get_cert
+  fi
   install_dependencies
   jwt_configuration
   apt-get install unzip -y
