@@ -14,7 +14,7 @@ function setup_logs_permission () {
   chmod 777 ./logs/*
 }
 
-function run_nextloud () {
+function run_nextcloud () {
   
   docker compose up -d
   echo "First run, please wait that config will be created"
@@ -46,3 +46,5 @@ main () {
    setup_logs_permission
    run_nextcloud
 }
+
+main
