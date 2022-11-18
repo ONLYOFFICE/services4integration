@@ -1,4 +1,4 @@
-# Nextcloud docker compose stand: 
+# Nextcloud multiple-instance docker compose stand: 
 
 Values in `.env` fille that you can castomize before deploy:
 
