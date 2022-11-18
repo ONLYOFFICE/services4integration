@@ -52,7 +52,7 @@ services:
     volumes:
       - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
       - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
-      - ../common/nginx_conf/nginx.conf:/etc/nginx/nginx.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
       - ./app.conf:/etc/nginx/app.conf
       - /etc/nginx/ssl:/etc/nginx/ssl
     depends_on:

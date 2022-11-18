@@ -35,6 +35,12 @@ while [ "$1" != "" ]; do
         shift
       fi
     ;;
-  esac
+    -dn | --domain_name )
+      if [ "$2" != "" ]; then
+        DOMAIN_NAME=$2
+        shift
+      fi
+    ;;
+esac
   shift
 done
