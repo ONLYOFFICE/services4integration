@@ -27,10 +27,10 @@ Also you can erase all logs with the simple erase logs srcipt.
 bash erase-logs.sh
 ```
 
-### Remake all new installation
+### Recreate all new installation
 
-With srtipt `remake.sh` you can make all new compose deploy
+With srtipt `recreate.sh` you can make all new compose deploy
 
 ```bash
-bash remake.sh
+bash recreate.sh
 ```
