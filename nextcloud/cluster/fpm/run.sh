@@ -35,6 +35,8 @@ function run_nextcloud () {
           sleep 5
   done
 
+  echo "DONE: instance id is generated"
+
   while ! cat ${CFG_FILE} | grep ${EXTERNAL_IP}; do
     	  sleep 5
   done
@@ -42,9 +44,12 @@ function run_nextcloud () {
   echo "DONE: CFG is complitely make, enable debug mod"
   sed -i '$i"log_type" => "file",\n"logfile" => "/var/log/nextcloud.log",\n"loglevel" => "0",' ${CFG_FILE}
   echo "DONE: DUBUG mod is enabled, loglevel => 0 now logs avaliavable in ./logs/nextcloud<instance_port>.log"
-
+  
   docker compose restart
 
+  echo "Install documentserver app inside nextcloud, please wait" 
+  docker exec -u www-data fpm-nextcloud_one-1 php occ --no-warnings app:install onlyoffice
+  echo "DONE: documentserver app installed"
 }
 
 main () {

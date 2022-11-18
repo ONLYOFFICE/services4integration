@@ -4,7 +4,7 @@ docker compose down
 
 rm -rf nextcloud
 rm -rf pgdata 
+rm -rf logs
 
-bash erase-logs.sh
 bash run.sh
 
