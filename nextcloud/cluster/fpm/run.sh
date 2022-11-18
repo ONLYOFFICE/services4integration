@@ -50,7 +50,12 @@ function run_nextcloud () {
   echo "Install documentserver app inside nextcloud, please wait" 
   docker exec -u www-data fpm-nextcloud_one-1 php occ --no-warnings app:install onlyoffice
   echo "DONE: documentserver app installed"
+  
+  echo "Setup documentserver address"
+  docker exec -u www-data fpm-nextcloud_one-1 php occ --no-warnings config:system:set onlyoffice DocumentServerUrl --value="${DS_URL}"
+  echo "DOME: documentserver address is configured"
 }
+
 
 main () {
    make_logs_folder
