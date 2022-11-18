@@ -52,7 +52,7 @@ function run_nextcloud () {
   echo "DONE: documentserver app installed"
   
   echo "Setup documentserver address"
-  docker exec -u www-data fpm-nextcloud_one-1 php occ --no-warnings config:system:set onlyoffice DocumentServerUrl --value="${DS_URL}"
+  docker exec -u www-data fpm-nextcloud_one-1 php occ --no-warnings config:system:set onlyoffice DocumentServerUrl --value="http://<ds_address>/"
   echo "DOME: documentserver address is configured"
 }
 
