@@ -3,6 +3,12 @@
 CFG_FILE=./nextcloud/config/config.php
 EXTERNAL_IP="$(wget -q -O - ifconfig.me/ip)"
 
+function make_logs_folder() {
+	mkdir logs
+	touch logs/nextcloud8081.log
+	touch logs/nextcloud8082.log
+}
+
 function setup_trust_domain() {
 
   sed -i "s!%external_ip%!${EXTERNAL_IP}!" .env
@@ -42,6 +48,7 @@ function run_nextcloud () {
 }
 
 main () {
+   make_logs_folder
    setup_trust_domain
    setup_logs_permission
    run_nextcloud
