@@ -1,0 +1,82 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:14
+    restart: always
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+  redis:
+    image: redis:alpine
+    restart: always
+
+  nextcloud_one:
+    image: nextcloud:fpm-alpine
+    deploy:
+      replicas: 1
+    restart: always
+    ports:
+      - "9001:9000"
+    volumes:
+      - ./nextcloud:/var/www/html
+      - ./logs/nextcloud8081.log:/var/log/nextcloud.log:rw
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  nextcloud_two:
+    image: nextcloud:fpm-alpine
+    deploy:
+      replicas: 1
+    restart: always
+    ports:
+      - "9002:9000"
+    volumes:
+      - ./nextcloud:/var/www/html
+      - ./logs/nextcloud8082.log:/var/log/nextcloud.log:rw
+    environment:
+      - POSTGRES_HOST=db
+      - REDIS_HOST=redis
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+
+  web:
+    build: ./web
+    restart: always
+    ports:
+      - "80:80"
+      - "8081:8081"
+      - "8082:8082"
+    volumes:
+      - ./nextcloud:/var/www/html:ro
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - nextcloud_one
+      - nextcloud_two
+
+  cron:
+    image: nextcloud:fpm-alpine
+    restart: always
+    volumes:
+      - ./nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  db:
+  nextcloud:
+
+
