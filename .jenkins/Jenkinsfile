@@ -570,7 +570,7 @@ pipeline {
             #!/usr/bin/env bash
 
             tmp="-d%space%${docker}%space%-gb%space%${gitbranch}%space%\
-            -mysqld%space%${mysql_database}%space%-mysqlu%space%${mysql_user}%space%-mysqlp ${mysql_password}%space%-mysqlh%space%${mysql_host}"
+            -mysqld%space%${mysql_database}%space%-mysqlu%space%${mysql_user}%space%-mysqlp%space%${mysql_password}%space%-mysqlh%space%${mysql_host}"
 
             bash .jenkins/connector_install.sh null ${tmp} ${cu} ${connector_path} ${Connector}
           '''
