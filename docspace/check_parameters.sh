@@ -90,11 +90,7 @@ while [ "$1" != "" ]; do
                 shift
             fi
         ;;
-
-        * )
-            echo "Unknown parameter $1" 1>&2
-            exit 1
-        ;;
+        
     esac
     shift
 done
