@@ -511,7 +511,7 @@ pipeline {
       environment {
         docker='true'
         gitbranch='release/rc-v1.2.0'
-        docker_status='4testing'
+        docker_status='4testing-'
         docker_tag='rc-v1.2.0'
         docker_username=''
         docker_password=''

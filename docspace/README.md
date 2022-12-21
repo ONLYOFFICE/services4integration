@@ -14,7 +14,7 @@ Where:
  - `docker` - Docker installation (true|false). If you select false, the package supply will be installed.
  - `docker_username` - Dockerhub username.
  - `docker_password` - Dockerhub password.
- - `docker_status` - DocSpace status. As an example - 4testing.
+ - `docker_status` - DocSpace status. As an example - 4testing-.
  - `docker_tag` - DocSpace version. The available versions of DocSpace can be viewed [here](https://hub.docker.com/repository/docker/onlyoffice/4testing-docspace-proxy/tags).
  - `docker_external_port` - External DocSpace port (default value 80).
  - `docker_documentserver_image` - Document server image name. Format - orgs/repo:tag.
