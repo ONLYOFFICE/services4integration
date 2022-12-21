@@ -4,7 +4,7 @@ product="docspace"
 GIT_BRANCH="develop"
 DOCKER="true"
 
-source check_parameters.sh
+source /app/${product}/check_parameters.sh
 PARAMETERS="$PARAMETERS -skiphc true";
 
 install_curl () {
