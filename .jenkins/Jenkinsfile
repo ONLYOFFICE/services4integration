@@ -538,7 +538,7 @@ pipeline {
 
             tmp="-d%space%${docker}%space%-gb%space%${gitbranch}%space%-s%space%${docker_status}%space%-tag%space%${docker_tag}%space%-un%space%${docker_username}%space%-p%space%${docker_password}%space%-ep%space%${docker_external_port}%space%-di%space%${docker_documentserver_image}%space%-mysqld%space%${mysql_database}%space%-mysqlu%space%${mysql_user}%space%-mysqlp%space%${mysql_password}%space%-mysqlh%space%${mysql_host}"
 
-            bash .jenkins/connector_install.sh null1 "${tmp}" null2 null3 ${Connector} ${docker_external_port}
+            bash .jenkins/connector_install.sh null1 ${tmp} ${connector_path} null3 ${Connector} ${docker_external_port}
           '''
         }
       }
