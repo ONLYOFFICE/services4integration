@@ -540,7 +540,7 @@ pipeline {
             -p%space%${docker_password}%space%-ep%space%${docker_external_port}%space%-di%space%${docker_documentserver_image}%space%\
             -mysqld%space%${mysql_database}%space%-mysqlu%space%${mysql_user}%space%-mysqlp%space%${mysql_password}%space%-mysqlh ${mysql_host}"
 
-            bash .jenkins/connector_install.sh null null null null ${Connector} ${docker_external_port}
+            bash .jenkins/connector_install.sh null ${tmp} null null ${Connector} ${docker_external_port}
           '''
         }
       }
