@@ -21,7 +21,6 @@ Where:
  - `mysql_database` - Mysql database name.
  - `mysql_user` - Mysql database user.
  - `mysql_password` - Mysql database password.
- - `mysql_root_password` - Mysql root password.
  - `mysql_host` - Mysql server host.
 
 For example:
