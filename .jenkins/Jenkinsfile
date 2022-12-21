@@ -555,7 +555,7 @@ pipeline {
         mysql_root_password=''
         mysql_host=''
         connector_url="null"
-        connector_path='docspace-package'
+        connector_path='docspace'
       }
       when { 
         allOf{
