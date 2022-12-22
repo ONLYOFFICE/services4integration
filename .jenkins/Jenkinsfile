@@ -538,7 +538,7 @@ pipeline {
 
             tmp="-d%space%${docker}%space%-gb%space%${gitbranch}%space%-s%space%${docker_status}%space%-tag%space%${docker_tag}%space%-un%space%${docker_username}%space%-p%space%${docker_password}%space%-ep%space%${docker_external_port}%space%-di%space%${docker_documentserver_image}%space%-mysqld%space%${mysql_database}%space%-mysqlu%space%${mysql_user}%space%-mysqlp%space%${mysql_password}%space%-mysqlh%space%${mysql_host}"
 
-            bash .jenkins/connector_install.sh null1 ${tmp} ${connector_path} null3 ${Connector} ${docker_external_port}
+            bash .jenkins/connector_install.sh null ${tmp} ${connector_path} null ${Connector} ${docker_external_port}
           '''
         }
       }
@@ -550,7 +550,6 @@ pipeline {
         mysql_database=''
         mysql_user=''
         mysql_password=''
-        mysql_root_password=''
         mysql_host=''
         connector_url="null"
         connector_path='docspace'
@@ -567,10 +566,9 @@ pipeline {
           sh '''
             #!/usr/bin/env bash
 
-            tmp="-d%space%${docker}%space%-gb%space%${gitbranch}%space%\
-            -mysqld%space%${mysql_database}%space%-mysqlu%space%${mysql_user}%space%-mysqlp%space%${mysql_password}%space%-mysqlh%space%${mysql_host}"
+            tmp="-d%space%${docker}%space%-gb%space%${gitbranch}%space%-mysqld%space%${mysql_database}%space%-mysqlu%space%${mysql_user}%space%-mysqlp%space%${mysql_password}%space%-mysqlh%space%${mysql_host}"
 
-            bash .jenkins/connector_install.sh null ${tmp} ${cu} ${connector_path} ${Connector}
+            bash .jenkins/connector_install.sh null ${tmp} ${connector_path} null ${Connector} 80
           '''
         }
       }
