@@ -34,3 +34,4 @@ Then you can go to the Mattermost web interface at: `https://domain_name/` and c
 ``` 
 You can enter credentials at the first login.
 ```
+JWT Header - Auth
