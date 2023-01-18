@@ -23,8 +23,14 @@ prepare_connector() {
   tar -C /apps -xvf /connectors/${CONNECTOR_NAME}
 }
 prepare_files() {
+  IP=$(wget -q -O - ifconfig.me/ip)
   sed -i -e  "s!owncloud/server!owncloud/server:${SERVICE_TAG}!g" \
     /apps/docker-compose.yml
+  str=$(grep -n "  app:" /apps/docker-compose.yml | cut -d: -f1)
+  str=$(($str+1))
+  sed -i $str'i\      - OWNCLOUD_TRUSTED_DOMAINS=localhost,'${IP} \
+   /apps/docker-compose.yml
+  sed -i $str'i\    environment:' /apps/docker-compose.yml
 }
 check_ready() {
   local owncloud_started
@@ -80,3 +86,4 @@ main() {
   complete_installation
 }
 main
+
