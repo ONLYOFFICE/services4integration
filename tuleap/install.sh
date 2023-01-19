@@ -53,9 +53,9 @@ fi
 #########################################
 get_cert() {
   docker run --rm --name certbot -p 80:80 -v "/etc/letsencrypt:/etc/letsencrypt" -v "/lib/letsencrypt:/var/lib/letsencrypt" certbot/certbot certonly --standalone -n -m example@gmail.com -d "${TULEAP_FQDN}" --agree-tos
-  mkdir /tmp/crt
-  cp /etc/letsencrypt/live/${TULEAP_FQDN}/fullchain.pem /tmp/crt
-  cp /etc/letsencrypt/live/${TULEAP_FQDN}/privkey.pem /tmp/crt
+  mkdir -p /etc/nginx/ssl
+  cp /etc/letsencrypt/live/${TULEAP_FQDN}/fullchain.pem /etc/nginx/ssl
+  cp /etc/letsencrypt/live/${TULEAP_FQDN}/privkey.pem /etc/nginx/ssl
 }
 
 #############################################################################################
