@@ -73,7 +73,7 @@ services:
       - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
       - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
       - ./nginx.conf:/etc/nginx/nginx.conf
-      - /etc/nginx/ssl:/tmp/crt
+      - /etc/nginx/ssl:/etc/nginx/ssl
     depends_on:
       - tuleap
 

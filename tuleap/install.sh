@@ -77,7 +77,7 @@ install_app() {
   export TULEAP_SYS_DBPASSWD="${TULEAP_SYS_DBPASSWD}"
   export SITE_ADMINISTRATOR_PASSWORD="${SITE_ADMINISTRATOR_PASSWORD}"
   export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
-  export JWT_ENV="${JWT_ENV}"
+  export JWT_ENV='JWT_SECRET='$JWT_SECRET
   cd /app/tuleap
   envsubst < docker-compose.yml | docker-compose -f - up -d
   docs_ready_check
