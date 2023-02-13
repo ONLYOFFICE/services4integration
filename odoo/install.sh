@@ -65,7 +65,7 @@ check_app() {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the $APP web interface at http://${IP}/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the $APP web interface at http://${IP}:8069/ and follow a few configuration steps \e[0m"
   }
 
 main() {
