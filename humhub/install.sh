@@ -28,6 +28,7 @@ jwt_configuration() {
 install_humhub_with_onlyoffice() {
   source /app/common/install_dependencies.sh
   install_dependencies
+  jwt_configuration
   prepare_connector
   prepare_files
   export JWT_ENV="${JWT_ENV}"
