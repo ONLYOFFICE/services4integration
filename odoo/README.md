@@ -27,5 +27,4 @@ If successful, the following line will appear:
 The script is finished
 ```
 Then you can go to the Odoo web interface at: `http://IP-SERVER:8069/` and check the connector operation.
-```
 
