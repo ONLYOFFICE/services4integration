@@ -35,6 +35,7 @@ services:
       - SEAFILE_ADMIN_PASSWORD=secret     # Specifies Seafile admin password, default is 'secret'.
       - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
       - SEAFILE_SERVER_HOSTNAME=${IP} # Specifies your host name if https is enabled.
+      - ONLYOFFICE_JWT_SECRET=${JWT_ENV}
     depends_on:
       - db
       - memcached
