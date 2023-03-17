@@ -26,6 +26,11 @@ install_app() {
   export TAG="${SERVICE_TAG}"
   export IP="${IP}"
   export JWT_ENV="${JWT_ENV}"
+  if [ "${JWT_ENABLED}" == 'false' ]; then
+    export JWT_SECRET=""
+  else
+    export JWT_SECRET="${JWT_SECRET}"
+  fi
   cd /app/seafile
   envsubst < docker-compose.yaml | docker-compose -f - up -d
   check_app
