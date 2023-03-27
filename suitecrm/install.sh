@@ -73,7 +73,6 @@ complete_installation(){
 }
 
 main() {
-   check_parameters
    install_suitecrm
    install_documentserver
    readiness_check
