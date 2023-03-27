@@ -1,17 +1,20 @@
 #!/bin/bash
+#
+# Prepare a stand with suitecrm with a dependent service Onlyoffice Document Server and add a connector
 
+IP=$(hostname -I)
+IP_ARR=($IP)
 SERVICE_TAG=""
-BRANCH="main"
+JWT_ENABLED=""
+JWT_SECRET=mysecret
+BRANCH_NAME="main"
+source /app/common/error.sh
+source /app/common/check_parameters.sh
+source /app/common/jwt_configuration.sh
 
 while [ "$1" != "" ]; do
    case $1 in
-      -st | --service-tag )
-      if [ "$2" != "" ]; then
-         SERVICE_TAG=$2
-         shift
-      fi
-      ;;
-      -b | --branch )
+      -bn | --branch )
       if [ "$2" != "" ]; then
          BRANCH=$2
          shift
@@ -21,22 +24,64 @@ while [ "$1" != "" ]; do
    shift
 done
 
+#############################################################################################
+# Install the necessary dependencies on the host and install discourse and dependent service
+# Globals:
+#   SERVICE_TAG
+#   BRANCH_NAME
+# Arguments:
+#   None
+# Outputs:
+#   None
+#############################################################################################
 install_discourse() {
    source /app/common/install_dependencies.sh
    install_dependencies
-
    curl -sSL https://raw.githubusercontent.com/bitnami/containers/main/bitnami/discourse/docker-compose.yml > docker-compose.yml
-
+   
    if [ "$SERVICE_TAG" != "" ]; then
       sed -i "s/docker.io\/bitnami\/discourse:.*/docker.io\/bitnami\/discourse:${SERVICE_TAG}/g" docker-compose.yml
    fi
 
-   git clone https://github.com/ONLYOFFICE/onlyoffice-discourse.git -b ${BRANCH}
-
-   # add discourse plugin to discourse service
+   # add onlyoffice plugin to discourse service
+   git clone https://github.com/ONLYOFFICE/onlyoffice-discourse.git -b ${BRANCH_NAME}
    sed -i '/^  discourse:$/!b;n;n;n;n;a\      - '\''./onlyoffice-discourse:/bitnami/discourse/plugins/onlyoffice'\''' docker-compose.yml
-
    docker-compose up -d
+}
+
+install_documentserver() {
+  jwt_configuration
+  docker run -i -t -d -p 3000:80 -e $JWT_ENV --restart=always onlyoffice/documentserver
+}
+
+#############################################################################################
+# Check the status of the services
+# Globals:
+#   None
+# Arguments:
+#   None
+# Outputs:
+#   Status of the services
+#############################################################################################
+readiness_check() {
+   for i in {1..10}; do
+      DISCOURSE_STATUS_CODE=$(curl -sL -o /dev/null -w "%{http_code}" http://localhost:80)
+      DS_STATUS_CODE=$(curl -sL -o /dev/null -w "%{http_code}" http://localhost:3000)
+      sleep 10
+   done
+
+   if [ "$DISCOURSE_STATUS_CODE" != "200" ] && [ "$DS_STATUS_CODE" != "200" ]; then
+      echo -e "\e[0;31m The services are not ready \e[0m"
+      return
+   elif [ "$DISCOURSE_STATUS_CODE" != "200" ]; then
+      echo -e "\e[0;31m The discourse service is not ready \e[0m"
+      return
+   elif [ "$DS_STATUS_CODE" != "200" ]; then
+      echo -e "\e[0;31m The Onlyoffice Document Server service is not ready \e[0m"
+      return
+   fi
+
+   echo -e "\e[0;32m The services are ready \e[0m"
 }
 
 complete_installation(){
@@ -45,6 +90,8 @@ complete_installation(){
 
 main() {
    install_discourse
+   install_documentserver
+   readiness_check
    complete_installation
 }
 
