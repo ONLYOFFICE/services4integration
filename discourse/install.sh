@@ -16,7 +16,7 @@ while [ "$1" != "" ]; do
    case $1 in
       -bn | --branch )
       if [ "$2" != "" ]; then
-         BRANCH=$2
+         BRANCH_NAME=$2
          shift
       fi
       ;;
