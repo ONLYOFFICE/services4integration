@@ -81,7 +81,6 @@ readiness_check() {
 
       sleep 10
    done
-
 }
 
 complete_installation(){
