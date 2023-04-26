@@ -48,24 +48,23 @@ install_documentserver() {
 #   Status of the services
 #############################################################################################
 readiness_check() {
-   for i in {1..10}; do
+   for i in {1..20}; do
       SCRM_STATUS_CODE=$(curl -sL -o /dev/null -w "%{http_code}" http://localhost:80)
-      DS_STATUS_CODE=$(curl -sL -o /dev/null -w "%{http_code}" http://localhost:3000)
+      DS_STATUS=$(curl -sL http://localhost:3000/healthcheck)
+
+      if [ "$SCRM_STATUS_CODE" == "200" ] && [ "$DS_STATUS" == "true" ]; then
+         echo -e "\e[0;32m The services are ready \e[0m"
+         break
+      elif [ "$SCRM_STATUS_CODE" != "200" ] && [ "$DS_STATUS" != "true" ]; then
+         echo -e "\e[0;31m The services are not ready \e[0m"
+      elif [ "$SCRM_STATUS_CODE" != "200" ]; then
+         echo -e "\e[0;31m Suitecrm is not ready \e[0m"
+      elif [ "$DS_STATUS" != "true" ]; then
+         echo -e "\e[0;31m The Onlyoffice Document Server service is not ready \e[0m"
+      fi
+   
       sleep 10
    done
-
-   if [ "$SCRM_STATUS_CODE" != "200" ] && [ "$DS_STATUS_CODE" != "200" ]; then
-      echo -e "\e[0;31m The services are not ready \e[0m"
-      return
-   elif [ "$SCRM_STATUS_CODE" != "200" ]; then
-      echo -e "\e[0;31m SuiteCRM is not ready \e[0m"
-      return
-   elif [ "$DS_STATUS_CODE" != "200" ]; then
-      echo -e "\e[0;31m Onlyoffice Document Server is not ready \e[0m"
-      return
-   else
-      echo -e "\e[0;32m The services are ready \e[0m"
-   fi
 }
 
 complete_installation(){
