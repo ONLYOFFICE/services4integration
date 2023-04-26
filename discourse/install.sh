@@ -7,7 +7,7 @@ IP_ARR=($IP)
 SERVICE_TAG=""
 JWT_ENABLED=""
 JWT_SECRET=mysecret
-BRANCH_NAME="main"
+BRANCH_NAME="master"
 source /app/common/error.sh
 source /app/common/check_parameters.sh
 source /app/common/jwt_configuration.sh
