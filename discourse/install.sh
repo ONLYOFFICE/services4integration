@@ -68,21 +68,20 @@ readiness_check() {
       DISCOURSE_STATUS_CODE=$(curl -sL -o /dev/null -w "%{http_code}" http://localhost:80)
       DS_STATUS=$(curl -sL http://localhost:3000/healthcheck)
 
-      if [ "$DISCOURSE_STATUS_CODE" != "200" ] && [ "$DS_STATUS" != "true" ]; then
+      if [ "$DISCOURSE_STATUS_CODE" == "200" ] && [ "$DS_STATUS" == "true" ]; then
+         echo -e "\e[0;32m The services are ready \e[0m"
+         break
+      elif [ "$DISCOURSE_STATUS_CODE" != "200" ] && [ "$DS_STATUS" != "true" ]; then
          echo -e "\e[0;31m The services are not ready \e[0m"
-         return
       elif [ "$DISCOURSE_STATUS_CODE" != "200" ]; then
          echo -e "\e[0;31m The discourse service is not ready \e[0m"
-         return
       elif [ "$DS_STATUS" != "true" ]; then
          echo -e "\e[0;31m The Onlyoffice Document Server service is not ready \e[0m"
-         return
       fi
 
       sleep 10
    done
 
-   echo -e "\e[0;32m The services are ready \e[0m"
 }
 
 complete_installation(){
