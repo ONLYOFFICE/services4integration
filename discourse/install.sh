@@ -65,7 +65,7 @@ install_documentserver() {
 #############################################################################################
 readiness_check() {
    for i in {1..20}; do
-      SCRM_STATUS_CODE=$(curl -sL --max-time 3 -o /dev/null -w "%{http_code}" http://localhost:80)
+      DISCOURSE_STATUS_CODE=$(curl -sL --max-time 3 -o /dev/null -w "%{http_code}" http://localhost:80)
       DS_STATUS=$(curl -sL --max-time 3 http://localhost:3000/healthcheck)
             
       if [ "$DISCOURSE_STATUS_CODE" == "200" ] && [ "$DS_STATUS" == "true" ]; then
