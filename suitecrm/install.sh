@@ -49,8 +49,8 @@ install_documentserver() {
 #############################################################################################
 readiness_check() {
    for i in {1..20}; do
-      SCRM_STATUS_CODE=$(curl -sL -o /dev/null -w "%{http_code}" http://localhost:80)
-      DS_STATUS=$(curl -sL http://localhost:3000/healthcheck)
+      SCRM_STATUS_CODE=$(curl -sL --max-time 3 -o /dev/null -w "%{http_code}" http://localhost:80)
+      DS_STATUS=$(curl -sL --max-time 3 http://localhost:3000/healthcheck)
 
       if [ "$SCRM_STATUS_CODE" == "200" ] && [ "$DS_STATUS" == "true" ]; then
          echo -e "\e[0;32m The services are ready \e[0m"
