@@ -45,7 +45,7 @@ RUN    mkdir -p /var/www /run/php \
                        php${PHP_VER}-gd \
                        nginx \
                        zip \
-                       supervisor\
+                       supervisor \
     && sed -i 's/listen = .*/listen = 127.0.0.1:9000/g' /etc/php/${PHP_VER}/fpm/pool.d/www.conf \
     && service php${PHP_VER}-fpm restart \
     && cd /var/www \
