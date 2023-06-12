@@ -33,6 +33,5 @@ php-fpm7.1
 service nginx start
 echo "Container ready"
 
-# Infinity sleep for container will be runned
-sleep infinity
-
+# Run supervisor to keep the container alive
+exec /usr/bin/supervisord -n
