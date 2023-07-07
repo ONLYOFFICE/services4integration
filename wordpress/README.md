@@ -10,6 +10,7 @@ runcmd:
 ```
 
 Where:
+ - `domain_name` - Domain name. must be specified if you need an https connection. If not specified - only http connection will be available
  - `wordpress_tag` - Wordpress version. The available versions of Wordpress can be viewed [here](https://hub.docker.com/_/wordpress?tab=tags)
  - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-wordpress/releases)
  - `jwt_enabled` - jwt is enabled by default. if you need to disable it - pass this parameter with a value of `false`
