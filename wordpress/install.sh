@@ -7,6 +7,7 @@ CONNECTOR_NAME='onlyoffice.zip'
 SERVICE_TAG='latest'
 IP=$(hostname -I)
 IP_ARR=($IP)
+NGINX_CONF='nginx.conf'
 JWT_SECRET='mysecret'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
@@ -25,11 +26,17 @@ install_wordpress() {
   source /app/common/install_dependencies.sh
   source /app/common/get_connector.sh
   install_dependencies
+  if [ "${DOMAIN_NAME}" ]; then
+    source /app/common/get_cert.sh
+    get_cert
+    NGINX_CONF='nginx_https.conf'
+  fi
   jwt_configuration
   apt-get install unzip -y
   mkdir -p /var/wordpress
   export TAG="${SERVICE_TAG}"
   export JWT_ENV="${JWT_ENV}"
+  export NGINX_CONF="${NGINX_CONF}"
   cd /app/wordpress/
   envsubst < docker-compose.yml | docker-compose -f - up -d
   check_wordpress
