@@ -17,7 +17,7 @@ Where:
 
 For example:
 ```
-/app/drupal/install.sh -st 8
+/app/drupal/install.sh -st 8 -cu https://github.com/ONLYOFFICE/onlyoffice-drupal/releases/download/v1.0.5/onlyoffice-drupal-1.0.5.zip
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
