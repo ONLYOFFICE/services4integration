@@ -35,7 +35,7 @@ install_app() {
 }
 create_config() {
 echo 'onlyoffice.docserv.url=http://'${IP}'
-onlyoffice.jwt.secret=mysecret
+onlyoffice.jwt.secret='${JWT_SECRET}'
 org.nuxeo.dev=true
 ' > /app/nuxeo/nuxeo.conf
 echo 'FROM nuxeo:'${SERVICE_TAG}'
