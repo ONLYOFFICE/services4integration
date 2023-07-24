@@ -30,8 +30,6 @@ The script is finished
 ```
 Then you can go to the Tuleap web interface at: `https://domain_name` and check the connector operation. 
 ```
-login: admin
-password: yYNgQ1
+login and password will be sent to the installation log, they can also be viewed in the file /var/lib/connector_pwd
 Document server URL: https://<domain_name>/ds-vpath/
-JWT secret: MfqqGX16TiFHsKfJwOjdRx6DSL49gbAY
 ```
