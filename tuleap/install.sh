@@ -8,6 +8,7 @@ TULEAP_SYS_DBPASSWD='yYNgQ1'
 SITE_ADMINISTRATOR_PASSWORD='yYNgQ1'
 MYSQL_ROOT_PASSWORD='yYNgQ1'
 JWT_SECRET='MfqqGX16TiFHsKfJwOjdRx6DSL49gbAY'
+DS_TAG='latest'
 
 ###############################################################################################
 # Check the passed parameters and their values and assign the received values to variables
@@ -36,6 +37,12 @@ while [ "$1" != "" ]; do
     -cu | --connector_url )
       if [ "$2" != "" ]; then
         CONNECTOR_URL=$2
+        shift
+      fi
+      ;;
+    -dt | --docs_tag )
+      if [ "$2" != "" ]; then
+        DS_TAG=$2
         shift
       fi
       ;;
@@ -78,41 +85,24 @@ install_app() {
   export SITE_ADMINISTRATOR_PASSWORD="${SITE_ADMINISTRATOR_PASSWORD}"
   export MYSQL_ROOT_PASSWORD="${MYSQL_ROOT_PASSWORD}"
   export JWT_ENV='JWT_SECRET='$JWT_SECRET
+  export DS_TAG="${DS_TAG}"
   cd /app/tuleap
   envsubst < docker-compose.yml | docker-compose -f - up -d
+  DS_ADDRESS='https://'$TULEAP_FQDN'/ds-vpath/healthcheck/'
+  source /app/common/docs_ready_check.sh
   docs_ready_check
   docker exec -it onlyoffice-document-server /var/www/onlyoffice/documentserver/npm/json -f /etc/onlyoffice/documentserver/default.json -I -e 'this.services.CoAuthoring.requestDefaults.rejectUnauthorized=false'
   docker exec -it onlyoffice-document-server supervisorctl restart all
 }
 
-docs_ready_check() {
-  echo -e "\e[0;32m Waiting for the launch of DocumentServer... \e[0m"
-  for i in {1..30}; do
-    echo "Getting the DocumentServer status: ${i}"
-    OUTPUT="$(curl -Is https://$TULEAP_FQDN/ds-vpath/healthcheck/ | head -1 | awk '{ print $2 }')"
-    if [ "${OUTPUT}" == "200" ]; then
-      echo -e "\e[0;32m DocumentServer is ready \e[0m"
-      local DS_READY
-      DS_READY='yes'
-      break
-    else
-      sleep 10
-    fi
-  done
-  if [[ "${DS_READY}" != 'yes' ]]; then
-    err "\e[0;31m Something goes wrong documentserver does not started, check logs with command --> docker logs -f onlyoffice-document-server \e[0m"
-    exit 1
-  fi
-}
-
 check_app() {
   echo -e "\e[0;32m Waiting for the launch of $APP \e[0m"
+  local APP_READY
   for i in {1..30}; do
     echo "Getting the $APP status: ${i}"
     OUTPUT="$(curl -Is https://${TULEAP_FQDN} | head -1 | awk '{ print $2 }')"
     if [ "${OUTPUT}" == "200" ]; then
       echo -e "\e[0;32m $APP is ready to serve \e[0m"
-      local APP_READY
       APP_READY='yes'
       break
     else
@@ -137,4 +127,5 @@ main() {
 }
 
 main
+
 
