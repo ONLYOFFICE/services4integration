@@ -29,7 +29,7 @@ services:
       - WORDPRESS_DATABASE_USER=bn_wordpress
       - WORDPRESS_DATABASE_NAME=bitnami_wordpress
       - WORDPRESS_USERNAME=adm
-      - WORDPRESS_PASSWORD=Z65uGXkr
+      - WORDPRESS_PASSWORD=${PASSWORD}
     networks:
       - onlyoffice
   onlyoffice-document-server:
