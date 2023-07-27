@@ -5,6 +5,9 @@
 APP='seafile'
 SERVICE_TAG='latest'
 JWT_SECRET='mysecret'
+NGINX_CONF='nginx.conf'
+DS_TAG='latest'
+SCHEME='http'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 source /app/common/jwt_configuration.sh
@@ -21,11 +24,23 @@ source /app/common/jwt_configuration.sh
 install_app() {
   source /app/common/install_dependencies.sh
   install_dependencies
-  jwt_configuration
   IP=$(wget -qO- ifconfig.me/ip)
+  APP_ADDR=${IP}
+  if [ "${DOMAIN_NAME}" ]; then
+    source /app/common/get_cert.sh
+    get_cert
+    NGINX_CONF='nginx_https.conf'
+    APP_ADDR=${DOMAIN_NAME}
+    SCHEME='https'
+  fi
+  jwt_configuration
   export TAG="${SERVICE_TAG}"
   export IP="${IP}"
   export JWT_ENV="${JWT_ENV}"
+  export NGINX_CONF="${NGINX_CONF}"
+  export SCHEME="${SCHEME}"
+  export DS_TAG="${DS_TAG}"
+  export APP_ADDR="${APP_ADDR}"
   if [ "${JWT_ENABLED}" == 'false' ]; then
     export JWT_SECRET=""
   else
@@ -33,6 +48,7 @@ install_app() {
   fi
   cd /app/seafile
   envsubst < docker-compose.yaml | docker-compose -f - up -d
+  APP_URI=${SCHEME}'://'${APP_ADDR}
   check_app
   docker exec seafile /run.sh
   docker-compose restart
@@ -50,7 +66,7 @@ check_app() {
   echo -e "\e[0;32m Waiting for the launch of ${APP} \e[0m"
   for i in {1..15}; do
     echo "Getting the ${APP} status: ${i}"
-    if [ "$(curl -Ss "http://${IP}/api2/ping/")" == "\"pong\"" ]; then
+    if [ "$(curl -Ss "${APP_URI}/api2/ping/")" == "\"pong\"" ]; then
       echo -e "\e[0;32m ${APP} is ready to serve \e[0m"
       local APP_READY
       APP_READY='yes'
@@ -65,7 +81,7 @@ check_app() {
   fi
 
   for i in {1..30}; do
-    healthcheck_ds="$(curl -f -s http://${IP}:3000/healthcheck)"
+    healthcheck_ds="$(curl -f -s ${APP_URI}/ds-vpath/healthcheck)"
     if [[ "${healthcheck_ds}" != 'true' ]]; then
       echo -e "\e[0;32m Waiting for the launch of document-server \e[0m"
         sleep 10
@@ -86,7 +102,7 @@ check_app() {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the ${APP} web interface at http://${IP}/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the ${APP} web interface at http://${APP_URI}/ and follow a few configuration steps \e[0m"
   }
 
 main() {

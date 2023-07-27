@@ -21,9 +21,6 @@ services:
   seafile:
     image: seafileltd/seafile-mc:${TAG}
     container_name: seafile
-    ports:
-      - "80:80"
-#     - "443:443"  # If https is enabled, cancel the comment.
     volumes:
       - /opt/seafile-data:/shared   # Requested, specifies the path to Seafile data persistent store.
       - ./run.sh:/run.sh
@@ -34,7 +31,8 @@ services:
       - SEAFILE_ADMIN_EMAIL=me@example.com # Specifies Seafile admin user, default is 'me@example.com'.
       - SEAFILE_ADMIN_PASSWORD=secret     # Specifies Seafile admin password, default is 'secret'.
       - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
-      - SEAFILE_SERVER_HOSTNAME=${IP} # Specifies your host name if https is enabled.
+      - SEAFILE_SERVER_HOSTNAME=${APP_ADDR} # Specifies your host name if https is enabled.
+      - SEAFILE_SERVER_SCHEME=${SCHEME}
       - ONLYOFFICE_JWT_SECRET=${JWT_SECRET}
     depends_on:
       - db
@@ -44,12 +42,10 @@ services:
 
   onlyoffice-document-server:
     container_name: onlyoffice-document-server
-    image: onlyoffice/documentserver
+    image: onlyoffice/documentserver:${DS_TAG}
     restart: always
     environment:
       - ${JWT_ENV}
-    ports:
-      - "3000:80"
     networks:
       - seafile-net
     healthcheck:
@@ -57,5 +53,23 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - seafile-net
+    volumes:
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - seafile
 networks:
-  seafile-net:
+  seafile-net
