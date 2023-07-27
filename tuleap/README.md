@@ -6,12 +6,13 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/tuleap/install.sh -dn domain_name -st tuleap_tag <-js jwt_secret>
+ - /app/tuleap/install.sh -dn domain_name -st tuleap_tag -dt documentserver_tag <-js jwt_secret>
 ```
 
 Where:
  - `domain_name` - domain name of your server. This is a required parameter.
  - `tuleap_tag` - Tuleap version. The available versions of Tuleap can be viewed [here](https://hub.docker.com/r/tuleap/tuleap-community-edition/tags)
+ - `documentserver_tag` - Documentserver version. The available versions of Documentserver can be viewed [here](https://hub.docker.com/r/onlyoffice/documentserver/tags)
  - `jwt_secret` - the default value is `MfqqGX16TiFHsKfJwOjdRx6DSL49gbAY`. if you need to change the secret - pass this parameter with the value of the secret. Note: secret must be at least 32 characters long.
  
 For example:
