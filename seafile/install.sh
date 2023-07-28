@@ -8,6 +8,7 @@ JWT_SECRET='mysecret'
 NGINX_CONF='nginx.conf'
 DS_TAG='latest'
 SCHEME='http'
+LOGIN='me@example.com'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 source /app/common/jwt_configuration.sh
@@ -23,6 +24,8 @@ source /app/common/jwt_configuration.sh
 #############################################################################################
 install_app() {
   source /app/common/install_dependencies.sh
+  source /app/common/gen_password.sh
+  gen_password
   install_dependencies
   IP=$(wget -qO- ifconfig.me/ip)
   APP_ADDR=${IP}
@@ -41,6 +44,7 @@ install_app() {
   export SCHEME="${SCHEME}"
   export DS_TAG="${DS_TAG}"
   export APP_ADDR="${APP_ADDR}"
+  export PASSWORD="${PASSWORD}"
   if [ "${JWT_ENABLED}" == 'false' ]; then
     export JWT_SECRET=""
   else
@@ -103,6 +107,8 @@ check_app() {
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
   echo -e "\e[0;32m Now you can go to the ${APP} web interface at http://${APP_URI}/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m    Login: ${LOGIN}"
+  echo -e "\e[0;32m Password: ${PASSWORD}"
   }
 
 main() {
