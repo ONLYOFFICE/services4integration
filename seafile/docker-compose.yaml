@@ -72,4 +72,4 @@ services:
     depends_on:
       - seafile
 networks:
-  seafile-net
+  seafile-net:

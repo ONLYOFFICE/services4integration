@@ -24,7 +24,6 @@ source /app/common/jwt_configuration.sh
 #############################################################################################
 install_app() {
   source /app/common/install_dependencies.sh
-  source /app/common/gen_password.sh
   gen_password
   install_dependencies
   IP=$(wget -qO- ifconfig.me/ip)
@@ -56,6 +55,21 @@ install_app() {
   check_app
   docker exec seafile /run.sh
   docker-compose restart
+}
+
+gen_password() {
+YMBOLS=""
+for symbol in {A..Z} {a..z} {0..9}; do SYMBOLS=$SYMBOLS$symbol; done
+: ${PWD_LENGTH:=16}  # password length
+PASSWORD=""    # password storage variable
+RANDOM=256     # random number generator initialization
+for i in `seq 1 $PWD_LENGTH`
+do
+PASSWORD=$PASSWORD${SYMBOLS:$(expr $RANDOM % ${#SYMBOLS}):1}
+done
+echo 'Login: '$LOGIN'
+Password: '$PASSWORD'
+' > /var/lib/connector_pwd
 }
 
 #############################################################################################
