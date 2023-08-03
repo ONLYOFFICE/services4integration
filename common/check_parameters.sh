@@ -41,6 +41,12 @@ while [ "$1" != "" ]; do
         shift
       fi
     ;;
+    -dt | --docs_tag )
+      if [ "$2" != "" ]; then
+        DS_TAG=$2
+        shift
+      fi
+    ;;
 esac
   shift
 done
