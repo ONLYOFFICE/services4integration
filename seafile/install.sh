@@ -8,6 +8,7 @@ JWT_SECRET='mysecret'
 NGINX_CONF='nginx.conf'
 DS_TAG='latest'
 SCHEME='http'
+LOGIN='me@example.com'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 source /app/common/jwt_configuration.sh
@@ -23,6 +24,7 @@ source /app/common/jwt_configuration.sh
 #############################################################################################
 install_app() {
   source /app/common/install_dependencies.sh
+  gen_password
   install_dependencies
   IP=$(wget -qO- ifconfig.me/ip)
   APP_ADDR=${IP}
@@ -41,6 +43,7 @@ install_app() {
   export SCHEME="${SCHEME}"
   export DS_TAG="${DS_TAG}"
   export APP_ADDR="${APP_ADDR}"
+  export PASSWORD="${PASSWORD}"
   if [ "${JWT_ENABLED}" == 'false' ]; then
     export JWT_SECRET=""
   else
@@ -52,6 +55,21 @@ install_app() {
   check_app
   docker exec seafile /run.sh
   docker-compose restart
+}
+
+gen_password() {
+YMBOLS=""
+for symbol in {A..Z} {a..z} {0..9}; do SYMBOLS=$SYMBOLS$symbol; done
+: ${PWD_LENGTH:=16}  # password length
+PASSWORD=""    # password storage variable
+RANDOM=256     # random number generator initialization
+for i in `seq 1 $PWD_LENGTH`
+do
+PASSWORD=$PASSWORD${SYMBOLS:$(expr $RANDOM % ${#SYMBOLS}):1}
+done
+echo 'Login: '$LOGIN'
+Password: '$PASSWORD'
+' > /var/lib/connector_pwd
 }
 
 #############################################################################################
@@ -103,6 +121,8 @@ check_app() {
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
   echo -e "\e[0;32m Now you can go to the ${APP} web interface at http://${APP_URI}/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m    Login: ${LOGIN}"
+  echo -e "\e[0;32m Password: ${PASSWORD}"
   }
 
 main() {
