@@ -5,10 +5,10 @@
 CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-wordpress/releases/download/v1.0.2/onlyoffice.zip'
 CONNECTOR_NAME='onlyoffice.zip'
 SERVICE_TAG='latest'
-IP=$(hostname -I)
-IP_ARR=($IP)
+APP_ADDR=$(wget -q -O - ifconfig.me/ip)
 NGINX_CONF='nginx.conf'
 JWT_SECRET='mysecret'
+DS_TAG='latest'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 source /app/common/jwt_configuration.sh
@@ -32,6 +32,7 @@ install_wordpress() {
     source /app/common/get_cert.sh
     get_cert
     NGINX_CONF='nginx_https.conf'
+    APP_ADDR=${DOMAIN_NAME}
   fi
   jwt_configuration
   gen_password
@@ -41,6 +42,7 @@ install_wordpress() {
   export JWT_ENV="${JWT_ENV}"
   export NGINX_CONF="${NGINX_CONF}"
   export PASSWORD="${PASSWORD}"
+  export DS_TAG="${DS_TAG}"
   cd /app/wordpress/
   envsubst < docker-compose.yml | docker-compose -f - up -d
   docs_ready_check
@@ -61,8 +63,8 @@ check_wordpress() {
   echo -e "\e[0;32m Waiting for the launch of Wordpress \e[0m"
   for i in {1..15}; do
     echo "Getting the Wordpress status: ${i}"
-    OUTPUT="$(curl -Is http://${IP_ARR[0]}/ | head -1 | awk '{ print $2 }')"
-    if [ "${OUTPUT}" == "200" -o "${OUTPUT}" == "302" ]; then
+    OUTPUT="$(curl -Is http://${APP_ADDR}/ | head -1 | awk '{ print $2 }')"
+    if [ "${OUTPUT}" == "200" -o "${OUTPUT}" == "302" -o "${OUTPUT}" == "301" ]; then
       echo -e "\e[0;32m wordpress is ready to serve \e[0m"
       local WORDPRESS_READY
       WORDPRESS_READY='yes'
@@ -79,7 +81,7 @@ check_wordpress() {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the Wordpress web interface at http://${IP_ARR[0]}/wp-admin/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the Wordpress web interface at http:/${APP_ADDR}/wp-admin/ and follow a few configuration steps \e[0m"
   echo -e "\e[0;32m Login: adm \e[0m"
   echo -e "\e[0;32m Password: "${PASSWORD}" \e[0m"
   }
@@ -90,4 +92,5 @@ main() {
 }
 
 main
+
 

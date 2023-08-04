@@ -34,7 +34,7 @@ services:
       - onlyoffice
   onlyoffice-document-server:
     restart: unless-stopped
-    image: onlyoffice/documentserver:latest
+    image: onlyoffice/documentserver:${DS_TAG}
     container_name: onlyoffice-document-server
     environment:
       - ${JWT_ENV}
