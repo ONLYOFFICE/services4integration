@@ -6,12 +6,13 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/wordpress/install.sh -st wordpress_tag -cu connector_url <-je jwt_enabled | -js jwt_secret>
+ - /app/wordpress/install.sh -st wordpress_tag -cu connector_url -dt documentserver_tag <-je jwt_enabled | -js jwt_secret>
 ```
 
 Where:
  - `domain_name` - Domain name. must be specified if you need an https connection. If not specified - only http connection will be available
  - `wordpress_tag` - Wordpress version. The available versions of Wordpress can be viewed [here](https://hub.docker.com/_/wordpress?tab=tags)
+ - `documentserver_tag` - Documentserver version. The available versions of Documentserver can be viewed [here](https://hub.docker.com/r/onlyoffice/documentserver/tags)
  - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-wordpress/releases)
  - `jwt_enabled` - jwt is enabled by default. if you need to disable it - pass this parameter with a value of `false`
  - `jwt_secret` - the default value is `mysecret`. if you need to change the secret - pass this parameter with the value of the secret
@@ -30,9 +31,8 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Wordpress web interface at: `http://IP-SERVER/wp-admin/` and check the connector operation. 
+Then you can go to the Wordpress web interface at: `http://<DOMAIN_NAME>/wp-admin/` and check the connector operation. 
 ```
-log: adm 
-pass: Z65uGXkr
+login and password will be sent to the installation log, they can also be viewed in the file /var/lib/connector_pwd
 jwt: mysecret
 ```

@@ -25,6 +25,8 @@ source /app/common/jwt_configuration.sh
 install_wordpress() {
   source /app/common/install_dependencies.sh
   source /app/common/get_connector.sh
+  source /app/common/docs_ready_check.sh
+  source /app/common/gen_password.sh
   install_dependencies
   if [ "${DOMAIN_NAME}" ]; then
     source /app/common/get_cert.sh
@@ -33,14 +35,17 @@ install_wordpress() {
     APP_ADDR=${DOMAIN_NAME}
   fi
   jwt_configuration
+  gen_password
   apt-get install unzip -y
   mkdir -p /var/wordpress
   export TAG="${SERVICE_TAG}"
   export JWT_ENV="${JWT_ENV}"
   export NGINX_CONF="${NGINX_CONF}"
+  export PASSWORD="${PASSWORD}"
   export DS_TAG="${DS_TAG}"
   cd /app/wordpress/
   envsubst < docker-compose.yml | docker-compose -f - up -d
+  docs_ready_check
   check_wordpress
   get_connector
   unzip /connectors/$CONNECTOR_NAME -d /var/wordpress/wp-content/plugins
@@ -76,7 +81,9 @@ check_wordpress() {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the Wordpress web interface at http://${APP_ADDR}/wp-admin/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the Wordpress web interface at http:/${APP_ADDR}/wp-admin/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Login: adm \e[0m"
+  echo -e "\e[0;32m Password: "${PASSWORD}" \e[0m"
   }
 
 main() {
