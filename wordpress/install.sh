@@ -9,6 +9,7 @@ APP_ADDR=$(wget -q -O - ifconfig.me/ip)
 NGINX_CONF='nginx.conf'
 JWT_SECRET='mysecret'
 DS_TAG='latest'
+SCHEME='http'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 source /app/common/jwt_configuration.sh
@@ -33,9 +34,11 @@ install_wordpress() {
     get_cert
     NGINX_CONF='nginx_https.conf'
     APP_ADDR=${DOMAIN_NAME}
+    SCHEME='https'
   fi
   jwt_configuration
   gen_password
+  DS_ADDRESS="${SCHEME}://${APP_ADDR}/ds-vpath"
   apt-get install unzip -y
   mkdir -p /var/wordpress
   export TAG="${SERVICE_TAG}"
@@ -63,7 +66,7 @@ check_wordpress() {
   echo -e "\e[0;32m Waiting for the launch of Wordpress \e[0m"
   for i in {1..15}; do
     echo "Getting the Wordpress status: ${i}"
-    OUTPUT="$(curl -Is http://${APP_ADDR}/ | head -1 | awk '{ print $2 }')"
+    OUTPUT="$(curl -Is ${SCHEME}://${APP_ADDR}/ | head -1 | awk '{ print $2 }')"
     if [ "${OUTPUT}" == "200" -o "${OUTPUT}" == "302" -o "${OUTPUT}" == "301" ]; then
       echo -e "\e[0;32m wordpress is ready to serve \e[0m"
       local WORDPRESS_READY
@@ -81,7 +84,7 @@ check_wordpress() {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the Wordpress web interface at http:/${APP_ADDR}/wp-admin/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the Wordpress web interface at ${SCHEME}:/${APP_ADDR}/wp-admin/ and follow a few configuration steps \e[0m"
   echo -e "\e[0;32m Login: adm \e[0m"
   echo -e "\e[0;32m Password: "${PASSWORD}" \e[0m"
   }
