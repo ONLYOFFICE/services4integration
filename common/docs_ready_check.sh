@@ -3,7 +3,7 @@ docs_ready_check() {
   local DS_READY
   for i in {1..30}; do
     echo "Getting the DocumentServer status: ${i}"
-    OUTPUT="$(curl -f -s ${DS_ADDRESS})"
+    OUTPUT="$(curl -f -s ${DS_ADDRESS}/healthcheck)"
     if [ "${OUTPUT}" == "true" ]; then
       echo -e "\e[0;32m DocumentServer is ready \e[0m"
       DS_READY='yes'
