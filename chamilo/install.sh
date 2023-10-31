@@ -126,7 +126,7 @@ install_chamilo
 if [ "$CONNECTOR_URL" != "" ]; then
   plugin_install
 fi
-documentserver_install
+install_documentserver
 complete_installation
 }
 main
