@@ -13,6 +13,7 @@ services:
     volumes:
       - /app/nuxeo/cpf.sh:/docker-entrypoint-initnuxeo.d/cpf.sh
       - /connectors:/connectors
+      - /app/nuxeo/nuxeo.conf:/etc/nuxeo/conf.d/nuxeo.conf
   onlyoffice-document-server:
     container_name: onlyoffice-document-server
     image: onlyoffice/documentserver
