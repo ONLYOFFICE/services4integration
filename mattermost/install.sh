@@ -85,7 +85,7 @@ install() {
   tar -xf /connectors/$CONNECTOR_NAME -C /opt/mattermost/volumes/app/mattermost/plugins
   docker restart mattermost
   jwt_configuration
-  docker run -i -t -d --name documentserver --net mattermost -e $JWT_ENV onlyoffice/documentserver
+  docker run -i -t -d --name documentserver --net mattermost -e $JWT_ENV -e JWT_HEADER=Auth onlyoffice/documentserver
 }
 
 complete_installation() {
