@@ -6,10 +6,11 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/redmine/install.sh -st redmine_tag -cu connector_url <-je jwt_enabled | -js jwt_secret>
+ - /app/redmine/install.sh -dn domain_name -st redmine_tag -cu connector_url <-je jwt_enabled | -js jwt_secret>
 ```
 
 Where:
+ - `domain_name` - Domain name. must be specified if you need an https connection. If not specified - only http connection will be available
  - `redmine_tag` - redmine version. The available versions of Redmine can be viewed [here](https://hub.docker.com/_/redmine?tab=tags)
  - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-redmine/releases)
  - `jwt_enabled` - jwt is enabled by default. if you need to disable it - pass this parameter with a value of `false`
@@ -29,7 +30,7 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Redmine web interface at: `http://IP-SERVER:3000/` and check the connector operation. 
+Then you can go to the Redmine web interface at: `http://IP-SERVER/` or `https://domain_name/` and check the connector operation. 
 ```
 log: Admin 
 pass: admin
