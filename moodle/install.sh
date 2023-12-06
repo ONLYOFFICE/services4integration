@@ -1,13 +1,13 @@
 #!/bin/bash
-# Prepares a Moodle stand with an installed connector. 
+# Prepares a Moodle stand with an installed connector.
 
 SERVICE_TAG="latest"
 CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-moodle/archive/\
 refs/tags/v1.0.0.tar.gz"
-CONNECTOR_NAME="${CONNECTOR_URL##*/}"
 JWT_SECRET='mysecret'
 source /app/common/error.sh
 source /app/common/check_parameters.sh $@
+CONNECTOR_NAME="${CONNECTOR_URL##*/}"
 source /app/common/jwt_configuration.sh
 
 install_moodle_with_onlyoffice() {
@@ -27,7 +27,8 @@ prepare_connector() {
   source /app/common/get_connector.sh
   get_connector
   tar -C /app/moodle -xvf /connectors/${CONNECTOR_NAME}
-  mv /app/moodle/moodle-mod_onlyoffice* /app/moodle/onlyoffice
+  mkdir /app/moodle/onlyoffice
+  mv /app/moodle/moodle-mod_onlyoffice*/* /app/moodle/onlyoffice
 }
 prepare_files() {
   readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)
