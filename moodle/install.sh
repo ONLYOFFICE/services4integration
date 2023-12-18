@@ -34,7 +34,9 @@ prepare_files() {
   readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)
   sed -i -e "s!https://documentserver.url!http://${EXT_IP}/ds-vpath/!g" \
     /app/moodle/onlyoffice/settings.php
-   sed -i "/documentserversecret/{s/''/${JWT_SECRET}/;}" \
+  sed -i '/    $defaultjwtheader/ a\    $jwt = \x27mysecret\x27;' \
+    /app/moodle/onlyoffice/settings.php
+  sed -i "/documentserversecret/{s/''/\$jwt/;}" \
     /app/moodle/onlyoffice/settings.php
 }
 check_ready() {
