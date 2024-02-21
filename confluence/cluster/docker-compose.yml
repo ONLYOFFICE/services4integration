@@ -40,6 +40,7 @@ services:
       - ATL_DB_TYPE=postgresql
       - COOKIE=JSESSIONID prefix nocache
       - EXCLUDE_PORTS=8091
+      - CATALINA_OPTS=-Dupm.plugin.upload.enabled=true
     volumes:
       - /confluence/share:/data/confluence/sharedhome
 
