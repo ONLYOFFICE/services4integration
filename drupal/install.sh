@@ -87,6 +87,8 @@ check_drupal() {
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
   echo -e "\e[0;32m Now you can go to the Drupal web interface at ${SCHEME}://${APP_ADDR}/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Login: user \e[0m"
+  echo -e "\e[0;32m Password: "${PASSWORD}" \e[0m"
 }
 
 main() {
