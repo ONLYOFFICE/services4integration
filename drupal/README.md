@@ -6,10 +6,11 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /app/drupal/install.sh -st drupal_tag <-je jwt_enabled | -js jwt_secret>
+ - /app/drupal/install.sh -dn domain_name -st drupal_tag <-je jwt_enabled | -js jwt_secret>
 ```
 
 Where:
+ - `domain_name` - Domain name. must be specified if you need an https connection. If not specified - only http connection will be available
  - `drupal_tag` - Drupal version. The available versions of Drupal can be viewed [here](https://hub.docker.com/r/bitnami/drupal/tags)
  - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-drupal/releases/)
  - `jwt_enabled` - jwt is enabled by default. if you need to disable it - pass this parameter with a value of `false`
@@ -17,7 +18,7 @@ Where:
 
 For example:
 ```
-/app/drupal/install.sh -st 8 -cu https://github.com/ONLYOFFICE/onlyoffice-drupal/releases/download/v1.0.5/onlyoffice-drupal-1.0.5.zip
+/app/drupal/install.sh -dn example.com -st 8 -cu https://github.com/ONLYOFFICE/onlyoffice-drupal/releases/download/v1.0.5/onlyoffice-drupal-1.0.5.zip
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
@@ -32,6 +33,5 @@ The script is finished
 Then you can go to the Drupal web interface at: `http://IP-SERVER/` and check the connector operation. 
 ```
 log: user
-pass: bitnami
 jwt: mysecret
 ```

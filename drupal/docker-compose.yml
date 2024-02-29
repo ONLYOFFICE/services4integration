@@ -12,9 +12,6 @@ services:
   drupal:
     build: .
     container_name: drupal
-    ports:
-      - '80:8080'
-      - '443:8443'
     environment:
       - DRUPAL_DATABASE_HOST=mariadb
       - DRUPAL_DATABASE_PORT_NUMBER=3306
@@ -22,6 +19,7 @@ services:
       - DRUPAL_DATABASE_NAME=bitnami_drupal
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
+      - DRUPAL_PASSWORD=${PASSWORD}
     volumes:
       - 'drupal_data:/bitnami/drupal'
     depends_on:
@@ -32,8 +30,21 @@ services:
     container_name: onlyoffice-document-server
     environment:
       - ${JWT_ENV}
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
     ports:
-      - 3000:80
+      - 80:80
+      - 443:443
+    volumes:
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - drupal
 volumes:
   mariadb_data:
     driver: local
