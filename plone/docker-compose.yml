@@ -13,6 +13,7 @@ services:
       - PROFILES=onlyoffice.connector:default
       - ADDONS=onlyoffice.connector
       - DEVELOP=src/onlyoffice.connector
+      - CORS_ALLOW_ORIGIN=*
     volumes:
       - ./onlyoffice:/plone/instance/src/onlyoffice.connector
     healthcheck:
