@@ -1,24 +1,24 @@
-#!/usr/bin/env bash  
+#!/usr/bin/env bash
 CONTENT_REPO_TAG=""
 SHARE_TAG=""
-CONNECTOR_REPO_NAME=onlyoffice-integration-repo.jar
-CONNECTOR_SHARE_NAME=onlyoffice-integration-share.jar
-CONNECTOR_REPO_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-repo.jar
-CONNECTOR_SHARE_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v5.0.1/onlyoffice-integration-share.jar
+CONNECTOR_REPO_NAME=onlyoffice-integration-repo.amp
+CONNECTOR_SHARE_NAME=onlyoffice-integration-share.amp
+CONNECTOR_REPO_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v6.1.0/onlyoffice-integration-repo.amp
+CONNECTOR_SHARE_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v6.1.0/onlyoffice-integration-share.amp
 JWT_ENABLED=""
 JWT_SECRET=mysecret
 source /app/common/jwt_configuration.sh
 
 while [ "$1" != "" ]; do
   case $1 in
- 
+
     -ct | --content_repo_tag )
       if [ "$2" != "" ]; then
         CONTENT_REPO_TAG=$2
         shift
       fi
     ;;
- 
+
     -st | --share_tag )
       if [ "$2" != "" ]; then
         SHARE_TAG=$2
@@ -39,7 +39,7 @@ while [ "$1" != "" ]; do
         shift
       fi
     ;;
-    
+
     -je | --jwt_enabled )
       if [ "$2" != "" ]; then
         JWT_ENABLED=$2
@@ -85,24 +85,64 @@ get_connector() {
 }
 
 configure_compose() {
+  wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
+    chmod +x /usr/bin/yq
   git clone https://github.com/Alfresco/acs-deployment.git /opt/alfresco
-  str=$(grep -n "  alfresco:" /opt/alfresco/docker-compose/community-docker-compose.yml | cut -d: -f1)
-  str=$(($str+1))
-  sed -i $str'i\      - /connectors/'${CONNECTOR_REPO_NAME}':/usr/local/tomcat/webapps/alfresco/WEB-INF/lib/'${CONNECTOR_REPO_NAME}'' /opt/alfresco/docker-compose/community-docker-compose.yml
-  sed -i $str'i\    volumes:' /opt/alfresco/docker-compose/community-docker-compose.yml
-  str=$(grep -n "  share:" /opt/alfresco/docker-compose/community-docker-compose.yml | cut -d: -f1)
-  str=$(($str+1))
-  sed -i $str'i\      - /connectors/'${CONNECTOR_SHARE_NAME}':/usr/local/tomcat/webapps/share/WEB-INF/lib/'${CONNECTOR_SHARE_NAME}'' /opt/alfresco/docker-compose/community-docker-compose.yml
-  sed -i $str'i\    volumes:' /opt/alfresco/docker-compose/community-docker-compose.yml
   sed -i 's/localhost/'${IP_ARR[0]}'/g' /opt/alfresco/docker-compose/community-docker-compose.yml
   sed -i 's/127.0.0.1/'${IP_ARR[0]}'/g' /opt/alfresco/docker-compose/community-docker-compose.yml
-  if [ -n "$CONTENT_REPO_TAG" ]; then
-    sed -i 's/image: alfresco\/alfresco-content-repository-community:.*/image: alfresco\/alfresco-content-repository-community:'${CONTENT_REPO_TAG}'/' /opt/alfresco/docker-compose/community-docker-compose.yml
-    sed -i 's/image: alfresco\/alfresco-share:.*/image: alfresco\/alfresco-share:'${SHARE_TAG}'/' /opt/alfresco/docker-compose/community-docker-compose.yml
+  if [ -z "$CONTENT_REPO_TAG" ]; then
+    CONTENT_REPO_TAG=$(yq '.services.alfresco.image' /opt/alfresco/docker-compose/community-docker-compose.yml | sed 's/.*://')
+    SHARE_TAG=$(yq '.services.share.image' /opt/alfresco/docker-compose/community-docker-compose.yml | sed 's/.*://')
   fi
+  conftgure_dockerfile
+  yq -i 'del(.services.alfresco.image)' /opt/alfresco/docker-compose/community-docker-compose.yml
+  yq -i 'del(.services.share.image)' /opt/alfresco/docker-compose/community-docker-compose.yml
+  yq -i '.services.alfresco.build.context = "/opt/alfresco/docker-compose/alfresco"' /opt/alfresco/docker-compose/community-docker-compose.yml
+  yq -i '.services.share.build.context = "./share"' /opt/alfresco/docker-compose/community-docker-compose.yml
+  cp /connectors/onlyoffice-integration-repo.amp /opt/alfresco/docker-compose/alfresco
+  cp /connectors/onlyoffice-integration-share.amp /opt/alfresco/docker-compose/share
   docker-compose -f /opt/alfresco/docker-compose/community-docker-compose.yml up -d
 }
 
+conftgure_dockerfile() {
+mkdir /opt/alfresco/docker-compose/alfresco
+mkdir /opt/alfresco/docker-compose/share
+echo 'FROM alfresco/alfresco-content-repository-community:'${CONTENT_REPO_TAG}'
+
+# Customize container: install amps
+
+ARG ALF_GROUP=Alfresco
+ARG TOMCAT_DIR=/usr/local/tomcat
+
+USER root
+
+ADD ./onlyoffice-integration-repo.amp ${TOMCAT_DIR}/amps/
+
+RUN java -jar ${TOMCAT_DIR}/alfresco-mmt/alfresco-mmt*.jar install \
+    ${TOMCAT_DIR}/amps ${TOMCAT_DIR}/webapps/alfresco -directory -nobackup -verbose
+
+# Restore permissions
+RUN chgrp -R ${ALF_GROUP} ${TOMCAT_DIR}/webapps && \
+    find ${TOMCAT_DIR}/webapps -type d -exec chmod 0750 {} \; && \
+    find ${TOMCAT_DIR}/webapps -type f -exec chmod 0640 {} \; && \
+    find ${TOMCAT_DIR}/shared -type d -exec chmod 0750 {} \; && \
+    find ${TOMCAT_DIR}/shared -type f -exec chmod 0640 {} \; && \
+    chmod -R g+r ${TOMCAT_DIR}/webapps && \
+    chgrp -R ${ALF_GROUP} ${TOMCAT_DIR}
+
+USER alfresco
+' > /opt/alfresco/docker-compose/alfresco/Dockerfile
+echo 'FROM alfresco/alfresco-share:'${SHARE_TAG}'
+
+ARG TOMCAT_DIR=/usr/local/tomcat
+
+ADD ./onlyoffice-integration-share.amp ${TOMCAT_DIR}/amps_share/
+
+RUN java -jar ${TOMCAT_DIR}/alfresco-mmt/alfresco-mmt*.jar install \
+    ${TOMCAT_DIR}/amps_share ${TOMCAT_DIR}/webapps/share -directory -nobackup -verbose
+' > /opt/alfresco/docker-compose/share/Dockerfile
+
+}
 configure_compose_6_X() {
   export HOST="${IP_ARR[0]}"
   export CONTENT_REPO_TAG="${CONTENT_REPO_TAG}"
@@ -118,7 +158,7 @@ install_alfresco() {
   IP_ARR=($IP)
   if [ ${CONTENT_REPO_TAG:0:1} == 6 ]; then
     configure_compose_6_X;
-  else 
+  else
     configure_compose;
   fi
 }
