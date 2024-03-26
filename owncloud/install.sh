@@ -10,6 +10,8 @@ source /app/common/check_parameters.sh $@
 install_owncloud_with_onlyoffice() {
   source /app/common/install_dependencies.sh
   install_dependencies
+  wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+  chmod +x /usr/bin/yq
   git clone https://github.com/ONLYOFFICE/docker-onlyoffice-owncloud /apps
   prepare_connector
   prepare_files
@@ -24,13 +26,8 @@ prepare_connector() {
 }
 prepare_files() {
   IP=$(wget -q -O - ifconfig.me/ip)
-  sed -i -e  "s!owncloud/server!owncloud/server:${SERVICE_TAG}!g" \
-    /apps/docker-compose.yml
-  str=$(grep -n "  app:" /apps/docker-compose.yml | cut -d: -f1)
-  str=$(($str+1))
-  sed -i $str'i\      - OWNCLOUD_TRUSTED_DOMAINS=localhost,'${IP} \
-   /apps/docker-compose.yml
-  sed -i $str'i\    environment:' /apps/docker-compose.yml
+  e="owncloud/server:${SERVICE_TAG}" yq -i '.services.app.image = strenv(e)' /apps/docker-compose.yml
+  e="OWNCLOUD_TRUSTED_DOMAINS=localhost,${IP}" yq -i '(.services.app.environment.[] | select(. == "OWNCLOUD_TRUSTED_DOMAINS*")) = strenv(e)' /apps/docker-compose.yml
 }
 check_ready() {
   local owncloud_started
