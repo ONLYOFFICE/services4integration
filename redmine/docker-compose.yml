@@ -14,8 +14,6 @@ services:
     image: redmine:${TAG}
     restart: unless-stopped
     container_name: redmine
-    ports:
-      - 3000:3000
     depends_on:
       - postgres
     environment:
@@ -31,8 +29,22 @@ services:
     container_name: onlyoffice-document-server
     environment:
       - ${JWT_ENV}
+
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
     ports:
       - 80:80
+      - 443:443
+    volumes:
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - redmine
 
 networks:
   default:
