@@ -1,14 +1,8 @@
 version: '3'
 services:
-  app:
+  moodle:
+    image: docker.io/bitnami/moodle:${SERVICE_TAG}
     container_name: app-server
-    image: "bitnami/moodle:${SERVICE_TAG}"
-    restart: always
-    expose:
-      - 8080
-      - 8443
-    networks:
-      - onlyoffice
     environment:
       - MOODLE_DATABASE_HOST=mariadb
       - MOODLE_DATABASE_PORT_NUMBER=3306
@@ -16,29 +10,21 @@ services:
       - MOODLE_DATABASE_NAME=bitnami_moodle
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
-      #- MOODLE_USERNAME='user'
-      #- MOODLE_PASSWORD='bitnami'
-      #- MOODLE_EMAIL='user@example.com'
-      #- MOODLE_SITE_NAME='New Site'
+        #- MOODLE_USERNAME=user
+        #- MOODLE_PASSWORD=bitnami
     volumes:
-      - moodle_data:/bitnami/moodle
-      - moodledata_data:/bitnami/moodledata
+      - 'moodle_data:/bitnami/moodle'
+      - 'moodledata_data:/bitnami/moodledata'
       - ./onlyoffice:/tmp/onlyoffice
       - ./run.sh:/run.sh
-    depends_on:
-      - mariadb
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    command: bash /run.sh
-  mariadb:
-    container_name: mariadb
-    image: docker.io/bitnami/mariadb:10.3
-    restart: always
     networks:
       - onlyoffice
+    depends_on:
+      - mariadb
+    command: bash /run.sh
+
+  mariadb:
+    image: docker.io/bitnami/mariadb:11.1
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
@@ -47,12 +33,10 @@ services:
       - MARIADB_CHARACTER_SET=utf8mb4
       - MARIADB_COLLATE=utf8mb4_unicode_ci
     volumes:
-      - mariadb_data:/bitnami/mariadb
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "--silent"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - 'mariadb_data:/bitnami/mariadb'
+    networks:
+      - onlyoffice
+
   onlyoffice-document-server:
     container_name: onlyoffice-document-server
     image: onlyoffice/documentserver
@@ -69,6 +53,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
   nginx:
     container_name: nginx-server
     image: nginx
@@ -83,13 +68,19 @@ services:
       - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
       - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
     depends_on:
-      - app
+      - moodle
+
 networks:
   onlyoffice:
     driver: 'bridge'
 volumes:
   mariadb_data:
+    driver: local
   moodle_data:
+    driver: local
   moodledata_data:
+    driver: local
   document_data:
+    driver: local
   document_log:
+    driver: local
