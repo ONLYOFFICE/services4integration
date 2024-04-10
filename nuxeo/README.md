@@ -17,7 +17,7 @@ Where:
 
 For example:
 ```
-/app/wordpress/install.sh -st latest -cu https://github.com/ONLYOFFICE/onlyoffice-nuxeo/releases/download/v2.0.0/onlyoffice-nuxeo-package-2.0.0.zip
+/app/nuxeo/install.sh -st latest -cu https://github.com/ONLYOFFICE/onlyoffice-nuxeo/releases/download/v2.0.0/onlyoffice-nuxeo-package-2.0.0.zip
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
