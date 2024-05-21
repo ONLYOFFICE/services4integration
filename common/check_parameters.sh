@@ -47,6 +47,12 @@ while [ "$1" != "" ]; do
         shift
       fi
     ;;
+    -b | --branch )
+      if [ "$2" != "" ]; then
+        BRANCH=$2
+        shift
+      fi
+    ;;
 esac
   shift
 done
