@@ -1,11 +1,15 @@
 #!/bin/bash
-# Prepares a Plone stand with an installed connector. 
+# Prepares a Plone stand with an installed connector.
 
-SERVICE_TAG="latest"
-CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-plone/releases/\
-download/v2.0.0/onlyoffice.connector-2.0.0.tar.gz"
+SERVICE_TAG="6.0.5"
+CONNECTOR_URL="https://github.com/ONLYOFFICE/onlyoffice-plone/releases/download/v4.0.0/onlyoffice.plone-4.0.0.tar.gz"
+CONNECTOR_REPO="https://github.com/ONLYOFFICE/onlyoffice-plone.git"
 CONNECTOR_NAME="${CONNECTOR_URL##*/}"
 JWT_SECRET='mysecret'
+APP_ADDR=$(wget -q -O - ifconfig.me/ip)
+NGINX_CONF='nginx.conf'
+DS_TAG='latest'
+SCHEME='http'
 source /app/common/error.sh
 source /app/common/check_parameters.sh $@
 source /app/common/jwt_configuration.sh
@@ -13,10 +17,19 @@ source /app/common/jwt_configuration.sh
 install_plone_with_onlyoffice() {
   source /app/common/install_dependencies.sh
   install_dependencies
+  if [ "${DOMAIN_NAME}" ]; then
+    source /app/common/get_cert.sh
+    #get_cert
+    NGINX_CONF='nginx_https.conf'
+    APP_ADDR=${DOMAIN_NAME}
+    SCHEME='https'
+  fi
   prepare_connector
-  prepare_files
   jwt_configuration
+  sed -i "s!server_name  plone.localhost;!server_name ${APP_ADDR};!g" /app/plone/${NGINX_CONF}
   export JWT_ENV="${JWT_ENV}"
+  export SERVICE_TAG="${SERVICE_TAG}"
+  export NGINX_CONF="${NGINX_CONF}"
   cd /app/plone/
   envsubst < docker-compose.yml | docker-compose -f - up -d
   echo OK > /opt/run
@@ -25,16 +38,10 @@ install_plone_with_onlyoffice() {
 prepare_connector() {
   source /app/common/get_connector.sh
   get_connector
-  tar -C /app/plone -xvf /connectors/${CONNECTOR_NAME}
-  mv /app/plone/onlyoffice* /app/plone/onlyoffice
+#  sed -i -e "s!https://documentserver/!${SCHEME}://${APP_ADDR}/ds-vpath/!g" \
+#    /app/plone/onlyoffice/src/onlyoffice/connector/browser/controlpanel.py
 }
-prepare_files() {
-  readonly EXT_IP=$(wget -q -O - ifconfig.me/ip)
-  sed -i -e "s!plone:latest!plone:${SERVICE_TAG}!g" \
-    /app/plone/docker-compose.yml
-  sed -i -e "s!https://documentserver/!http://${EXT_IP}/ds-vpath/!g" \
-    /app/plone/onlyoffice/src/onlyoffice/connector/browser/controlpanel.py
-}
+
 check_ready() {
   local plone_started
   local healthcheck_ds
@@ -58,7 +65,7 @@ check_ready() {
   fi
 
   for i in {1..30}; do
-    healthcheck_ds="$(curl -f -s http://localhost/ds-vpath/healthcheck)"
+    healthcheck_ds="$(curl -f -s ${SCHEME}://${APP_ADDR}/ds-vpath/healthcheck)"
     if [[ "${healthcheck_ds}" != 'true' ]]; then
       echo -e "\e[0;32m Waiting for the launch of document-server \e[0m"
         sleep 10
@@ -87,3 +94,4 @@ main() {
   complete_installation
 }
 main
+

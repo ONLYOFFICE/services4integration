@@ -16,9 +16,8 @@ get_connector() {
   echo -e "\e[0;32m The connector will now be downloaded to the host \e[0m"
   rm -rf /connectors
   mkdir /connectors
-  if [[ -n ${CONNECTOR_URL} && -n ${BRANCH} ]]; then
-    echo -e "\e[0;31m Specify only one connector source \e[0m"
-    exit 1
+  if [[ -n ${BRANCH} ]]; then
+    git clone --branch=${BRANCH} ${CONNECTOR_REPO} /connectors/onlyoffice
   elif [[ -n ${CONNECTOR_URL} ]]; then
     CONNECTOR_NAME=${CONNECTOR_URL##*/}
     wget -O /connectors/${CONNECTOR_NAME} ${CONNECTOR_URL}
@@ -39,7 +38,5 @@ get_connector() {
       tar -C /connectors -xvf /connectors/${CONNECTOR_NAME}
     fi
     mv $(ls -d /connectors/*/) /connectors/onlyoffice
-  elif [[ -n ${BRANCH} ]]; then
-    git clone --branch=${BRANCH} ${CONNECTOR_REPO} /connectors/onlyoffice
   fi
 }
