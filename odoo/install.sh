@@ -6,11 +6,14 @@ APP='Odoo'
 ##CONNECTOR_URL=''
 ##CONNECTOR_NAME=''
 SERVICE_TAG='latest'
-readonly IP=$(wget -q -O - ifconfig.me/ip)
-##JWT_SECRET='mysecret'
+APP_ADDR=$(wget -q -O - ifconfig.me/ip)
+NGINX_CONF='nginx.conf'
+SCHEME='http'
+JWT_SECRET='mysecret'
+DS_TAG='latest'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
-##source /app/common/jwt_configuration.sh
+source /app/common/jwt_configuration.sh
 
 #############################################################################################
 # Install the necessary dependencies on the host and install Odoo and dependent service
@@ -23,18 +26,40 @@ source /app/common/error.sh
 #############################################################################################
 install_app() {
   source /app/common/install_dependencies.sh
+  source /app/common/jwt_configuration.sh
   ##source /app/common/get_connector.sh
   install_dependencies
-  ##jwt_configuration
+  if [ "${DOMAIN_NAME}" ]; then
+    source /app/common/get_cert.sh
+    get_cert
+    NGINX_CONF='nginx_https.conf'
+    APP_ADDR=${DOMAIN_NAME}
+    SCHEME='https'
+  fi
+  jwt_configuration
   apt-get install unzip -y
+  create_config_file
   export TAG="${SERVICE_TAG}"
-  ##export JWT_ENV="${JWT_ENV}"
+  export NGINX_CONF="${NGINX_CONF}"
+  export DS_TAG="${DS_TAG}"
+  export JWT_ENV="${JWT_ENV}"
   cd /app/odoo/
   envsubst < docker-compose.yml | docker-compose -f - up -d
   check_app
   ##get_connector
 }
 
+create_config_file() {
+  mkdir /app/odoo/config
+  echo '[options]
+  addons_path = /mnt/extra-addons
+  ' > /app/odoo/config/odoo.conf
+  echo 'FROM odoo:'${SERVICE_TAG}'
+  USER root
+  RUN pip3 install pyjwt
+  USER odoo
+  ' > /app/odoo/Dockerfile
+}
 #############################################################################################
 # Check odoo startup and status
 # Globals:
@@ -47,7 +72,7 @@ check_app() {
   echo -e "\e[0;32m Waiting for the launch of $APP \e[0m"
   for i in {1..15}; do
     echo "Getting the $APP status: ${i}"
-    OUTPUT="$(curl -Is http://${IP}:8069/ | head -1 | awk '{ print $2 }')"
+    OUTPUT="$(curl -Is ${SCHEME}://${APP_ADDR} | head -1 | awk '{ print $2 }')"
     if [ "${OUTPUT}" == "303" -o "${OUTPUT}" == "302" ]; then
       echo -e "\e[0;32m $APP is ready to serve \e[0m"
       local APP_READY
@@ -65,7 +90,7 @@ check_app() {
 
 complete_installation() {
   echo -e "\e[0;32m The script is finished \e[0m"
-  echo -e "\e[0;32m Now you can go to the $APP web interface at http://${IP}:8069/ and follow a few configuration steps \e[0m"
+  echo -e "\e[0;32m Now you can go to the $APP web interface at ${SCHEME}://${APP_ADDR} and follow a few configuration steps \e[0m"
   }
 
 main() {
