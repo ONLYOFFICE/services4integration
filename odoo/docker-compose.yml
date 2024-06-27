@@ -1,18 +1,37 @@
 version: '3.1'
 services:
-  web:
-    image: odoo:${TAG}
+  odoo:
+    build: .
     container_name: odoo
     depends_on:
       - db
-    ports:
-      - "8069:8069"
     volumes:
       - ./config:/etc/odoo
-    ##  - ./onlyoffice-odoo:/mnt/extra-addons
+      - ./onlyoffice-odoo:/mnt/extra-addons
   db:
     image: postgres:13
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_PASSWORD=odoo
       - POSTGRES_USER=odoo
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - odoo
+  onlyoffice-document-server:
+    restart: unless-stopped
+    image: onlyoffice/documentserver:${DS_TAG}
+    container_name: onlyoffice-document-server
+    environment:
+      - ${JWT_ENV}
