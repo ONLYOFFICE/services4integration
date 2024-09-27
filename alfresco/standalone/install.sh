@@ -119,7 +119,7 @@ USER root
 ADD ./onlyoffice-integration-repo.amp ${TOMCAT_DIR}/amps/
 
 RUN java -jar ${TOMCAT_DIR}/alfresco-mmt/alfresco-mmt*.jar install \
-    ${TOMCAT_DIR}/amps ${TOMCAT_DIR}/webapps/alfresco -directory -nobackup -verbose
+    ${TOMCAT_DIR}/amps ${TOMCAT_DIR}/webapps/alfresco -directory -nobackup -verbose -force
 
 # Restore permissions
 RUN chgrp -R ${ALF_GROUP} ${TOMCAT_DIR}/webapps && \
@@ -139,7 +139,7 @@ ARG TOMCAT_DIR=/usr/local/tomcat
 ADD ./onlyoffice-integration-share.amp ${TOMCAT_DIR}/amps_share/
 
 RUN java -jar ${TOMCAT_DIR}/alfresco-mmt/alfresco-mmt*.jar install \
-    ${TOMCAT_DIR}/amps_share ${TOMCAT_DIR}/webapps/share -directory -nobackup -verbose
+    ${TOMCAT_DIR}/amps_share ${TOMCAT_DIR}/webapps/share -directory -nobackup -verbose -force
 ' > /opt/alfresco/docker-compose/share/Dockerfile
 
 }
