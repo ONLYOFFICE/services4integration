@@ -1,7 +1,7 @@
 gen_password() {
 SYMBOLS=""
 for symbol in {A..Z} {a..z} {0..9}; do SYMBOLS=$SYMBOLS$symbol; done
-SYMBOLS=$SYMBOLS'!@%&*()?/\[]{}-+_=<>.,'
+SYMBOLS=$SYMBOLS'!&*()?/-+_=<>.,'
 : ${PWD_LENGTH:=16}  # password length
 PASSWORD=""    # variable to store password
 RANDOM=256     # initializing the random number generator
