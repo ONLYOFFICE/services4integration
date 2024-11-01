@@ -3,8 +3,8 @@ CONTENT_REPO_TAG=""
 SHARE_TAG=""
 CONNECTOR_REPO_NAME=onlyoffice-integration-repo.amp
 CONNECTOR_SHARE_NAME=onlyoffice-integration-share.amp
-CONNECTOR_REPO_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v6.1.0/onlyoffice-integration-repo.amp
-CONNECTOR_SHARE_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v6.1.0/onlyoffice-integration-share.amp
+CONNECTOR_REPO_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v7.0.0/onlyoffice-integration-repo.amp
+CONNECTOR_SHARE_URL=https://github.com/ONLYOFFICE/onlyoffice-alfresco/releases/download/v7.0.0/onlyoffice-integration-share.amp
 JWT_ENABLED=""
 JWT_SECRET=mysecret
 source /app/common/jwt_configuration.sh
@@ -86,22 +86,23 @@ get_connector() {
 
 configure_compose() {
   wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq &&\
-    chmod +x /usr/bin/yq
+  chmod +x /usr/bin/yq
+  COMPOSE_PATH='/opt/alfresco/docker-compose/community-compose.yaml'
   git clone https://github.com/Alfresco/acs-deployment.git /opt/alfresco
-  sed -i 's/localhost/'${IP_ARR[0]}'/g' /opt/alfresco/docker-compose/community-docker-compose.yml
-  sed -i 's/127.0.0.1/'${IP_ARR[0]}'/g' /opt/alfresco/docker-compose/community-docker-compose.yml
+  sed -i 's/localhost/'${IP_ARR[0]}'/g' ${COMPOSE_PATH}
+  sed -i 's/127.0.0.1/'${IP_ARR[0]}'/g' ${COMPOSE_PATH}
   if [ -z "$CONTENT_REPO_TAG" ]; then
-    CONTENT_REPO_TAG=$(yq '.services.alfresco.image' /opt/alfresco/docker-compose/community-docker-compose.yml | sed 's/.*://')
-    SHARE_TAG=$(yq '.services.share.image' /opt/alfresco/docker-compose/community-docker-compose.yml | sed 's/.*://')
+    CONTENT_REPO_TAG=$(yq '.services.alfresco.image' ${COMPOSE_PATH} | sed 's/.*://')
+    SHARE_TAG=$(yq '.services.share.image' ${COMPOSE_PATH} | sed 's/.*://')
   fi
   conftgure_dockerfile
-  yq -i 'del(.services.alfresco.image)' /opt/alfresco/docker-compose/community-docker-compose.yml
-  yq -i 'del(.services.share.image)' /opt/alfresco/docker-compose/community-docker-compose.yml
-  yq -i '.services.alfresco.build.context = "/opt/alfresco/docker-compose/alfresco"' /opt/alfresco/docker-compose/community-docker-compose.yml
-  yq -i '.services.share.build.context = "./share"' /opt/alfresco/docker-compose/community-docker-compose.yml
+  yq -i 'del(.services.alfresco.image)' ${COMPOSE_PATH}
+  yq -i 'del(.services.share.image)' ${COMPOSE_PATH}
+  yq -i '.services.alfresco.build.context = "/opt/alfresco/docker-compose/alfresco"' ${COMPOSE_PATH}
+  yq -i '.services.share.build.context = "./share"' ${COMPOSE_PATH}
   cp /connectors/onlyoffice-integration-repo.amp /opt/alfresco/docker-compose/alfresco
   cp /connectors/onlyoffice-integration-share.amp /opt/alfresco/docker-compose/share
-  docker-compose -f /opt/alfresco/docker-compose/community-docker-compose.yml up -d
+  docker-compose -f ${COMPOSE_PATH} up -d
 }
 
 conftgure_dockerfile() {
