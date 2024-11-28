@@ -5,7 +5,7 @@ pipeline {
     buildDiscarder (logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
   }  
   parameters {
-    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','strapi','wordpress','documentserver','nuxeo'], description: '')
+    choice(name: 'Connector', choices: ['alfresco','chamilo','confluence','drupal','humhub','jira-standalone','jira-cluster','liferay','moodle','nextcloud','owncloud','plone','redmine','strapi','wordpress','documentserver','nuxeo','docspace','docspace-package'], description: '')
     choice(name: 'vm_size', choices: ['s-2vcpu-4gb','s-4vcpu-8gb'], description: '')
     string(name: 'st', defaultValue: 'latest', description: '-st, service_tag. Default: latest')
     string(name: 'cu', defaultValue: 'from_pipeline', description: '-cu, connector_url. Add custom url or will be used url from pipeline.')
@@ -503,6 +503,72 @@ pipeline {
             echo "log:  Administrator"
             echo "pass: Administrator"
             echo "jwt:  mysecret"
+          '''
+        }
+      }
+    }
+    stage ('docspace') {
+      environment {
+        docker='true'
+        gitbranch='release/rc-v1.2.0'
+        docker_status='4testing-'
+        docker_tag='rc-v1.2.0'
+        docker_username=''
+        docker_password=''
+        docker_external_port='80'
+        docker_documentserver_image=''
+        mysql_database=''
+        mysql_user=''
+        mysql_password=''
+        mysql_host=''
+        connector_url="null"
+        connector_path='docspace'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "docspace" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            tmp="-d%space%'${docker}'%space%-gb%space%'${gitbranch}'%space%-s%space%'${docker_status}'%space%-tag%space%'${docker_tag}'%space%-un%space%'${docker_username}'%space%-p%space%'${docker_password}'%space%-ep%space%'${docker_external_port}'%space%-di%space%'${docker_documentserver_image}'%space%-mysqld%space%'${mysql_database}'%space%-mysqlu%space%'${mysql_user}'%space%-mysqlp%space%'${mysql_password}'%space%-mysqlh%space%'${mysql_host}"
+
+            bash .jenkins/connector_install.sh null ${tmp} ${connector_path} null ${Connector} ${docker_external_port}
+          '''
+        }
+      }
+    }
+    stage ('docspace-package') {
+      environment {
+        docker='false'
+        gitbranch='release/rc-v1.2.0'
+        mysql_database=''
+        mysql_user=''
+        mysql_password=''
+        mysql_host=''
+        connector_url="null"
+        connector_path='docspace'
+      }
+      when { 
+        allOf{
+          expression { return env.EXECUTE == "true" }
+          expression { return env.Connector == "docspace-package" }
+        }
+      }
+      steps {
+        withCredentials([ string(credentialsId: 'do_install_connector', variable: 'DO_TOKEN') ]) 
+        {
+          sh '''
+            #!/usr/bin/env bash
+
+            tmp="-d%space%'${docker}'%space%-gb%space%'${gitbranch}'%space%-mysqld%space%'${mysql_database}'%space%-mysqlu%space%'${mysql_user}'%space%-mysqlp%space%'${mysql_password}'%space%-mysqlh%space%'${mysql_host}'"
+
+            bash .jenkins/connector_install.sh null ${tmp} ${connector_path} null ${Connector} 80
           '''
         }
       }
