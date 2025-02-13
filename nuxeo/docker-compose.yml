@@ -9,17 +9,18 @@ services:
     networks:
       - onlyoffice
     environment:
-      - NUXEO_URL="http://${IP}:8080/nuxeo"
+      - NUXEO_URL="${SCHEME}://${APP_ADDR}/nuxeo"
+      - NUXEO_DEV=true
     volumes:
       - /app/nuxeo/cpf.sh:/docker-entrypoint-initnuxeo.d/cpf.sh
-      - /connectors:/connectors
-      - /app/nuxeo/nuxeo.conf:/etc/nuxeo/conf.d/nuxeo.conf
+        # - /connectors:/connectors
+        #- /app/nuxeo/nuxeo.conf:/etc/nuxeo/conf.d/nuxeo.conf
   onlyoffice-document-server:
     container_name: onlyoffice-document-server
     image: onlyoffice/documentserver
     restart: always
-    ports:
-      - 80:80
+    #ports:
+            #   - 80:80
     environment:
       - ${JWT_ENV}
     networks:
@@ -32,10 +33,26 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - onlyoffice
+    volumes:
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - nuxeo
 networks:
   onlyoffice:
     driver: 'bridge'
 volumes:
   document_data:
   document_log:
-
