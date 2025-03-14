@@ -22,6 +22,12 @@ while [ "$1" != "" ]; do
         shift
       fi
       ;;
+    -du | --docspace_connector_url )
+      if [ "$2" != "" ]; then
+        DOCSPACE_CONNECTOR_URL=$2
+        shift
+      fi
+      ;;
     -je | --jwt_enabled )
       if [ "$2" != "" ]; then
         JWT_ENABLED=$2
