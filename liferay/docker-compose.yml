@@ -1,0 +1,40 @@
+services:
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - onlyoffice
+
+  liferay:
+    container_name: liferay
+    image: liferay/portal:${SERVICE_TAG}
+    environment:
+      - LIFERAY_WEB_PERIOD_SERVER_PERIOD_PROTOCOL=${SCHEME}
+      - LIFERAY_WEB_PERIOD_SERVER_PERIOD_HOST=${APP_ADDR}
+    volumes:
+      - ./liferay-files:/mnt/liferay
+    networks:
+      - onlyoffice
+
+  onlyoffice-document-server:
+    restart: unless-stopped
+    image: onlyoffice/documentserver:${DS_TAG}
+    container_name: onlyoffice-document-server
+    environment:
+      - ${JWT_ENV}
+    networks:
+      - onlyoffice
+
+networks:
+  onlyoffice:
+    driver: 'bridge'
