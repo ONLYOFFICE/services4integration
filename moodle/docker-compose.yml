@@ -1,7 +1,7 @@
 version: '3'
 services:
   moodle:
-    image: docker.io/bitnami/moodle:4.5
+    image: docker.io/bitnami/moodle:${SERVICE_TAG}
     container_name: app-server
     # ports:
     #  - 8080:8080
