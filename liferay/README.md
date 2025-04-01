@@ -36,4 +36,3 @@ log: test@liferay.com
 pass: test
 jwt: mysecret
 ```
-
