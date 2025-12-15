@@ -6,10 +6,11 @@ Pass the following `cloud-init` directives to the instance with `user data`:
 
 runcmd:
  - git clone --depth=1 https://github.com/ONLYOFFICE/services4integration.git /app
- - /bin/bash /app/nextcloud/install.sh -st nextcloud_tag -cu connector_url <-je jwt_enabled | -js jwt_secret>
+ - /bin/bash /app/nextcloud/install.sh -dn domain_name -st nextcloud_tag -cu connector_url <-je jwt_enabled | -js jwt_secret>
 ```
 
 Where:
+ - `domain_name` - Domain name. must be specified if you need an https connection. If not specified - only http connection will be available
  - `nextcloud_tag` - Nextcloud version. The available versions of Nextcloud can be viewed [here](https://hub.docker.com/_/nextcloud?tab=tags)
  - `connector_url` - The address at which the connector under test is available. The available versions of the connector can be viewed [here](https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/)
  - `jwt_enabled` - jwt is enabled by default. if you need to disable it - pass this parameter with a value of `false`
@@ -17,7 +18,7 @@ Where:
 
 For example:
 ```
-/app/nextcloud/install.sh -st 22.0 -cu https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.4/onlyoffice.tar.gz
+/app/nextcloud/install.sh -dn example.domain.com -st 22.0 -cu https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v7.5.4/onlyoffice.tar.gz
 ```
 
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
@@ -29,9 +30,8 @@ If successful, the following line will appear:
 ``` 
 The script is finished
 ```
-Then you can go to the Nextcloud web interface at: `http://IP-SERVER:8080/` and check the connector operation.
+Then you can go to the Nextcloud web interface at: `http(s)://IP-SERVER/` and check the connector operation.
 ```
 log: admin
-pass: admin
 jwt: mysecret
 ```
