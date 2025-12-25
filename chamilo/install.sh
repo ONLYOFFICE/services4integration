@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
-SERVICE_TAG="1.11.16"
+SERVICE_TAG="1.11.32"
 PHP_VERSION="7.4"
 IP=""
-DB_USER="chamilouser"
-DB_PWD="jx7bqzRo"
-CONNECTOR_NAME="onlyoffice.zip"
 CONNECTOR_URL=""
+DB_USER="chamilouser"
+DB_PWD=""
+CONNECTOR_NAME="onlyoffice.zip"
 JWT_SECRET="mysecret"
 
 source /app/common/check_parameters.sh "${@}"
 source /app/common/jwt_configuration.sh
-check_parameters
 CHAMILO_URL="https://github.com/chamilo/chamilo-lms/releases/download/v$SERVICE_TAG/chamilo-$SERVICE_TAG.zip"
 
 dependencies_install () {
@@ -24,9 +23,10 @@ apt-get install -y mariadb-server mariadb-client
 systemctl stop mariadb.service
 systemctl start mariadb.service
 systemctl enable mariadb.service
+ROOT_PASSWORD=$(openssl rand -base64 16 | tr -d '/+' | head -c 12)
 mysql -u root << EOF
 use mysql
-SET PASSWORD FOR 'root'@'localhost' = PASSWORD('ewigwf242h3');
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$ROOT_PASSWORD';
 FLUSH PRIVILEGES;
 EOF
 apt-get install -y software-properties-common
@@ -44,7 +44,10 @@ if [ ${VERSION_ARR[0]} -le 1 ]; then
   fi
 fi
 
-apt install -y php$PHP_VERSION libapache2-mod-php$PHP_VERSION php$PHP_VERSION-common php$PHP_VERSION-sqlite3 php$PHP_VERSION-curl php$PHP_VERSION-intl php$PHP_VERSION-mbstring php$PHP_VERSION-xmlrpc php$PHP_VERSION-mysql php$PHP_VERSION-gd php$PHP_VERSION-xml php$PHP_VERSION-cli php$PHP_VERSION-ldap php$PHP_VERSION-apcu php$PHP_VERSION-zip
+apt install -y php$PHP_VERSION libapache2-mod-php$PHP_VERSION php$PHP_VERSION-common \
+  php$PHP_VERSION-sqlite3 php$PHP_VERSION-curl php$PHP_VERSION-intl php$PHP_VERSION-mbstring \
+  php$PHP_VERSION-xmlrpc php$PHP_VERSION-mysql php$PHP_VERSION-gd php$PHP_VERSION-xml \
+  php$PHP_VERSION-cli php$PHP_VERSION-ldap php$PHP_VERSION-apcu php$PHP_VERSION-zip
 }
 
 configure_php () {
@@ -56,11 +59,13 @@ sed -i 's/upload_max_filesize.*/upload_max_filesize = 100M/' /etc/php/$PHP_VERSI
 sed -i 's/max_execution_time.*/max_execution_time = 360/' /etc/php/$PHP_VERSION/apache2/php.ini
 sed -i 's/session.cookie_httponly =/session.cookie_httponly = On/' /etc/php/$PHP_VERSION/apache2/php.ini
 sed -i 's/post_max_size =.*/post_max_size = 10M/' /etc/php/$PHP_VERSION/apache2/php.ini
+sed -i 's/short_open_tag.*/short_open_tag = Off/' /etc/php/$PHP_VERSION/apache2/php.ini
 systemctl restart apache2.service
 }
 
 configure_database () {
-mysql -u root -pewigwf242h3 << EOF
+DB_PWD=$(openssl rand -base64 16 | tr -d '/+' | head -c 12)
+mysql -u root -p${ROOT_PASSWORD} << EOF
 CREATE DATABASE chamilo;
 CREATE USER '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PWD}';
 GRANT ALL ON chamilo.* TO '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PWD}' WITH GRANT OPTION;
@@ -97,17 +102,14 @@ systemctl restart apache2.service
 }
 
 plugin_install () {
-apt install -y composer
 source /app/common/get_connector.sh
 get_connector
+rm -r /var/www/html/Chamilo/plugin/onlyoffice/
 unzip /connectors/$CONNECTOR_NAME -d /connectors
 cp -r /connectors/onlyoffice /var/www/html/Chamilo/plugin
 chmod -R u+rwx /var/www/html/Chamilo/plugin/onlyoffice/
 chmod -R go+rx /var/www/html/Chamilo/plugin/onlyoffice/
 chown -R www-data:www-data /var/www/html/Chamilo/plugin/onlyoffice/
-rm -rf /var/www/html/Chamilo/vendor/*
-export COMPOSER_HOME="$HOME/.config/composer";
-composer install -d /var/www/html/Chamilo
 }
 
 install_documentserver() {
@@ -117,13 +119,15 @@ install_documentserver() {
 
 complete_installation(){
   echo -e "\e[0;32m The script is finished \e[0m"
+  echo "DB_PASSWORD: ${DB_PWD}" | tee /var/lib/app_password
+  echo "db_ROOT_PASSWORD: ${ROOT_PASSWORD}" >> /var/lib/app_password
 }
 main () {
 dependencies_install
 configure_php
 configure_database
 install_chamilo
-if [ "$CONNECTOR_URL" != "" ]; then
+if [ -e /connectors/onlyoffice.zip ]; then
   plugin_install
 fi
 install_documentserver
