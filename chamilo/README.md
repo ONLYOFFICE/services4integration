@@ -20,6 +20,8 @@ For example:
 /app/chamilo/install.sh -st 1.11.16 -cu https://github.com/ONLYOFFICE/onlyoffice-chamilo/releases/download/v1.1.2/onlyoffice.zip
 ```
 
+You can also install the connector from the archive by placing it in /connectors/onlyoffice.zip
+
 After that, you can connect via SSH to the VM and check the progress of the script using the following command:
 ```
 sudo tail -f /var/log/cloud-init-output.log
@@ -32,7 +34,6 @@ The script is finished
 Then you can go to the Chamilo web interface at: `http://IP-SERVER/` and check the connector operation. 
 Access to the database: 
 ```
-log: chamilouser  
-pass: jx7bqzRo
+db_user: chamilouser
 jwt: mysecret
 ```
