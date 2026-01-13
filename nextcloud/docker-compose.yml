@@ -5,35 +5,38 @@ volumes:
   db:
 
 services:
-  ds:
-    image: onlyoffice/documentserver
+  onlyoffice-document-server:
+    container_name: onlyoffice-document-server
+    image: onlyoffice/documentserver:${DS_TAG}
     restart: always
     environment:
       - ${JWT_ENV}
-    ports:
-      - 3000:80
-      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-s", "http://localhost/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - onlyoffice
+
   db:
-    image: mariadb
-    container_name: nextcloud_db
+    image: mariadb:10.6
     restart: always
-    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-file-per-table=1 --skip-innodb-read-only-compressed
-    depends_on:
-      - ds
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
     volumes:
       - db:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=nextcloud
-      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
-  
-  app:
+    networks:
+      - onlyoffice
+
+  nextcloud:
     image: nextcloud:${SERVICE_TAG}
-    container_name: nextcloud_app
+    container_name: nextcloud
     restart: always
-    ports:
-      - 8080:80
     links:
       - db
     depends_on:
@@ -41,10 +44,40 @@ services:
     volumes:
       - nextcloud:/var/www/html
     environment:
-      - MYSQL_PASSWORD=nextcloud
+      - MYSQL_PASSWORD=${DB_PASSWORD}
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_HOST=db
       - NEXTCLOUD_ADMIN_USER=admin
-      - NEXTCLOUD_ADMIN_PASSWORD=admin
-      - NEXTCLOUD_TRUSTED_DOMAINS="${EXT_IP}"
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - NEXTCLOUD_TRUSTED_DOMAINE=${DOMAIN_NAME}
+      - TRUSTED_PROXIES=172.25.0.0/16
+      - OVERWRITEPROTOCOL=${SCHEME}
+      - OVERWRITEHOST=${DOMAIN_NAME}
+    networks:
+      - onlyoffice
+
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - onlyoffice
+    volumes:
+      - ../common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - ../common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - ../common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - nextcloud
+
+networks:
+  onlyoffice:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16
