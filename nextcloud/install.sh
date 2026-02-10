@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 SERVICE_TAG="latest"
-CONNECTOR_URL=""https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v9.11.0/onlyoffice.tar.gz
+CONNECTOR_URL=""https://github.com/ONLYOFFICE/onlyoffice-nextcloud/releases/download/v9.12.0/onlyoffice.tar.gz
 CONNECTOR_NAME="onlyoffice.tar.gz"
 JWT_SECRET='mysecret'
 NGINX_CONF='nginx.conf'
 SCHEME='http'
+DS_TAG='latest'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 source /app/common/jwt_configuration.sh
@@ -21,22 +22,23 @@ install_nextcloud() {
   install_dependencies
   if [ "${DOMAIN_NAME}" ]; then
     source /app/common/get_cert.sh
-    #get_cert
+    get_cert
     NGINX_CONF='nginx_https.conf'
     APP_ADDR=${DOMAIN_NAME}
     SCHEME='https'
   fi
-  gen_password
-  DB_PASSWORD="${PASSWORD}"
-  gen_password
+
+  DB_PASSWORD=$(openssl rand -base64 16 | tr -d '/+' | head -c 12)
+  PASSWORD=$(tr -dc 'A-Za-z0-9!"#$%&' < /dev/urandom | head -c 12)
 
   echo 'JWT_ENV='${JWT_ENV}'
 SERVICE_TAG='${SERVICE_TAG}'
 NEXTCLOUD_ADMIN_PASSWORD='${PASSWORD}'
-MYSQL_PASSWORD='${DB_PASSWORD}'
-NEXTCLOUD_TRUSTED_DOMAINS='${DOMAIN_NAME}'
+DB_PASSWORD='${DB_PASSWORD}'
+DOMAIN_NAME='${DOMAIN_NAME}'
 NGINX_CONF='${NGINX_CONF}'
-TRUSTED_PROXIES=172.25.0.0/16
+DS_TAG='${DS_TAG}'
+SCHEME='${SCHEME}'
 ' > /app/nextcloud/.env
   cd /app/nextcloud/
   docker-compose up -d
