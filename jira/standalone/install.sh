@@ -3,10 +3,13 @@
 # Prepare a stand with Jira standalone with a dependent service Onlyoffice Document Server and add a connector
 
 SERVICE_TAG='latest'
-CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v1.0.1/onlyoffice-jira-app-1.0.1.jar'
+CONNECTOR_URL='https://github.com/ONLYOFFICE/onlyoffice-jira/releases/download/v4.1.1/onlyoffice-jira-app-4.1.1.jar'
 CONNECTOR_NAME='onlyoffice-integration-web-jira.jar'
 PLUGIN_DIRECTORY='/var/atlassian/application-data/jira/plugins/installed-plugins/'
+DS_TAG='latest'
 JWT_SECRET='mysecret'
+NGINX_CONF='nginx.conf'
+SCHEME='http'
 source /app/common/check_parameters.sh "${@}"
 source /app/common/error.sh
 source /app/common/jwt_configuration.sh
@@ -24,8 +27,24 @@ install_jira(){
   source /app/common/install_dependencies.sh
   install_dependencies
   jwt_configuration
-  docker run -i -t -d --restart=always --name onlyoffice-document-server -p 3000:80 -e $JWT_ENV onlyoffice/documentserver
-  docker run -i -t -d --restart=always --name jira -p 8080:8080 atlassian/jira-software:"${SERVICE_TAG}"
+  APP_ADDR="$(wget -q -O - ifconfig.me/ip)"
+  if [ "${DOMAIN_NAME}" ]; then
+    source /app/common/get_cert.sh
+    get_cert
+    NGINX_CONF='nginx_https.conf'
+    APP_ADDR=${DOMAIN_NAME}
+    SCHEME='https'
+  fi
+  MYSQL_PASSWORD=$(openssl rand -base64 20 | tr -d '/+' | head -c 16)
+  echo 'JWT_ENV='${JWT_ENV}'
+SERVICE_TAG='${SERVICE_TAG}'
+NGINX_CONF='${NGINX_CONF}'
+DOMAIN_NAME='${APP_ADDR}'
+DS_TAG='${DS_TAG}'
+MYSQL_PASSWORD='${MYSQL_PASSWORD}'
+' > /app/jira/standalone/.env
+  cd /app/jira/standalone
+  docker-compose up -d
   echo OK > /opt/run
   echo -e "\e[0;32m Installation is complete \e[0m"
 }
@@ -43,7 +62,7 @@ check_launch_jira(){
   echo -e "\e[0;32m Waiting for the launch of Jira \e[0m"
   for ((i=1 ; i <= 100 ; i++)); do
     echo "Getting the Jira status: ${i}"
-    docker logs jira | grep -w "Jira is ready to serve"
+    docker logs jira | grep -wq "Jira is ready to serve"
     if [[ "$?" -ne 0 ]]; then
       sleep 5
     else

@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: jira_postgres
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=jiradb
+      - POSTGRES_PASSWORD=${MYSQL_PASSWORD}
+      - POSTGRES_DB=jiradb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jiradb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - onlyoffice
+
+  jira:
+    image: atlassian/jira-software:10.3.7
+    container_name: jira
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ATL_JDBC_URL=jdbc:postgresql://db:5432/jiradb?stringtype=unspecified
+      - ATL_JDBC_USER=jiradb
+      - ATL_JDBC_PASSWORD=${MYSQL_PASSWORD}
+      - ATL_DB_DRIVER=org.postgresql.Driver
+      - ATL_DB_TYPE=postgres72
+      - JVM_MINIMUM_MEMORY=2048m
+      - JVM_MAXIMUM_MEMORY=4096m
+      - JVM_SUPPORT_RECOMMENDED_ARGS=-Dupm.plugin.upload.enabled=true -Datlassian.upm.on.demand=false -Dplugin.signature.verification.disabled=true
+      - ATL_PROXY_NAME=${DOMAIN_NAME}
+      - ATL_PROXY_PORT=443
+      - ATL_PROXY_SCHEME=https
+      - ATL_TOMCAT_TRUSTEDPROXIES=172\..*
+    volumes:
+      - jira_data:/var/atlassian/application-data/jira
+    networks:
+      - onlyoffice
+
+  nginx:
+    container_name: nginx-server
+    image: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - onlyoffice
+    volumes:
+      - /app/common/nginx_conf/local.conf:/etc/nginx/local.conf
+      - /app/common/nginx_conf/map.conf:/etc/nginx/map.conf
+      - /app/common/nginx_conf/${NGINX_CONF}:/etc/nginx/nginx.conf
+      - ./app.conf:/etc/nginx/app.conf
+      - /etc/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - jira
+
+  onlyoffice-document-server:
+    restart: unless-stopped
+    image: onlyoffice/documentserver:${DS_TAG}
+    container_name: onlyoffice-document-server
+    environment:
+      - ${JWT_ENV}
+    networks:
+      - onlyoffice
+
+volumes:
+  postgres_data:
+    driver: local
+  jira_data:
+    driver: local
+networks:
+  onlyoffice:
+    driver: 'bridge'
